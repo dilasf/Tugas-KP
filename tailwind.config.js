@@ -13,8 +13,26 @@ export default {
     theme: {
         extend: {
             fontFamily: {
-                sans: ['Figtree', ...defaultTheme.fontFamily.sans],
+                sans: ['Inter', ...defaultTheme.fontFamily.sans],
             },
+            fontSize: {
+                '10px': '10px',
+                '12px': '12px',
+                '14px': '14px',
+                // Tambahkan ukuran teks lainnya jika diperlukan
+              },
+
+            colors: {
+                'custom-dark': '#1B1E23',
+                'side-dark' : '#515458',
+                'hover-side' : '#448BE2',
+                'light-blue' : '#448BE2',
+                'light-yellow' : '#FFD000',
+                'light-gray' : '#D9D9D9',
+                'light-green' : "#0AA00A",
+                'light-gray-input' : '#D9D9D9',
+                'dark-blue' : '#00509D',
+              },
         },
     },
 

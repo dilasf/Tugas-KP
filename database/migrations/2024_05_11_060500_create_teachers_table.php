@@ -9,24 +9,35 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up(): void
+    public function up()
     {
         Schema::create('teachers', function (Blueprint $table) {
-            $table->teacher_id();
-            $table->string('photo') -> nullable();
-            $table->integer('nuptk', 20);
+            $table->bigIncrements('id');
+            $table->string('photo')->nullable();
+            $table->bigInteger('nuptk')->nullable()->unique();
             $table->string('teacher_name');
+            $table->string('gender', 12);
             $table->string('placeOfbirth', 100);
-            $table->string('dateOfbirth', 50);
-            $table->string('gender',12);
+            $table->date('dateOfbirth', 50);
             $table->string('religion', 10);
-            $table->string('addres');
-            $table->integer('mobile_phone', 13) -> nullable();
-            $table->boolean('status');
+            $table->string('address');
+            $table->bigInteger('mobile_phone')->nullable()->unique();
+            $table->bigInteger('nip')->nullable()->unique();
+            $table->string('employment_status', 50);
+            $table->string('typesOfCAR', 50);
+            $table->string('prefix', 30)->nullable();
+            $table->string('suffix', 20)->nullable();
+            $table->string('education_Level', 50);
+            $table->string('fieldOfStudy', 100);
+            $table->string('certification', 100)->nullable();
+            $table->date('startDateofEmployment');
+            $table->string('additional_Duties', 100)->nullable();
+            $table->string('teaching', 150)->nullable();
+            $table->string('competency', 100)->nullable();
+            $table->boolean('status')->default(true);
             $table->timestamps();
         });
     }
-
     /**
      * Reverse the migrations.
      */
