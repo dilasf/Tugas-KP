@@ -1,5 +1,6 @@
 
   <!-- Sidebar -->
+  <div class="overflow-x-auto">
     <div class="px-6">
         <a class="flex-none text-xl font-semibold text-white focus:outline-none focus:ring-1 focus:ring-gray-600" href="#" aria-label="Admin">Admin</a>
     </div>
@@ -22,7 +23,7 @@
             <li class="hs-accordion" id="users-accordion">
                 <button type="button" class="hs-accordion-toggle w-full text-start flex items-center gap-x-4 py-2 px-2.5 hs-accordion-active:text-white hs-accordion-active:hover:bg-side-dark text-sm text-slate-200 hover:bg-hover-side hover:text-white focus:outline-none focus:bg-side-dark">
                     <svg class="flex-shrink-0 size-4" xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" ><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-                        Pengguna
+                        Manajemen Pengguna
 
                     <svg class="hs-accordion-active:block ms-auto hidden size-4" xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg>
                     <svg class="hs-accordion-active:hidden ms-auto block size-4" xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
@@ -37,7 +38,7 @@
                                 </x-dropdown-link>
                             </li>
                             <li>
-                                <x-dropdown-link :href="route('teacher_data.index')" :active="request()->routeIs('teacher')">
+                                <x-dropdown-link :href="route('student_data.index')" :active="request()->routeIs('student')">
                                     {{ __('Data Siswa') }}
                                 </x-dropdown-link>
                             </li>
@@ -50,12 +51,12 @@
                                 <div id="users-accordion-sub-2-child" class="hs-accordion-content w-full overflow-hidden transition-[height] duration-300 hidden ps-2">
                                     <ul class="pt-2 ps-2">
                                         <li>
-                                            <x-dropdown-link href="#">
+                                            <x-dropdown-link :href="route('account.student.index')" :active="request()->routeIs('accountstudent')">
                                                 {{ __('Siswa') }}
                                             </x-dropdown-link>
                                         </li>
                                         <li>
-                                            <x-dropdown-link href="#">
+                                            <x-dropdown-link :href="route('account.teacher.index')" :active="request()->routeIs('accountteacher')">
                                                 {{ __('Guru') }}
                                             </x-dropdown-link>
                                         </li>
@@ -70,7 +71,7 @@
                 <button type="button" class="hs-accordion-toggle w-full text-start flex items-center gap-x-3.5 py-2 px-2.5 hs-accordion-active:text-white hs-accordion-active:hover:bg-side-dark text-sm text-slate-200 hover:bg-hover-side hover:text-white focus:outline-none focus:bg-side-dark">
 
                     <img src="{{ asset('img/pembelajaran_logo.png') }}" class="w-[20px] h-[20px]">
-                        Pembelajaran
+                        Kelas dan Pengajaran
 
                     <svg class="hs-accordion-active:block ms-auto hidden size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg>
                     <svg class="hs-accordion-active:hidden ms-auto block size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
@@ -79,36 +80,20 @@
                 <div id="account-accordion-child" class="hs-accordion-content w-full overflow-hidden transition-[height] duration-300 hidden">
                     <ul class="pt-2 ps-2">
                         <li>
-                            <x-dropdown-link :href="route('teacher_data.index')" :active="request()->routeIs('teacher')">
+                            <x-dropdown-link :href="route('subject.semester_year.index')" :active="request()->routeIs('subject.semester_year')">
+                            {{ __('Semester & Tahun Ajaran') }}
+                            </x-dropdown-link>
+                        </li>
+                        <li>
+                            <x-dropdown-link :href="route('subject.index')" :active="request()->routeIs('subject')">
                                 {{ __('Mata Pelajaran') }}
                             </x-dropdown-link>
                         </li>
-                    </ul>
-                </div>
-
-            <li class="hs-accordion" id="projects-accordion">
-                <button type="button" class="hs-accordion-toggle w-full text-start flex items-center gap-x-3.5 py-2 px-2.5 hs-accordion-active:text-white hs-accordion-active:hover:bg-side-dark text-sm text-slate-200 hover:bg-hover-side hover:text-white focus:outline-none focus:bg-side-dark">
-                    <img src="{{ asset('img/posisi_logo.png') }}" class="w-[20px] h-[20px]">
-                        Posisi
-
-                    <svg class="hs-accordion-active:block ms-auto hidden size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg>
-                    <svg class="hs-accordion-active:hidden ms-auto block size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
-                </button>
-
-                <div id="projects-accordion-child" class="hs-accordion-content w-full overflow-hidden transition-[height] duration-300 hidden">
-                    <ul class="pt-2 ps-2">
                         <li>
-                            <x-dropdown-link :href="route('teacher_data.index')" :active="request()->routeIs('teacher')">
-                            {{ __('Guru') }}
-                            </x-dropdown-link>
-                        </li>
-
-                        <li>
-                            <x-dropdown-link :href="route('teacher_data.index')" :active="request()->routeIs('teacher')">
+                            <x-dropdown-link :href="route('class.index')" :active="request()->routeIs('class')">
                             {{ __('Kelas') }}
                             </x-dropdown-link>
                         </li>
-
                     </ul>
                 </div>
 
@@ -125,12 +110,12 @@
             </li>
 
 
-            <li><a class="w-full flex items-center gap-x-3.5 py-2 px-2.5 text-sm text-gray-400 rounded-lg hover:bg-gray-800 hover:text-white-300 focus:outline-none focus:ring-1 focus:ring-gray-600" href="#">
+            {{-- <li><a class="w-full flex items-center gap-x-3.5 py-2 px-2.5 text-sm text-gray-400 rounded-lg hover:bg-gray-800 hover:text-white-300 focus:outline-none focus:ring-1 focus:ring-gray-600" href="#">
             <svg class="flex-shrink-0 size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
             Documentation
-            </a></li>
+            </a></li> --}}
 
       </ul>
     </nav>
-
+  </div>
   <!-- End Sidebar -->

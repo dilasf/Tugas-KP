@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>{{ config('app.name', 'Laravel') }}</title>
+    <title>{{ config('app.name', 'E-Rapor') }}</title>
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -14,6 +14,7 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <script src="//unpkg.com/alpinejs" defer></script>
 
+    <!-- Tailwind CSS -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
 </head>
 <body x-data="{ sidebarOpen: false }">
@@ -26,8 +27,8 @@
             @include('layouts.sidebar')
         </div>
 
-           <!-- Main Content -->
-           <div x-bind:class="sidebarOpen ? 'col-span-9' : 'col-span-12'" class="transition-all duration-300 overflow-x-auto">
+        <!-- Main Content -->
+        <div x-bind:class="sidebarOpen ? 'col-span-9' : 'col-span-12'" class="transition-all duration-300 overflow-x-auto">
 
             <!-- ========== HEADER ========== -->
             <header class="flex flex-wrap sm:justify-start sm:flex-nowrap z-50 w-full bg-white border-b border-gray-200 text-sm py-3 sm:py-0 dark:bg-neutral-800 dark:border-neutral-700">
@@ -40,8 +41,8 @@
                                 <div class="flex items-center py-4">
                                     <button @click="sidebarOpen = !sidebarOpen" type="button" class="text-gray-500 hover:text-gray-600" aria-label="Toggle navigation">
                                         <span class="sr-only">Toggle Navigation</span>
-                                        <svg class="size-5" width="16" height="16" fill="currentColor" viewBox="0 0 15 15">
-                                            <path fill-rule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5z"/>
+                                        <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fill-rule="evenodd" d="M4 6h12V5H4v1zm0 4h12V9H4v1zm0 4h12v-1H4v1z" clip-rule="evenodd" />
                                         </svg>
                                     </button>
                                 </div>

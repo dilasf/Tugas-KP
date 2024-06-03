@@ -17,11 +17,6 @@ class TeachersImport implements WithHeadingRow,ToModel
     public function model(array $row)
     {
 
-            // return new Teacher([
-            //     'teacher_name'  => $row['nama'],
-            //     // tambahkan properti lainnya jika ada
-            // ]);
-
         return new Teacher([
             'teacher_name'  => $row['nama'],
             'nuptk' => $row['nuptk'],
@@ -43,6 +38,7 @@ class TeachersImport implements WithHeadingRow,ToModel
             'additional_Duties' => $row['tugas_tambahan'],
             'teaching' => $row['mengajar'],
             'competency' => $row['kompetensi'],
+            'mail' => $row['email'],
         ]);
     }
 }

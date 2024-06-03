@@ -18,9 +18,10 @@ return new class extends Migration
             $table->string('teacher_name');
             $table->string('gender', 12);
             $table->string('placeOfbirth', 100);
-            $table->date('dateOfbirth', 50);
+            $table->date('dateOfbirth');
             $table->string('religion', 10);
             $table->string('address');
+            $table->string('mail', 50);
             $table->bigInteger('mobile_phone')->nullable()->unique();
             $table->bigInteger('nip')->nullable()->unique();
             $table->string('employment_status', 50);

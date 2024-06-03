@@ -18,7 +18,7 @@ export default {
             fontSize: {
                 '10px': '10px',
                 '12px': '12px',
-                '14px': '14px',
+                '16px': '16px',
                 // Tambahkan ukuran teks lainnya jika diperlukan
               },
 
@@ -31,7 +31,16 @@ export default {
                 'light-gray' : '#D9D9D9',
                 'light-green' : "#0AA00A",
                 'light-gray-input' : '#D9D9D9',
-                'dark-blue' : '#00509D',
+                'light-orange' : '#F39C12',
+                'semi-dark-orange' : '#D78A0F',
+                'aqua-blue' : '#00C0EF',
+                'semi-dark-aqua' : '#03ABD4',
+                'semi-green' : "#00BB65",
+                'semi-dark-green' : "#00A75A",
+                'light-puple' : '#605CA8',
+                'semi-dark-purple' : '#504C8D',
+                'semi-blue' :'#0087D9',
+                'dark-blue' : '#0070B2',
               },
         },
     },

@@ -34,6 +34,7 @@ class TeacherController extends Controller
             'gender' => 'required|max:12',
             'religion' => 'required|max:12',
             'address' => 'required|max:255',
+            'mail' => 'required|email|unique:teachers|max:50',
             'mobile_phone' => 'nullable|unique:teachers|numeric|digits_between:1,13',
             'nip'=> 'nullable|unique:teachers|numeric|digits_between:1,20',
             'employment_status'=> 'required|max:50',
@@ -56,9 +57,8 @@ class TeacherController extends Controller
                 'photo_' . time() . '.' . $request->file('photo')->extension()
             );
             $validated['photo'] = basename($path);
-            // Kemudian simpan ke database atau lakukan tindakan lainnya
-        }
 
+        }
 
         $data = Teacher::create($validated);
 
@@ -93,6 +93,7 @@ class TeacherController extends Controller
             'gender' => 'required|max:12',
             'religion' => 'required|max:10',
             'address' => 'required|max:255',
+            'mail' => 'required|email|unique:teachers,mail,'.$id,
             'mobile_phone' => 'nullable|numeric|unique:teachers,mobile_phone,' . $id,
             'nip'=> 'nullable|numeric|unique:teachers,nip,' . $id . '|digits_between:1,20',
             'employment_status'=> 'required|max:50',
@@ -102,7 +103,7 @@ class TeacherController extends Controller
             'education_Level'=> 'required|max:50',
             'fieldOfStudy'=> 'required|max:100',
             'certification'=> 'nullable|max:100',
-            'startDateofEmployment'=> 'required|date',  // Memastikan validasi format tanggal
+            'startDateofEmployment'=> 'required|date',
             'additional_Duties'=> 'nullable|max:100',
             'teaching'=> 'nullable|max:150',
             'competency'=> 'nullable|max:100',
