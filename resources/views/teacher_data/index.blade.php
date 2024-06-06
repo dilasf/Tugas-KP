@@ -1,6 +1,6 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-2xl text-gray-800 dark:text-gray-200 leading-tight">
+        <h2 class="font-semibold text-2xl text-gray-800 leading-tight">
             {{ __('Data Guru') }}
         </h2>
     </x-slot>
@@ -9,13 +9,16 @@
                 <div class="flex justify-between items-center px-6 py-4">
                     <div style="order: 1;">
                         <x-search-box>
-                            <input id="searchInput" class="py-3 px-4 w-full border-gray-200 rounded-lg text-sm focus:border-light-blue focus:ring-light-blue disabled:opacity-50 disabled:pointer-events-none" type="text" placeholder="Cari Guru" value="">
+                            <input id="searchInput" class="py-3 px-4 w-full border-gray-200 rounded-lg text-sm
+                            focus:border-light-blue focus:ring-light-blue disabled:opacity-50 disabled:pointer-events-none"
+                            type="text" placeholder="Cari Guru" value="">
                         </x-search-box>
                     </div>
                     <div style="order: 2;">
                         <div class="flex items-center">
                             <x-edit-primary-button x-data=""
-                                x-on:click.prevent="$dispatch('open-modal', 'import-teacher')"   class="mr-4 font-semibold inline-flex items-center"
+                                x-on:click.prevent="$dispatch('open-modal', 'import-teacher')"   class="mr-4 font-semibold
+                                inline-flex items-center"
                                 style="padding: 0.5rem 1rem;">
                                 <img src="{{ asset('img/import_logo.png') }}" class="w-[18px] h-[18px]"  alt="Import Icon">
                                 <span class="text-12px ml-1">{{ __('Import Excel') }}</span>

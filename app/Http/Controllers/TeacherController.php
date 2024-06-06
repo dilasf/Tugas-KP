@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Imports\TeachersImport;
 use App\Models\Teacher;
-use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Facades\Excel;
@@ -139,7 +138,11 @@ class TeacherController extends Controller
     public function destroy(string $id)
     {
         $teacher = Teacher::findOrFail($id);
-       //Storage::delete('public/cover_buku/'.$book->cover);
+        $photoPath = 'public/photos/' . $teacher->photo;
+
+        if (Storage::exists($photoPath)) {
+            Storage::delete($photoPath);
+        }
 
        $data = $teacher->delete();
         if ($data) {

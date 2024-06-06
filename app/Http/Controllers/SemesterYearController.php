@@ -9,7 +9,9 @@ class SemesterYearController extends Controller
 {
     public function index()
     {
-        $data = SemesterYear::all();
+        $data = SemesterYear::orderBy('year', 'desc')
+                            ->orderBy('semester', 'asc')
+                            ->get();
         $sidebarOpen = false;
         return view('subject.semester_year.index', ['semester_years' => $data], compact('sidebarOpen'));
     }
@@ -25,8 +27,6 @@ class SemesterYearController extends Controller
             'semester' => 'required|integer|digits:1',
             'year' => 'required|digits:4|integer|min:1900|max:' . (date('Y')),
         ]);
-
-        // dd($request->all());
 
         $data = SemesterYear::create($validated);
 
@@ -74,7 +74,6 @@ class SemesterYearController extends Controller
     public function destroy(string $id)
     {
         $semesteryear = SemesterYear::findOrFail($id);
-       //Storage::delete('public/cover_buku/'.$book->cover);
 
        $data = $semesteryear->delete();
         if ($data) {

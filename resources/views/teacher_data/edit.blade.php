@@ -4,7 +4,7 @@
             <a href="{{ route('teacher_data.index') }}">
                 <img src="{{ asset('img/back_logo.png') }}" class="w-[30px] h-[30px] mr-2 cursor-pointer">
             </a>
-            <h2 class="font-semibold text-2xl text-gray-800 dark:text-gray-200 leading-tight">
+            <h2 class="font-semibold text-2xl text-gray-800 leading-tight">
                 {{ __('Data Guru') }}
             </h2>
         </div>

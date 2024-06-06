@@ -22,7 +22,7 @@
 </div>
 
 <script>
-    document.querySelectorAll('th').forEach(el => el.classList.add("px-4", "py-3", "text-center", "text-xs", "font-medium", "text-white", "uppercase", "tracking-wider"));
-    document.querySelectorAll('td').forEach(el => el.classList.add("px-4", "py-2", "whitespace-nowrap", "text-sm", "font-medium", "text-gray-900"));
+    document.querySelectorAll('th').forEach(el => el.classList.add("px-4", "py-3", "text-center", "text-xs", "font-medium", "text-white", "uppercase", "tracking-wider", 'border'));
+    document.querySelectorAll('td').forEach(el => el.classList.add("px-4", "py-2", "whitespace-nowrap", "text-sm", "font-medium", "text-gray-900", 'border'));
 
 </script>

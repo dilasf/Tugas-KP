@@ -3,9 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\HeightWeight;
-use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 
 class HeightWeightController extends Controller
 {
@@ -15,12 +13,6 @@ class HeightWeightController extends Controller
         $sidebarOpen = false;
         return view('height_weight.index', ['heightWeights' => $data], compact('sidebarOpen'));
     }
-
-    // public function dashboard()
-    // {
-    //     $heightWeightCount = HeightWeight::count();
-    //     return view('dashboard', compact('heightWeightCount'));
-    // }
 
     public function create()
     {

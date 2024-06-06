@@ -12,8 +12,11 @@
                     <x-box-purple tag="button" href="{{ route('teacher_data.index') }}" :count="$teacherCount" title="Data Guru"/>
                 </div>
 
-                <div style="width: 259px;">
+                {{-- <div style="width: 259px;">
                     <x-box-aqua tag="button" href="{{ route('student_data.index') }}" :count="$studentCount" title="Data Siswa"/>
+                </div> --}}
+                <div style="width: 259px;">
+                    <x-box-aqua tag="button" href="{{ route('grade.knowledge_scores.index') }}" :count="0" title="Data Siswa"/>
                 </div>
 {{--
                 <div style="width: 259px;">

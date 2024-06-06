@@ -49,4 +49,15 @@ class Student extends Model
     {
         return $this->belongsTo(StudentClass::class, 'class_id', 'id');
     }
+
+    public function grades()
+    {
+        return $this->hasMany(Grade::class, 'student_id', 'id');
+    }
+
+    public function classSubjects()
+    {
+        return $this->hasMany(ClassSubject::class);
+    }
+
 }

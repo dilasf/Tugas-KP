@@ -10,25 +10,31 @@ class Subject extends Model
     use HasFactory;
 
 
+    public function classes()
+    {
+        return $this->belongsToMany(StudentClass::class, 'class_subjects', 'subject_id', 'class_id');
+    }
+
+
     protected $fillable = [
         'subject_name',
         'kkm',
     ];
 
-    public static function getDataTeachers()
-    {
-        $subjects = Subject::all();
-        $subjects_filter = [];
+    // public static function getDataSubject()
+    // {
+    //     $subjects = Subject::all();
+    //     $subjects_filter = [];
 
-        $no = 1;
-        foreach ($subjects as $mapel) {
-            $subjects_filter[] = [
-                'no' => $no++,
-                'subject_name' => $mapel->subject_name,
-                'kkm' => $mapel->kkm,
-            ];
-        }
+    //     $no = 1;
+    //     foreach ($subjects as $mapel) {
+    //         $subjects_filter[] = [
+    //             'no' => $no++,
+    //             'subject_name' => $mapel->subject_name,
+    //             'kkm' => $mapel->kkm,
+    //         ];
+    //     }
 
-        return $subjects_filter;
-    }
+    //     return $subjects_filter;
+    // }
 }

@@ -23,7 +23,7 @@ class SubjectController extends Controller
     {
         $validated = $request->validate([
             'subject_name' => 'required|max:150',
-            'kkm' => 'required|unique:subjects|numeric|digits_between:1,100',
+            'kkm' => 'required|numeric|digits_between:1,100',
         ]);
 
 
@@ -53,7 +53,7 @@ class SubjectController extends Controller
         $subject = Subject::findOrFail($id);
         $validated = $request->validate([
             'subject_name' => 'required|max:150',
-            'kkm' => 'required|unique:subjects|numeric|digits_between:1,100',
+            'kkm' => 'required|numeric|digits_between:1,100',
         ]);
 
 
@@ -73,7 +73,6 @@ class SubjectController extends Controller
     public function destroy(string $id)
     {
         $subject = Subject::findOrFail($id);
-       //Storage::delete('public/cover_buku/'.$book->cover);
 
        $data = $subject->delete();
         if ($data) {

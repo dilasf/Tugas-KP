@@ -11,7 +11,10 @@ class StudentClassController extends Controller
 
     public function index()
     {
-        $data = StudentClass::with('teacher')->get();
+        $data = StudentClass::with('teacher')
+                            ->orderBy('class_name')
+                            ->orderBy('level')
+                            ->get();
         $sidebarOpen = false;
         return view('class.index', ['classes' => $data], compact('sidebarOpen'));
 
@@ -79,11 +82,6 @@ class StudentClassController extends Controller
 
         $data = $class->update($validated);
 
-        // $class->total_students = $validated['number_of_students'];
-        // $class->number_of_male_students = $validated['number_of_male_students'];
-        // $class->number_of_female_students = $validated['number_of_female_students'];
-        // $class->save();
-
         if ($data) {
             $notification['alert-type'] = 'success';
             $notification['message'] = 'Data Kelas Berhasil Diperbaharui';
@@ -98,7 +96,6 @@ class StudentClassController extends Controller
     public function destroy(string $id)
     {
         $class = StudentClass::findOrFail($id);
-       //Storage::delete('public/cover_buku/'.$book->cover);
 
        $class->total_students = 0;
         $class->number_of_male_students = 0;

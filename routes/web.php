@@ -2,8 +2,11 @@
 
 use App\Http\Controllers\AccountStudentController;
 use App\Http\Controllers\AccountTeacherController;
+use App\Http\Controllers\ClassSubjectController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\GradeController;
 use App\Http\Controllers\GuardianController;
+use App\Http\Controllers\KnowledgeScoreController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SemesterYearController;
 use App\Http\Controllers\StudentClassController;
@@ -58,6 +61,7 @@ Route::middleware('auth')->group(function () {
     Route::post('height_weights/store', [StudentController::class, 'storeheights'])->name('heightstore.store');
     Route::post('/student/import', [StudentController::class, 'import'])->name('student_data.import');
     Route::get('/student/{id}', [StudentController::class, 'show'])->name('student_data.show-detail');
+    // Route::get('/students/{id}/grade/{$classSubjectId}', [StudentController::class, 'showGrades'])->name('grade.index');
 
 });
 
@@ -79,11 +83,6 @@ Route::middleware('auth')->group(function () {
     Route::delete('/subject/semester_year/{id}', [SemesterYearController::class, 'destroy'])->name('subject.semester_year.destroy');
 });
 
-Route::middleware('auth')->group(function () {
-    Route::get('/guardian/{id}', [GuardianController::class, 'index'])->name('guardian.index');
-    // Route::get('/guardian/{id}', [GuardianController::class, 'show'])->name('guardian.index');
-});
-
 
 Route::middleware('auth')->group(function () {
     Route::get('/class', [StudentClassController::class, 'index'])->name('class.index');
@@ -97,6 +96,11 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::middleware('auth')->group(function () {
+    Route::get('/class-subjects', [ClassSubjectController::class, 'index'])->name('class-subjects.index');
+    Route::get('/class-subjects/{id}', [ClassSubjectController::class, 'show'])->name('class-subjects.show');
+});
+
+Route::middleware('auth')->group(function () {
     Route::get('/account/teacher', [AccountTeacherController::class, 'index'])->name('account.teacher.index');
 });
 
@@ -107,5 +111,34 @@ Route::middleware('auth')->group(function () {
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'dashboard'])->name('dashboard');
 });
+
+Route::middleware('auth')->group(function () {
+    Route::get('/grade/{studentId}/{classSubjectId}', [GradeController::class, 'index'])->name('grade.index');
+    Route::get('/grade/detail/{studentId}/{classSubjectId}/{semesterYearId}', [GradeController::class, 'showDetail'])->name('grade.detail');
+    Route::get('/grade/edit/{studentId}/{classSubjectId}/{semesterYearId}/{assessmentType}', [GradeController::class, 'edit'])->name('grade.edit');
+    Route::match(['put', 'patch'],'/grade/update/{studentId}/{classSubjectId}/{semesterYearId}/{assessmentType}', [GradeController::class, 'update'])->name('grade.update');
+
+    // Route::get('grades/create/{studentId}/{classSubjectId}', [GradeController::class, 'create'])->name('grade.create');
+    // Route::post('grades', [GradeController::class, 'store'])->name('grade.store');
+
+    // Route::post('grade/store-knowledge-score/{studentId}', [GradeController::class, 'storeKnowledgeScore'])->name('grade.storeKnowledgeScore');
+    // Route::get('/grade/createAttitudeScore', [GradeController::class, 'createAttitudeScore'])->name('grade.createAttitudeScore');
+    // Route::post('/grade/storeAttitudeScore', [GradeController::class, 'storeAttitudeScore'])->name('grade.storeAttitudeScore');
+    // Route::get('/grade/createSkillScore', [GradeController::class, 'createSkillScore'])->name('grade.createSkillScore');
+    // Route::post('/grade/storeSkillScore', [GradeController::class, 'storeSkillScore'])->name('grade.storeSkillScore');
+    // Route::get('/grades/{studentId}/{classSubjectId}/{semesterId}', [GradeController::class,'show'])->name('grade.show');
+    // Route::get('/cancel', [GradeController::class, 'cancelAction'])->name('grade.cancel');
+
+});
+
+Route::middleware('auth')->group(function () {
+    Route::get('/knowledge-scores', [KnowledgeScoreController::class, 'index'])->name('grade.knowledge_scores.index');
+    Route::get('/knowledge-scores/create', [KnowledgeScoreController::class, 'create'])->name('grade.knowledge_scores.create');
+    Route::post('/knowledge-scores', [KnowledgeScoreController::class, 'store'])->name('grade.knowledge_scores.store');
+    Route::get('/knowledge-scores/{id}/edit', [KnowledgeScoreController::class, 'edit'])->name('grade.knowledge_scores.edit');
+    Route::match(['put', 'patch'],'/knowledge-scores/{id}', [KnowledgeScoreController::class, 'update'])->name('grade.knowledge_scores.update');
+    Route::delete('/knowledge-scores/{id}', [KnowledgeScoreController::class, 'destroy'])->name('grade.knowledge_scores.destroy');
+});
+
 
 require __DIR__.'/auth.php';
