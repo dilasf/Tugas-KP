@@ -73,6 +73,7 @@
                             @endforeach
                         </x-table>
                     </div>
+
                 </div>
             </div>
         </div>

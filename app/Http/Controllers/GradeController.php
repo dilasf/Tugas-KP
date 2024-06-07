@@ -15,80 +15,159 @@ use Illuminate\Support\Facades\DB;
 
 class GradeController extends Controller
 {
-    //Mnemapilkan Total Nilai
+    // //Mnemapilkan Total Nilai
+    // public function index(Request $request, $studentId, $classSubjectId)
+    // {
+    //     // Ambil nilai semester yang dipilih dari request, atau gunakan nilai default jika tidak ada
+    //     $selectedSemesterYearId = $request->input('semester_year_id', null);
+    //     $semesters = SemesterYear::all();
+
+    //     // Tentukan semester default
+    //     $defaultSemester = $semesters->firstWhere('semester', 1);
+
+    //     // Jika tidak ada semester yang dipilih, atur semester default ke semester 1
+    //     if (!$selectedSemesterYearId) {
+    //         $selectedSemesterYearId = $defaultSemester->id;
+    //     }
+
+    //     // Ambil data berdasarkan studentId dan classSubjectId
+    //     $student = Student::findOrFail($studentId);
+    //     $classSubject = ClassSubject::findOrFail($classSubjectId);
+
+    //     // Sidebar
+    //     $sidebarOpen = false;
+
+    //     // Ambil nilai knowledge score berdasarkan studentId, classSubjectId, dan semesterYearId
+    //     $knowledgeScores = KnowledgeScore::where('student_id', $studentId)
+    //         ->where('class_subject_id', $classSubjectId)
+    //         ->when($selectedSemesterYearId, function ($query, $selectedSemesterYearId) {
+    //             return $query->where('semester_year_id', $selectedSemesterYearId);
+    //         })
+    //         ->get();
+
+    //     // Ambil nilai attitude score berdasarkan studentId, classSubjectId, dan semesterYearId
+    //     $attitudeScores = AttitudeScore::where('student_id', $studentId)
+    //         ->where('class_subject_id', $classSubjectId)
+    //         ->when($selectedSemesterYearId, function ($query, $selectedSemesterYearId) {
+    //             return $query->where('semester_year_id', $selectedSemesterYearId);
+    //         })
+    //         ->get();
+
+    //     // Ambil nilai skill score berdasarkan studentId, classSubjectId, dan semesterYearId
+    //     $skillScores = SkillScore::where('student_id', $studentId)
+    //         ->where('class_subject_id', $classSubjectId)
+    //         ->when($selectedSemesterYearId, function ($query, $selectedSemesterYearId) {
+    //             return $query->where('semester_year_id', $selectedSemesterYearId);
+    //         })
+    //         ->get();
+
+    //     // Hitung total nilai akhir untuk setiap kategori
+    //     $finalKnowledgeScore = $knowledgeScores->sum('final_score');
+    //     $finalAttitudeScore = $attitudeScores->sum('final_score');
+    //     $finalSkillScore = $skillScores->sum('final_score');
+
+    //     // Hitung grade berdasarkan nilai akhir
+    //     $knowledgeGrade = $this->calculateGrade($finalKnowledgeScore, 'final_score');
+    //     $attitudeGrade = $this->calculateGrade($finalAttitudeScore, 'final_score');
+    //     $skillGrade = $this->calculateGrade($finalSkillScore, 'final_score');
+
+    //     // Kembalikan view dengan data yang diperlukan
+    //     return view('grade.index', compact(
+    //         'sidebarOpen',
+    //         'finalKnowledgeScore',
+    //         'knowledgeGrade',
+    //         'finalAttitudeScore',
+    //         'attitudeGrade',
+    //         'finalSkillScore',
+    //         'skillGrade',
+    //         'selectedSemesterYearId',
+    //         'semesters',
+    //         'student',
+    //         'classSubject',
+    //         'knowledgeScores',
+    //         'attitudeScores',
+    //         'skillScores'
+    //     ));
+    // }
+
     public function index(Request $request, $studentId, $classSubjectId)
-    {
-        // Ambil nilai semester yang dipilih dari request, atau gunakan nilai default jika tidak ada
-        $selectedSemesterYearId = $request->input('semester_year_id', null);
-        $semesters = SemesterYear::all();
+{
+    // Ambil nilai semester yang dipilih dari request, atau gunakan nilai default jika tidak ada
+    $selectedSemesterYearId = $request->input('semester_year_id', null);
+    $semesters = SemesterYear::all();
 
-        // Tentukan semester default
-        $defaultSemester = $semesters->firstWhere('semester', 1);
+    // Tentukan semester default
+    $defaultSemester = $semesters->firstWhere('semester', 1);
 
-        // Jika tidak ada semester yang dipilih, atur semester default ke semester 1
-        if (!$selectedSemesterYearId) {
-            $selectedSemesterYearId = $defaultSemester->id;
-        }
-
-        // Ambil data berdasarkan studentId dan classSubjectId
-        $student = Student::findOrFail($studentId);
-        $classSubject = ClassSubject::findOrFail($classSubjectId);
-
-        // Sidebar
-        $sidebarOpen = false;
-
-        // Ambil nilai knowledge score berdasarkan studentId, classSubjectId, dan semesterYearId
-        $knowledgeScores = KnowledgeScore::where('student_id', $studentId)
-            ->where('class_subject_id', $classSubjectId)
-            ->when($selectedSemesterYearId, function ($query, $selectedSemesterYearId) {
-                return $query->where('semester_year_id', $selectedSemesterYearId);
-            })
-            ->get();
-
-        // Ambil nilai attitude score berdasarkan studentId, classSubjectId, dan semesterYearId
-        $attitudeScores = AttitudeScore::where('student_id', $studentId)
-            ->where('class_subject_id', $classSubjectId)
-            ->when($selectedSemesterYearId, function ($query, $selectedSemesterYearId) {
-                return $query->where('semester_year_id', $selectedSemesterYearId);
-            })
-            ->get();
-
-        // Ambil nilai skill score berdasarkan studentId, classSubjectId, dan semesterYearId
-        $skillScores = SkillScore::where('student_id', $studentId)
-            ->where('class_subject_id', $classSubjectId)
-            ->when($selectedSemesterYearId, function ($query, $selectedSemesterYearId) {
-                return $query->where('semester_year_id', $selectedSemesterYearId);
-            })
-            ->get();
-
-        // Hitung total nilai akhir untuk setiap kategori
-        $finalKnowledgeScore = $knowledgeScores->sum('final_score');
-        $finalAttitudeScore = $attitudeScores->sum('final_score');
-        $finalSkillScore = $skillScores->sum('final_score');
-
-        // Hitung grade berdasarkan nilai akhir
-        $knowledgeGrade = $this->calculateGrade($finalKnowledgeScore, 'final_score');
-        $attitudeGrade = $this->calculateGrade($finalAttitudeScore, 'final_score');
-        $skillGrade = $this->calculateGrade($finalSkillScore, 'final_score');
-
-        // Kembalikan view dengan data yang diperlukan
-        return view('grade.index', compact(
-            'sidebarOpen',
-            'finalKnowledgeScore',
-            'knowledgeGrade',
-            'finalAttitudeScore',
-            'attitudeGrade',
-            'finalSkillScore',
-            'skillGrade',
-            'selectedSemesterYearId',
-            'semesters',
-            'student',
-            'classSubject',
-            'knowledgeScores',
-            'attitudeScores',
-            'skillScores'
-        ));
+    // Jika tidak ada semester yang dipilih, atur semester default ke semester 1
+    if (!$selectedSemesterYearId) {
+        $selectedSemesterYearId = $defaultSemester->id;
     }
+
+    // Ambil data berdasarkan studentId dan classSubjectId
+    $student = Student::findOrFail($studentId);
+    $classSubject = ClassSubject::findOrFail($classSubjectId);
+
+    // Sidebar
+    $sidebarOpen = false;
+
+    // Ambil nilai knowledge score berdasarkan studentId, classSubjectId, dan semesterYearId
+    $knowledgeScores = KnowledgeScore::where('student_id', $studentId)
+        ->where('class_subject_id', $classSubjectId)
+        ->when($selectedSemesterYearId, function ($query, $selectedSemesterYearId) {
+            return $query->where('semester_year_id', $selectedSemesterYearId);
+        })
+        ->get();
+
+    // Ambil nilai attitude score berdasarkan studentId, classSubjectId, dan semesterYearId
+    $attitudeScores = AttitudeScore::where('student_id', $studentId)
+        ->where('class_subject_id', $classSubjectId)
+        ->when($selectedSemesterYearId, function ($query, $selectedSemesterYearId) {
+            return $query->where('semester_year_id', $selectedSemesterYearId);
+        })
+        ->get();
+
+    // Ambil nilai skill score berdasarkan studentId, classSubjectId, dan semesterYearId
+    $skillScores = SkillScore::where('student_id', $studentId)
+        ->where('class_subject_id', $classSubjectId)
+        ->when($selectedSemesterYearId, function ($query, $selectedSemesterYearId) {
+            return $query->where('semester_year_id', $selectedSemesterYearId);
+        })
+        ->get();
+
+    // Hitung jumlah penilaian yang telah diisi untuk setiap kategori
+    $knowledgeAssessmentCount = $knowledgeScores->count();
+    $attitudeAssessmentCount = $attitudeScores->count();
+    $skillAssessmentCount = $skillScores->count();
+
+    // Hitung total nilai akhir untuk setiap kategori
+    $finalKnowledgeScore = $knowledgeScores->sum('score') / ($knowledgeAssessmentCount > 0 ? $knowledgeAssessmentCount : 1);
+    $finalAttitudeScore = $attitudeScores->sum('score') / ($attitudeAssessmentCount > 0 ? $attitudeAssessmentCount : 1);
+    $finalSkillScore = $skillScores->sum('score') / ($skillAssessmentCount > 0 ? $skillAssessmentCount : 1);
+
+    // Hitung grade berdasarkan nilai akhir
+    $knowledgeGrade = $this->calculateGrade($finalKnowledgeScore, 'score');
+    $attitudeGrade = $this->calculateGrade($finalAttitudeScore, 'score');
+    $skillGrade = $this->calculateGrade($finalSkillScore, 'score');
+
+    // Kembalikan view dengan data yang diperlukan
+    return view('grade.index', compact(
+        'sidebarOpen',
+        'finalKnowledgeScore',
+        'knowledgeGrade',
+        'finalAttitudeScore',
+        'attitudeGrade',
+        'finalSkillScore',
+        'skillGrade',
+        'selectedSemesterYearId',
+        'semesters',
+        'student',
+        'classSubject',
+        'knowledgeScores',
+        'attitudeScores',
+        'skillScores'
+    ));
+}
 
 
     // Detail Nilai Knowlage
@@ -132,6 +211,7 @@ class GradeController extends Controller
         ));
     }
 
+
     //Edit Nilai Knowledge
     public function editKnowledgeScore($studentId, $classSubjectId, $semesterYearId, $assessmentType)
     {
@@ -152,19 +232,16 @@ class GradeController extends Controller
             'classSubjectId'));
     }
 
-    public function updateKnowledgeScore(Request $request, $studentId, $classSubjectId, $semesterYearId, $assessmentType)
-    {
+        public function updateKnowledgeScore(Request $request, $studentId, $classSubjectId, $semesterYearId, $assessmentType)
+        {
         // Lakukan validasi
         $request->validate([
-            'score' => 'required|numeric|max:100',
+            'score' => 'required|numeric|min:0|max:100',
             'description' => 'nullable|string',
         ]);
 
         // Mendapatkan nilai yang diinput
         $score = $request->input('score');
-        if ($score > 100) {
-            return back()->withErrors(['score' => 'Nilai tidak boleh melebihi 100']);
-        }
 
         // Cari atau buat data nilai dari database
         $knowledgeScore = KnowledgeScore::firstOrNew([
@@ -176,35 +253,50 @@ class GradeController extends Controller
 
         // Jika knowledgeScore belum ada di database, maka ini adalah input pertama
         if (!$knowledgeScore->exists) {
+            // Ambil final_score dari penilaian sebelumnya (jika ada)
+            $previousKnowledgeScore = KnowledgeScore::where('student_id', $studentId)
+                ->where('class_subject_id', $classSubjectId)
+                ->where('semester_year_id', $semesterYearId)
+                ->orderBy('id', 'desc')
+                ->first();
+
+            $previousFinalScore = $previousKnowledgeScore ? $previousKnowledgeScore->final_score : 0;
+
+            // Set nilai final_score
             $knowledgeScore->score = $score;
-            $knowledgeScore->final_score = $score; // Set final_score menjadi score pertama kali
-            $knowledgeScore->grade = $this->calculateGrade($score, 'score');
+            $knowledgeScore->final_score = $previousFinalScore + $score;
+            $knowledgeScore->grade = $this->calculateGrade($knowledgeScore->final_score, 'final_score');
             $knowledgeScore->description = $request->input('description');
             $knowledgeScore->save();
         } else {
             // Jika knowledgeScore sudah ada, maka ini adalah update
-            // Ambil final_score dari penilaian sebelumnya (jika ada)
-            $previousFinalScore = KnowledgeScore::where('student_id', $studentId)
-                ->where('class_subject_id', $classSubjectId)
-                ->where('semester_year_id', $semesterYearId)
-                ->where('id', '<', $knowledgeScore->id)
-                ->orderBy('id', 'desc')
-                ->pluck('final_score')
-                ->first();
+            // Ambil nilai akhir sebelumnya
+            $previousFinalScore = $knowledgeScore->final_score;
 
-            // Kurangi nilai lama dari Final Score
-            $knowledgeScore->final_score -= $knowledgeScore->score;
+            // Hitung selisih antara nilai baru dan nilai lama
+            $scoreDifference = $score - $knowledgeScore->score;
 
-            // Tambahkan nilai baru ke Final Score, ditambah dengan final_score sebelumnya
+            // Perbarui nilai akhir dan grade untuk knowledgeScore yang diubah
             $knowledgeScore->score = $score;
-            $knowledgeScore->final_score = ($previousFinalScore ?? 0) + $score;
-
-            // Mendapatkan nilai grade baru berdasarkan nilai akhir baru
-            $knowledgeScore->grade = $this->calculateGrade($score, 'score');
-
-            // Simpan perubahan ke dalam database
+            $knowledgeScore->final_score = max(0, $knowledgeScore->final_score + $scoreDifference);
+            $knowledgeScore->grade = $this->calculateGrade($knowledgeScore->final_score, 'final_score');
             $knowledgeScore->description = $request->input('description');
             $knowledgeScore->save();
+
+            // Perbarui nilai akhir untuk semua nilai yang berada di bawah knowledgeScore yang diubah
+            $knowledgeScoresBelow = KnowledgeScore::where('student_id', $studentId)
+                ->where('class_subject_id', $classSubjectId)
+                ->where('semester_year_id', $semesterYearId)
+                ->where('id', '>', $knowledgeScore->id)
+                ->orderBy('id')
+                ->get();
+
+            foreach ($knowledgeScoresBelow as $knowledge) {
+                $previousFinalScore += $knowledge->score + $scoreDifference;
+                $knowledge->final_score = max(0, $previousFinalScore);
+                $knowledge->grade = $this->calculateGrade($knowledge->final_score, 'final_score');
+                $knowledge->save();
+            }
         }
 
         $notification = [
@@ -217,6 +309,7 @@ class GradeController extends Controller
             'semesterYearId' => $semesterYearId
         ])->with($notification);
     }
+
 
     // Detail Nilai Sikap
     public function showDetailAttitudeScore($studentId, $classSubjectId, $semesterYearId = null)
@@ -273,16 +366,16 @@ class GradeController extends Controller
 
     public function updateAttitudeScore(Request $request, $studentId, $classSubjectId, $semesterYearId, $assessmentType)
     {
+        // Lakukan validasi
         $request->validate([
-            'score' => 'required|numeric|max:100',
+            'score' => 'required|numeric|min:0|max:100',
             'description' => 'nullable|string',
         ]);
 
+        // Mendapatkan nilai yang diinput
         $score = $request->input('score');
-        if ($score > 100) {
-            return back()->withErrors(['score' => 'Nilai tidak boleh melebihi 100']);
-        }
 
+        // Cari atau buat data nilai dari database
         $attitudeScore = AttitudeScore::firstOrNew([
             'student_id' => $studentId,
             'class_subject_id' => $classSubjectId,
@@ -291,26 +384,51 @@ class GradeController extends Controller
         ]);
 
         if (!$attitudeScore->exists) {
+            // Jika ini adalah input pertama
+            $previousAttitudeScore = AttitudeScore::where('student_id', $studentId)
+                ->where('class_subject_id', $classSubjectId)
+                ->where('semester_year_id', $semesterYearId)
+                ->orderBy('id', 'desc')
+                ->first();
+
+            $previousFinalScore = $previousAttitudeScore ? $previousAttitudeScore->final_score : 0;
+
+            // Set nilai final_score
             $attitudeScore->score = $score;
-            $attitudeScore->final_score = $score;
-            $attitudeScore->grade = $this->calculateGrade($score, 'score');
+            $attitudeScore->final_score = $previousFinalScore + $score;
+            $attitudeScore->grade = $this->calculateGrade($attitudeScore->final_score, 'final_score');
             $attitudeScore->description = $request->input('description');
             $attitudeScore->save();
         } else {
-            $previousFinalScore = AttitudeScore::where('student_id', $studentId)
-                ->where('class_subject_id', $classSubjectId)
-                ->where('semester_year_id', $semesterYearId)
-                ->where('id', '<', $attitudeScore->id)
-                ->orderBy('id', 'desc')
-                ->pluck('final_score')
-                ->first();
+            // Jika attitudeScore sudah ada, maka ini adalah update
+            // Ambil nilai akhir sebelumnya
+            $previousFinalScore = $attitudeScore->final_score;
 
-            $attitudeScore->final_score -= $attitudeScore->score;
+            // Hitung selisih antara nilai baru dan nilai lama
+            $scoreDifference = $score - $attitudeScore->score;
+
+            // Perbarui nilai akhir dan grade untuk attitudeScore yang diubah
             $attitudeScore->score = $score;
-            $attitudeScore->final_score = ($previousFinalScore ?? 0) + $score;
-            $attitudeScore->grade = $this->calculateGrade($score, 'score');
+            $attitudeScore->final_score = max(0, $attitudeScore->final_score + $scoreDifference);
+            $attitudeScore->grade = $this->calculateGrade($attitudeScore->final_score, 'final_score');
             $attitudeScore->description = $request->input('description');
             $attitudeScore->save();
+
+            // Perbarui nilai akhir untuk semua nilai yang berada di bawah attitudeScore yang diubah
+            $attitudeScoresBelow = AttitudeScore::where('student_id', $studentId)
+                ->where('class_subject_id', $classSubjectId)
+                ->where('semester_year_id', $semesterYearId)
+                ->where('id', '>', $attitudeScore->id)
+                ->orderBy('id')
+                ->get();
+
+            $cumulativeScore = $attitudeScore->final_score;
+            foreach ($attitudeScoresBelow as $attitude) {
+                $cumulativeScore += $attitude->score + $scoreDifference;
+                $attitude->final_score = max(0, $cumulativeScore);
+                $attitude->grade = $this->calculateGrade($attitude->final_score, 'final_score');
+                $attitude->save();
+            }
         }
 
         $notification = [
@@ -324,54 +442,55 @@ class GradeController extends Controller
         ])->with($notification);
     }
 
+
     // Detail Nilai Keterampilan
     public function showDetailSkillScore($studentId, $classSubjectId, $semesterYearId = null)
-{
-    $student = Student::findOrFail($studentId);
-    $classSubject = ClassSubject::findOrFail($classSubjectId);
-    $sidebarOpen = false;
+    {
+        $student = Student::findOrFail($studentId);
+        $classSubject = ClassSubject::findOrFail($classSubjectId);
+        $sidebarOpen = false;
 
-    $semesters = SemesterYear::all();
+        $semesters = SemesterYear::all();
 
-    if (is_null($semesterYearId)) {
-        $semesterYearId = $semesters->first()->id;
+        if (is_null($semesterYearId)) {
+            $semesterYearId = $semesters->first()->id;
+        }
+
+        $semester = SemesterYear::findOrFail($semesterYearId);
+        $assessmentTypes = SkillScore::distinct()->pluck('assessment_type');
+
+        // Ambil data keterampilan dan kehadiran
+        $skillScores = SkillScore::where('student_id', $studentId)
+            ->where('class_subject_id', $classSubjectId)
+            ->where('semester_year_id', $semesterYearId)
+            ->get();
+
+        // Ambil data kehadiran atau buat instance kosong jika tidak ditemukan
+        $attendance = Attendance::firstOrNew(
+            [
+                'student_id' => $studentId,
+                'class_subject_id' => $classSubjectId,
+                'semester_year_id' => $semesterYearId,
+            ],
+            [
+                'sick' => 0,
+                'permission' => 0,
+                'unexcused' => 0,
+            ]
+        );
+
+        return view('grade.detailSkillScore', compact(
+            'sidebarOpen',
+            'student',
+            'classSubject',
+            'semester',
+            'skillScores',
+            'semesterYearId',
+            'semesters',
+            'assessmentTypes',
+            'attendance'
+        ));
     }
-
-    $semester = SemesterYear::findOrFail($semesterYearId);
-    $assessmentTypes = SkillScore::distinct()->pluck('assessment_type');
-
-    // Ambil data keterampilan dan kehadiran
-    $skillScores = SkillScore::where('student_id', $studentId)
-        ->where('class_subject_id', $classSubjectId)
-        ->where('semester_year_id', $semesterYearId)
-        ->get();
-
-    // Ambil data kehadiran atau buat instance kosong jika tidak ditemukan
-    $attendance = Attendance::firstOrNew(
-        [
-            'student_id' => $studentId,
-            'class_subject_id' => $classSubjectId,
-            'semester_year_id' => $semesterYearId,
-        ],
-        [
-            'sick' => 0,
-            'permission' => 0,
-            'unexcused' => 0,
-        ]
-    );
-
-    return view('grade.detailSkillScore', compact(
-        'sidebarOpen',
-        'student',
-        'classSubject',
-        'semester',
-        'skillScores',
-        'semesterYearId',
-        'semesters',
-        'assessmentTypes',
-        'attendance'
-    ));
-}
 
     // Edit Nilai Keterampilan
     public function editSkillScore($studentId, $classSubjectId, $semesterYearId, $assessmentType)
@@ -394,70 +513,93 @@ class GradeController extends Controller
     }
 
     public function updateSkillScore(Request $request, $studentId, $classSubjectId, $semesterYearId, $assessmentType)
-{
-    $request->validate([
-        'score' => 'required|numeric|max:100',
-        'description' => 'nullable|string',
-        'sick' => 'nullable|numeric',
-        'permission' => 'nullable|numeric',
-        'unexcused' => 'nullable|numeric',
-    ]);
+    {
+        $request->validate([
+            'score' => 'required|numeric|min:0|max:100',
+            'description' => 'nullable|string',
+            'sick' => 'nullable|numeric',
+            'permission' => 'nullable|numeric',
+            'unexcused' => 'nullable|numeric',
+        ]);
 
-    $score = $request->input('score');
-    if ($score > 100) {
-        return back()->withErrors(['score' => 'Nilai tidak boleh melebihi 100']);
+        $score = $request->input('score');
+
+        // Cari atau buat data nilai dari database
+        $skillScore = SkillScore::firstOrNew([
+            'student_id' => $studentId,
+            'class_subject_id' => $classSubjectId,
+            'semester_year_id' => $semesterYearId,
+            'assessment_type' => $assessmentType
+        ]);
+
+        if (!$skillScore->exists) {
+            // Jika ini adalah input pertama
+            $previousSkillScore = SkillScore::where('student_id', $studentId)
+                ->where('class_subject_id', $classSubjectId)
+                ->where('semester_year_id', $semesterYearId)
+                ->orderBy('id', 'desc')
+                ->first();
+
+            $previousFinalScore = $previousSkillScore ? $previousSkillScore->final_score : 0;
+
+            // Set nilai final_score
+            $skillScore->score = $score;
+            $skillScore->final_score = $previousFinalScore + $score;
+            $skillScore->grade = $this->calculateGrade($skillScore->final_score, 'final_score');
+            $skillScore->description = $request->input('description');
+            $skillScore->save();
+        } else {
+            // Jika skillScore sudah ada, maka ini adalah update
+            // Ambil nilai akhir sebelumnya
+            $previousFinalScore = $skillScore->final_score;
+
+            // Hitung selisih antara nilai baru dan nilai lama
+            $scoreDifference = $score - $skillScore->score;
+
+            // Perbarui nilai akhir dan grade untuk skillScore yang diubah
+            $skillScore->score = $score;
+            $skillScore->final_score = max(0, $skillScore->final_score + $scoreDifference);
+            $skillScore->grade = $this->calculateGrade($skillScore->final_score, 'final_score');
+            $skillScore->description = $request->input('description');
+            $skillScore->save();
+
+            // Perbarui nilai akhir untuk semua nilai yang berada di bawah skillScore yang diubah
+            $skillScoresBelow = SkillScore::where('student_id', $studentId)
+                ->where('class_subject_id', $classSubjectId)
+                ->where('semester_year_id', $semesterYearId)
+                ->where('id', '>', $skillScore->id)
+                ->orderBy('id')
+                ->get();
+
+            $cumulativeScore = $skillScore->final_score;
+            foreach ($skillScoresBelow as $skill) {
+                $cumulativeScore += $skill->score + $scoreDifference;
+                $skill->final_score = max(0, $cumulativeScore);
+                $skill->grade = $this->calculateGrade($skill->final_score, 'final_score');
+                $skill->save();
+            }
+        }
+
+        // Update atau tambahkan informasi kehadiran
+        Attendance::updateOrCreate(
+            ['student_id' => $studentId, 'class_subject_id' => $classSubjectId, 'semester_year_id' => $semesterYearId],
+            [
+                'sick' => $request->input('sick', 0),
+                'permission' => $request->input('permission', 0),
+                'unexcused' => $request->input('unexcused', 0),
+            ]
+        );
+
+        $notification = [
+            'alert-type' => 'success',
+            'message' => 'Data Penilaian Keterampilan dan Kehadiran Berhasil Disimpan'
+        ];
+        return redirect()->route('grade.detailSkillScore', [
+            'studentId' => $studentId,
+            'classSubjectId' => $classSubjectId,
+            'semesterYearId' => $semesterYearId
+        ])->with($notification);
     }
-
-    $skillScore = SkillScore::firstOrNew([
-        'student_id' => $studentId,
-        'class_subject_id' => $classSubjectId,
-        'semester_year_id' => $semesterYearId,
-        'assessment_type' => $assessmentType
-    ]);
-
-    if (!$skillScore->exists) {
-        $skillScore->score = $score;
-        $skillScore->final_score = $score;
-        $skillScore->grade = $this->calculateGrade($score, 'score');
-        $skillScore->description = $request->input('description');
-        $skillScore->save();
-    } else {
-        $previousFinalScore = SkillScore::where('student_id', $studentId)
-            ->where('class_subject_id', $classSubjectId)
-            ->where('semester_year_id', $semesterYearId)
-            ->where('id', '<', $skillScore->id)
-            ->orderBy('id', 'desc')
-            ->pluck('final_score')
-            ->first();
-
-        $skillScore->final_score -= $skillScore->score;
-        $skillScore->score = $score;
-        $skillScore->final_score = ($previousFinalScore ?? 0) + $score;
-        $skillScore->grade = $this->calculateGrade($score, 'score');
-        $skillScore->description = $request->input('description');
-        $skillScore->save();
-    }
-
-    // Update atau tambahkan informasi kehadiran
-    $attendance = Attendance::updateOrCreate(
-        ['student_id' => $studentId, 'class_subject_id' => $classSubjectId, 'semester_year_id' => $semesterYearId],
-        [
-            'sick' => $request->input('sick', 0),
-            'permission' => $request->input('permission', 0),
-            'unexcused' => $request->input('unexcused', 0),
-        ]
-    );
-
-    $notification = [
-        'alert-type' => 'success',
-        'message' => 'Data Penilaian Keterampilan dan Kehadiran Berhasil Disimpan'
-    ];
-    return redirect()->route('grade.detailSkillScore', [
-        'studentId' => $studentId,
-        'classSubjectId' => $classSubjectId,
-        'semesterYearId' => $semesterYearId
-    ])->with($notification);
-}
 
 
 private function calculateGrade($value, $type)

@@ -97,7 +97,7 @@
                                     <td class="text-center">{{ $num++ }}</td>
                                     <td>Sikap</td>
                                     <td class="text-center">{{ $finalAttitudeScore }}</td>
-                                    <td class="text-center">{{ $attitudeGrade }}</td>
+                                     <td class="text-center">{{ $attitudeGrade }}</td>
                                     <td class="text-center">
                                             <x-detail-primary-button tag="a" href="{{ route('grade.detailAttitudeScore', ['studentId' => $student->id, 'classSubjectId' => $classSubject->id, 'semesterYearId' => $selectedSemesterYearId]) }}"
                                                 class="flex items-center justify-center min-w-[60px]">
