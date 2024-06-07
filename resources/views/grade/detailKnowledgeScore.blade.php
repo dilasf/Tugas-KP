@@ -63,7 +63,7 @@
                                     <td class="text-center">{{ $knowledgeScore->final_score ?? '0' }}</td>
                                     <td>{{ $knowledgeScore->description ?? 'Tidak Ada Deskripsi' }}</td>
                                     <td class="text-center">
-                                        <x-edit-primary-button tag="a" href="{{ route('grade.edit', ['studentId' => $student->id, 'classSubjectId' => $classSubject->id, 'semesterYearId' => $semesterYearId, 'assessmentType' => $assessmentType]) }}"
+                                        <x-edit-primary-button tag="a" href="{{ route('grade.editKnowledgeScore', ['studentId' => $student->id, 'classSubjectId' => $classSubject->id, 'semesterYearId' => $semesterYearId, 'assessmentType' => $assessmentType]) }}"
                                             class="flex items-center justify-center min-w-[60px]">
                                             <img src="{{ asset('img/edit-brush_logo.png') }}" class="w-[13px] h-[13px]">
                                             <span x-show="!sidebarOpen" class="ml-1 text-[10px]">{{ __('Edit') }}</span>

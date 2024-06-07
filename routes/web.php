@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\AccountStudentController;
 use App\Http\Controllers\AccountTeacherController;
+use App\Http\Controllers\AttendanceController;
+use App\Http\Controllers\AttitudeScoreController;
 use App\Http\Controllers\ClassSubjectController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\GradeController;
@@ -9,6 +11,7 @@ use App\Http\Controllers\GuardianController;
 use App\Http\Controllers\KnowledgeScoreController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SemesterYearController;
+use App\Http\Controllers\skillScoreController;
 use App\Http\Controllers\StudentClassController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\SubjectController;
@@ -21,8 +24,12 @@ Route::get('/', function () {
 });
 
 Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+    return view('dashboard-admin');
+})->middleware(['auth', 'verified'])->name('dashboard-admin');
+
+Route::middleware('auth')->group(function () {
+    Route::get('/dashboard', [DashboardController::class, 'dashboard'])->name('dashboard-admin');
+});
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -30,6 +37,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
+//Data Guru
 Route::middleware('auth')->group(function () {
     Route::get('/teacher', [TeacherController::class, 'index'])->name('teacher_data.index');;
     Route::get('/teacher/create', [TeacherController::class, 'create'])->name('teacher_data.create');
@@ -43,6 +51,8 @@ Route::middleware('auth')->group(function () {
     // Route::get('/books/export', [BookController::class, 'export'])->name('book.export');
 });
 
+
+//Data Siswa
 Route::middleware('auth')->group(function () {
     Route::get('/student', [StudentController::class, 'index'])->name('student_data.index');
     Route::get('/student/create', [StudentController::class, 'create'])->name('student_data.create');
@@ -65,6 +75,8 @@ Route::middleware('auth')->group(function () {
 
 });
 
+
+//Data Mapel
 Route::middleware('auth')->group(function () {
     Route::get('/subject', [SubjectController::class, 'index'])->name('subject.index');
     Route::get('/subject/create', [SubjectController::class, 'create'])->name('subject.create');
@@ -74,6 +86,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/subject/{id}', [SubjectController::class, 'destroy'])->name('subject.destroy');
 });
 
+//Data Semester
 Route::middleware('auth')->group(function () {
     Route::get('/subject/semester_year', [SemesterYearController::class, 'index'])->name('subject.semester_year.index');
     Route::get('/subject/semester_year/create', [SemesterYearController::class, 'create'])->name('subject.semester_year.create');
@@ -83,7 +96,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/subject/semester_year/{id}', [SemesterYearController::class, 'destroy'])->name('subject.semester_year.destroy');
 });
 
-
+//Data Kelas
 Route::middleware('auth')->group(function () {
     Route::get('/class', [StudentClassController::class, 'index'])->name('class.index');
     Route::get('/class/create', [StudentClassController::class, 'create'])->name('class.create');
@@ -95,10 +108,13 @@ Route::middleware('auth')->group(function () {
 
 });
 
+
+//Kelas dan mapel
 Route::middleware('auth')->group(function () {
     Route::get('/class-subjects', [ClassSubjectController::class, 'index'])->name('class-subjects.index');
     Route::get('/class-subjects/{id}', [ClassSubjectController::class, 'show'])->name('class-subjects.show');
 });
+
 
 Route::middleware('auth')->group(function () {
     Route::get('/account/teacher', [AccountTeacherController::class, 'index'])->name('account.teacher.index');
@@ -108,29 +124,31 @@ Route::middleware('auth')->group(function () {
     Route::get('/account/student', [AccountStudentController::class, 'index'])->name('account.student.index');
 });
 
-Route::middleware('auth')->group(function () {
-    Route::get('/dashboard', [DashboardController::class, 'dashboard'])->name('dashboard');
-});
-
+//Nilai
 Route::middleware('auth')->group(function () {
     Route::get('/grade/{studentId}/{classSubjectId}', [GradeController::class, 'index'])->name('grade.index');
-    Route::get('/grade/detail/{studentId}/{classSubjectId}/{semesterYearId}', [GradeController::class, 'showDetail'])->name('grade.detail');
-    Route::get('/grade/edit/{studentId}/{classSubjectId}/{semesterYearId}/{assessmentType}', [GradeController::class, 'edit'])->name('grade.edit');
-    Route::match(['put', 'patch'],'/grade/update/{studentId}/{classSubjectId}/{semesterYearId}/{assessmentType}', [GradeController::class, 'update'])->name('grade.update');
 
-    // Route::get('grades/create/{studentId}/{classSubjectId}', [GradeController::class, 'create'])->name('grade.create');
-    // Route::post('grades', [GradeController::class, 'store'])->name('grade.store');
+    //nilai pengetahuan
+    Route::get('/grade/detailKnowledgeScore/{studentId}/{classSubjectId}/{semesterYearId}', [GradeController::class, 'showDetailKnowledgeScore'])->name('grade.detailKnowledgeScore');
+    Route::get('/grade/editKnowledgeScore/{studentId}/{classSubjectId}/{semesterYearId}/{assessmentType}', [GradeController::class, 'editKnowledgeScore'])->name('grade.editKnowledgeScore');
+    Route::match(['put', 'patch'],'/grade/updateKnowledgeScore/{studentId}/{classSubjectId}/{semesterYearId}/{assessmentType}', [GradeController::class, 'updateKnowledgeScore'])->name('grade.updateKnowledgeScore');
 
-    // Route::post('grade/store-knowledge-score/{studentId}', [GradeController::class, 'storeKnowledgeScore'])->name('grade.storeKnowledgeScore');
-    // Route::get('/grade/createAttitudeScore', [GradeController::class, 'createAttitudeScore'])->name('grade.createAttitudeScore');
-    // Route::post('/grade/storeAttitudeScore', [GradeController::class, 'storeAttitudeScore'])->name('grade.storeAttitudeScore');
-    // Route::get('/grade/createSkillScore', [GradeController::class, 'createSkillScore'])->name('grade.createSkillScore');
-    // Route::post('/grade/storeSkillScore', [GradeController::class, 'storeSkillScore'])->name('grade.storeSkillScore');
-    // Route::get('/grades/{studentId}/{classSubjectId}/{semesterId}', [GradeController::class,'show'])->name('grade.show');
-    // Route::get('/cancel', [GradeController::class, 'cancelAction'])->name('grade.cancel');
+    //nilai sikap
+    Route::get('/grade/detailAttitudeScore/{studentId}/{classSubjectId}/{semesterYearId}', [GradeController::class, 'showDetailAttitudeScore'])->name('grade.detailAttitudeScore');
+    Route::get('/grade/editAttitudeScore/{studentId}/{classSubjectId}/{semesterYearId}/{assessmentType}', [GradeController::class,'editAttitudeScore'])->name('grade.editAttitudeScore');
+    Route::match(['put', 'patch'],'/grade/updateAttitudeScore/{studentId}/{classSubjectId}/{semesterYearId}/{assessmentType}',  [GradeController::class,'updateAttitudeScore'])->name('grade.updateAttitudeScore');
+
+    //nilai keterampilan
+    Route::get('/grade/detailSkillScore/{studentId}/{classSubjectId}/{semesterYearId}', [GradeController::class, 'showDetailSkillScore'])->name('grade.detailSkillScore');
+    Route::get('/grade/editSkillScore/{studentId}/{classSubjectId}/{semesterYearId}/{assessmentType}', [GradeController::class,'editSkillScore'])->name('grade.editSkillScore');
+    Route::match(['put', 'patch'],'/grade/updateSkillScore/{studentId}/{classSubjectId}/{semesterYearId}/{assessmentType}',  [GradeController::class,'updateSkillScore'])->name('grade.updateSkillScore');
+    // kehadiran
+    Route::patch('/attendance/{studentId}/{classSubjectId}/{semesterYearId}/{type}/{action}', [AttendanceController::class, 'update'])->name('attendance.update');
+
 
 });
 
+//Jenis Nilai Pengetahuan
 Route::middleware('auth')->group(function () {
     Route::get('/knowledge-scores', [KnowledgeScoreController::class, 'index'])->name('grade.knowledge_scores.index');
     Route::get('/knowledge-scores/create', [KnowledgeScoreController::class, 'create'])->name('grade.knowledge_scores.create');
@@ -138,6 +156,27 @@ Route::middleware('auth')->group(function () {
     Route::get('/knowledge-scores/{id}/edit', [KnowledgeScoreController::class, 'edit'])->name('grade.knowledge_scores.edit');
     Route::match(['put', 'patch'],'/knowledge-scores/{id}', [KnowledgeScoreController::class, 'update'])->name('grade.knowledge_scores.update');
     Route::delete('/knowledge-scores/{id}', [KnowledgeScoreController::class, 'destroy'])->name('grade.knowledge_scores.destroy');
+});
+
+//Jenis Nilai Pengetahuan
+Route::middleware('auth')->group(function () {
+    Route::get('/attitude-scores', [AttitudeScoreController::class, 'index'])->name('grade.attitude_scores.index');
+    Route::get('/attitude-scores/create', [AttitudeScoreController::class, 'create'])->name('grade.attitude_scores.create');
+    Route::post('/attitude-scores', [AttitudeScoreController::class, 'store'])->name('grade.attitude_scores.store');
+    Route::get('/attitude-scores/{id}/edit', [AttitudeScoreController::class, 'edit'])->name('grade.attitude_scores.edit');
+    Route::match(['put', 'patch'],'/attitude-scores/{id}', [AttitudeScoreController::class, 'update'])->name('grade.attitude_scores.update');
+    Route::delete('/attitude-scores/{id}', [AttitudeScoreController::class, 'destroy'])->name('grade.attitude_scores.destroy');
+});
+
+
+//Jenis Nilai Pengetahuan
+Route::middleware('auth')->group(function () {
+    Route::get('/skill-scores', [skillScoreController::class, 'index'])->name('grade.skill_scores.index');
+    Route::get('/skill-scores/create', [skillScoreController::class, 'create'])->name('grade.skill_scores.create');
+    Route::post('/skill-scores', [skillScoreController::class, 'store'])->name('grade.skill_scores.store');
+    Route::get('/skill-scores/{id}/edit', [skillScoreController::class, 'edit'])->name('grade.skill_scores.edit');
+    Route::match(['put', 'patch'],'/skill-scores/{id}', [skillScoreController::class, 'update'])->name('grade.skill_scores.update');
+    Route::delete('/skill-scores/{id}', [skillScoreController::class, 'destroy'])->name('grade.skill_scores.destroy');
 });
 
 

@@ -31,13 +31,13 @@
         <div x-bind:class="sidebarOpen ? 'col-span-9' : 'col-span-12'" class="transition-all duration-300 overflow-x-auto">
 
             <!-- ========== HEADER ========== -->
-            <header class="flex flex-wrap sm:justify-start sm:flex-nowrap z-50 w-full bg-white border-b border-gray-200 text-sm py-3 sm:py-0 dark:bg-neutral-800 dark:border-neutral-700">
+            <header class="flex flex-wrap sm:justify-start sm:flex-nowrap z-50 w-full bg-white border-b border-gray-200 text-sm py-3 sm:py-0">
                 <nav class="relative max-w-[85rem] flex flex-wrap basis-full items-center w-full mx-auto px-4 sm:flex sm:items-center sm:justify-between sm:px-6 lg:px-8" aria-label="Global">
                     <div class="flex items-center justify-between w-full">
                         <div class="flex items-center">
 
                             <!-- Sidebar Toggle -->
-                            <div class="sticky top-0 inset-x-0 z-20 bg-white border-y dark:bg-neutral-800 dark:border-neutral-700">
+                            <div class="sticky top-0 inset-x-0 z-20 bg-white border-y">
                                 <div class="flex items-center py-4">
                                     <button @click="sidebarOpen = !sidebarOpen" type="button" class="text-gray-500 hover:text-gray-600" aria-label="Toggle navigation">
                                         <span class="sr-only">Toggle Navigation</span>
@@ -50,7 +50,7 @@
                             <!-- End Sidebar Toggle -->
 
                             <!-- Title -->
-                            <a class="h-9 w-auto fill-current text-gray-800 dark:text-gray-200 font-bold flex flex-col gap-y-4 gap-x-0 mt-5 sm:flex-row sm:items-center sm:justify-end sm:gap-y-0 sm:gap-x-7 sm:mt-0 sm:ps-7 ms-4" href="{{ route('dashboard') }}">
+                            <a class="h-9 w-auto fill-current text-gray-800 font-bold flex flex-col gap-y-4 gap-x-0 mt-5 sm:flex-row sm:items-center sm:justify-end sm:gap-y-0 sm:gap-x-7 sm:mt-0 sm:ps-7 ms-4" href="{{ route('dashboard-admin') }}">
                                 E-RAPOR SDN DAWUAN
                             </a>
                         </div>

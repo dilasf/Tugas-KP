@@ -14,7 +14,6 @@
             <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg">
                 <div class="p-6 bg-white border-b border-gray-200">
                     <div class="mb-4 flex items-start">
-
                          {{-- Data Diri Singkat --}}
                          <div class="mr-4">
                             <div class="mb-2 flex items-center">
@@ -32,13 +31,13 @@
                             <form method="GET" action="{{ route('grade.index', ['studentId' => $student->id, 'classSubjectId' => $classSubject->id]) }}">
                                 <label class="block">
                                     <span class="text-16px font-medium">Pilih Semester :</span>
-                                    <select name="semester_year_id" onchange="this.form.submit()" class="border border-gray-300 rounded-md px-5 py-1 ml-2 {{ $sidebarOpen ? 'w-48' : 'w-64' }}">
-                                        @foreach($semesters as $semester)
-                                            <option value="{{ $semester->id }}" {{ $selectedSemesterYearId == $semester->id ? 'selected' : '' }}>
-                                                {{ 'Semester ' . $semester->semester . ' Tahun ' . $semester->year }}
-                                            </option>
-                                        @endforeach
-                                    </select>
+                                        <select name="semester_year_id" onchange="this.form.submit()" class="border border-gray-300 rounded-md px-5 py-1 ml-2 {{ $sidebarOpen ? 'w-48' : 'w-64' }}">
+                                            @foreach($semesters as $semester)
+                                                <option value="{{ $semester->id }}" {{ $selectedSemesterYearId == $semester->id ? 'selected' : '' }}>
+                                                    {{ 'Semester ' . $semester->semester . ' Tahun ' . $semester->year }}
+                                                </option>
+                                            @endforeach
+                                        </select>
                                 </label>
                             </form>
                         </div>
@@ -58,14 +57,15 @@
                                 </tr>
                             </x-slot>
                                 @php $num=1; @endphp
+
                                 {{-- Nilai Pengetahuan --}}
-                                    <tr>
-                                        <td class="text-center">{{ $num++ }}</td>
-                                        <td>Pengetahuan</td>
-                                        <td class="text-center"> {{ $finalScore }}</td>
-                                        <td class="text-center">{{  $grade}}</td>
-                                       <td class="text-center">
-                                        <x-detail-primary-button tag="a" href="{{ route('grade.detail', ['studentId' => $student->id, 'classSubjectId' => $classSubject->id, 'semesterYearId' => $selectedSemesterYearId]) }}"
+                                <tr>
+                                    <td class="text-center">{{ $num++ }}</td>
+                                    <td>Pengetahuan</td>
+                                    <td class="text-center"> {{ $finalKnowledgeScore }}</td>
+                                    <td class="text-center">{{ $knowledgeGrade }}</td>
+                                    <td class="text-center">
+                                        <x-detail-primary-button tag="a" href="{{ route('grade.detailKnowledgeScore', ['studentId' => $student->id, 'classSubjectId' => $classSubject->id, 'semesterYearId' => $selectedSemesterYearId]) }}"
                                             class="flex items-center justify-center min-w-[60px]">
                                             <img src="{{ asset('img/detail_logo.png') }}" class="w-[13px] h-[13px]">
                                             <span x-show="!sidebarOpen" class="ml-1 text-[10px]">{{ __('Detail') }}</span>
@@ -74,41 +74,39 @@
                                         {{-- <a href="{{ route('grade.detail', ['studentId' => $student->id, 'classSubjectId' => $classSubject->id, 'semesterYearId' => $selectedSemesterYearId]) }}" class="btn btn-primary">
                                             Lihat Detail
                                         </a> --}}
-                                       </td>
-                                    </tr>
+                                    </td>
+                                </tr>
 
-{{--
-                                    <tr>
-                                        <td>{{ $num++ }}</td>
-                                        <td class="px-4 py-2 border">Sikap</td>
-                                        <td class="px-4 py-2 border">{{ $grade->attitudeScore ? $grade->attitudeScore->score : 0 }}</td>
-                                        <td class="px-4 py-2 border">{{ $grade->attitudeScore ? $grade->attitudeScore->final_score : 0 }}</td>
-                                        <td class="px-4 py-2 border">{{ $grade->attitudeScore ? $grade->attitudeScore->grade : 'N/A' }}</td>
-                                        <td class="px-4 py-2 border">{{ $grade->attitudeScore ? $grade->attitudeScore->description : 'N/A' }}</td>
-                                    </tr>
-                                    <tr>
-                                        <td>{{ $num++ }}</td>
-                                        <td class="px-4 py-2 border">Keterampilan</td>
-                                        <td class="px-4 py-2 border">{{ $grade->skillScore ? $grade->skillScore->score : 0 }}</td>
-                                        <td class="px-4 py-2 border">{{ $grade->skillScore ? $grade->skillScore->final_score : 0 }}</td>
-                                        <td class="px-4 py-2 border">{{ $grade->skillScore ? $grade->skillScore->grade : 'N/A' }}</td>
-                                        <td class="px-4 py-2 border">{{ $grade->skillScore ? $grade->skillScore->description : 'N/A' }}</td>
+                                {{-- Kelompok Keterampilan --}}
+                                <tr>
+                                    <td class="text-center">{{ $num++ }}</td>
+                                    <td>Keterampilan</td>
+                                    <td class="text-center">{{ $finalSkillScore }}</td>
+                                    <td class="text-center">{{ $skillGrade }}</td>
+                                    <td class="text-center">
+                                            <x-detail-primary-button tag="a" href="{{ route('grade.detailSkillScore', ['studentId' => $student->id, 'classSubjectId' => $classSubject->id, 'semesterYearId' => $selectedSemesterYearId]) }}"
+                                                class="flex items-center justify-center min-w-[60px]">
+                                                <img src="{{ asset('img/detail_logo.png') }}" class="w-[13px] h-[13px]">
+                                                <span x-show="!sidebarOpen" class="ml-1 text-[10px]">{{ __('Detail') }}</span>
+                                            </x-detail-primary-button>
+                                    </td>
+                                </tr>
 
-                                        </td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="6" class="px-4 py-2 border text-center">Tidak ada data penilaian</td>
-                                    </tr>
-                                @endforelse
-                                @endforeach --}}
+                                {{-- Kelompok Sikap --}}
+                                <tr>
+                                    <td class="text-center">{{ $num++ }}</td>
+                                    <td>Sikap</td>
+                                    <td class="text-center">{{ $finalAttitudeScore }}</td>
+                                    <td class="text-center">{{ $attitudeGrade }}</td>
+                                    <td class="text-center">
+                                            <x-detail-primary-button tag="a" href="{{ route('grade.detailAttitudeScore', ['studentId' => $student->id, 'classSubjectId' => $classSubject->id, 'semesterYearId' => $selectedSemesterYearId]) }}"
+                                                class="flex items-center justify-center min-w-[60px]">
+                                                <img src="{{ asset('img/detail_logo.png') }}" class="w-[13px] h-[13px]">
+                                                <span x-show="!sidebarOpen" class="ml-1 text-[10px]">{{ __('Detail') }}</span>
+                                            </x-detail-primary-button>
+                                    </td>
+                                </tr>
                         </x-table>
-
-                    </div>
-                    {{-- <div class="mt-4">
-                        <x-primary-button tag="a" href="{{ route('grade.create', ['studentId' => $student->id, 'classSubjectId' => $classSubject->id]) }}">
-                            <span class="text-12px ml-1">{{ __('+ Tambah Penilaian') }}</span>
-                        </x-primary-button> --}}
                     </div>
                 </div>
             </div>

@@ -18,6 +18,6 @@ class DashboardController extends Controller
         $teacherCount = Teacher::count();
         $semesterYearCount = SemesterYear::count();
 
-        return view('dashboard', compact('subjectCount', 'studentCount', 'classCount', 'teacherCount', 'semesterYearCount'));
+        return view('dashboard-admin', compact('subjectCount', 'studentCount', 'classCount', 'teacherCount', 'semesterYearCount'));
     }
 }

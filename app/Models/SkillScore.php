@@ -27,4 +27,10 @@ class SkillScore extends Model
     {
         return $this->hasMany(Grade::class);
     }
+
+    public function attendance()
+{
+    return $this->belongsTo(Attendance::class);
+}
+
 }
