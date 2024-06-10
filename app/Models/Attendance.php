@@ -29,4 +29,9 @@ class Attendance extends Model
     {
         return $this->belongsTo(SemesterYear::class);
     }
+
+    public function rapor()
+    {
+        return $this->belongsTo(Rapor::class);
+    }
 }

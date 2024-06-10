@@ -60,4 +60,24 @@ class Student extends Model
         return $this->hasMany(ClassSubject::class);
     }
 
+    public function health()
+    {
+        return $this->hasOne(Health::class);
+    }
+
+    public function achievements()
+    {
+        return $this->hasMany(Achievement::class);
+    }
+
+    public function extracurriculars()
+    {
+        return $this->hasMany(Extracurricular::class);
+    }
+
+    public function rapor()
+{
+    return $this->hasMany(Rapor::class);
+}
+
 }

@@ -33,4 +33,8 @@ class SkillScore extends Model
     return $this->belongsTo(Attendance::class);
 }
 
+public function rapor()
+{
+    return $this->belongsTo(Rapor::class);
+}
 }

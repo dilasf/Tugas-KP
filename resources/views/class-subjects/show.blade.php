@@ -28,7 +28,7 @@
                         <td  class="text-center">{{ $student->nis }}</td>
                         <td>{{ $student->student_name }}</td>
                         <td  class="text-center">
-                            <a href="{{ route('grade.index', ['studentId' => $student->id, 'classSubjectId' => $classSubject->id]) }}"
+                           <a href="{{ route('grade.index', ['studentId' => $student->id, 'classSubjectId' => $classSubject->id]) }}"
                                 class="inline-flex items-center px-2 py-1 sm:px-3 sm:py-2 md:px-4 md:py-2 bg-light-blue border border-transparent rounded-md font-semibold
                                        text-xs sm:text-xs md:text-sm text-white dark:text-gray-800 tracking-widest
                                        hover:bg-sky-600 dark:hover:bg-white focus:bg-sky-600  active:bg-sky-600
@@ -36,6 +36,7 @@
                                        transition ease-in-out duration-150">
                                  <span class="text-12px ml-1">{{ __('Penilaian') }}</span>
                              </a>
+
                         </td>
 
                     </tr>

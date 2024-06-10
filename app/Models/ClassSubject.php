@@ -22,4 +22,10 @@ class ClassSubject extends Model
     {
         return $this->belongsTo(Subject::class, 'subject_id', 'id');
     }
+
+    public function rapor()
+{
+    return $this->hasMany(Rapor::class, 'class_subject_id');
+}
+
 }

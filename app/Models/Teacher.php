@@ -35,41 +35,5 @@ class Teacher extends Model
         'status',
     ];
 
-    // public static function getDataTeachers()
-    // {
-    //     $teachers = Teacher::all();
-    //     $teachers_filter = [];
 
-    //     $no = 1;
-    //     foreach ($teachers as $teacher) {
-    //         $teachers_filter[] = [
-    //             'no' => $no++,
-    //             'photo' => $teacher->photo,
-    //             'nuptk' => $teacher->nuptk,
-    //             'teacher_name' => $teacher->teacher_name,
-    //             'placeOfbirth' => $teacher->placeOfbirth,
-    //             'dateOfbirth' => $teacher->dateOfbirth,
-    //             'gender' => $teacher->gender,
-    //             'religion' => $teacher->religion,
-    //             'address' => $teacher->address,
-    //             'mail' => $teacher->mail,
-    //             'mobile_phone' => $teacher->mobile_phone,
-    //             'nip'=> $teacher->nip,
-    //             'employment_status'=> $teacher->employment_status,
-    //             'typesOfCAR'=> $teacher->typesOfCAR,
-    //             'prefix'=> $teacher->prefix,
-    //             'suffix'=> $teacher->suffix,
-    //             'education_Level'=> $teacher->education_Level,
-    //             'fieldOfStudy'=> $teacher->fieldOfStudy,
-    //             'certification'=> $teacher->certification,
-    //             'startDateofEmployment'=> $teacher->startDateofEmployment,
-    //             'additional_Duties'=> $teacher->additional_Duties,
-    //             'teaching'=> $teacher->teaching,
-    //             'competency'=> $teacher->competency,
-    //             'status' => $teacher->status,
-    //         ];
-    //     }
-
-    //     return $teachers_filter;
-    // }
 }

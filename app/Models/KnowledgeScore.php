@@ -27,4 +27,10 @@ class KnowledgeScore extends Model
     {
         return $this->hasMany(Grade::class);
     }
+
+    public function rapor()
+    {
+        return $this->hasMany(Rapor::class, 'student_id', 'student_id')->where('semester_year_id', $this->semester_year_id);
+    }
+
 }

@@ -442,7 +442,7 @@ class StudentController extends Controller
             'message' => 'Import data berhasil dilakukan',
             'alert-type' => 'success'
         );
-        return redirect()->route('teacher_data.index')->with($notification);
+        return redirect()->route('student_data.index')->with($notification);
     }
 
 

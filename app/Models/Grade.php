@@ -16,8 +16,32 @@ class Grade extends Model
         'knowledge_score_id',
         'attitude_score_id',
         'skill_score_id',
+        'average_knowledge_score',
+        'gradeKnowledges',
+        'gradeAttitude',
+        'gradeSkill'
     ];
 
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::saved(function ($grade) {
+            // Buat dan simpan instance Rapor
+            Rapor::updateOrCreate(
+                [
+                    'student_id' => $grade->student_id,
+                    'semester_year_id' => $grade->semester_year_id,
+                    'class_subject_id' => $grade->class_subject_id,
+                ],
+                [
+                    'grade_id' => $grade->id,
+                    'school_name' => 'SDN DAWUAN',
+                    'school_address' => 'KP Pasir Eurih',
+                ]
+            );
+        });
+    }
     public function student()
     {
         return $this->belongsTo(Student::class);
@@ -47,4 +71,10 @@ class Grade extends Model
     {
         return $this->belongsTo(SkillScore::class);
     }
+
+    public function rapor()
+    {
+        return $this->hasMany(Rapor::class);
+    }
+
 }

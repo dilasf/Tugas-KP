@@ -41,9 +41,9 @@ class StudentClassController extends Controller
 
         $class = StudentClass::create($validated);
 
-        $class->total_students = $validated['number_of_students'];
-        $class->number_of_male_students = $validated['number_of_male_students'];
-        $class->number_of_female_students = $validated['number_of_female_students'];
+        $class->number_of_students = $validated['number_of_students'] ?? 0;
+        $class->number_of_male_students = $validated['number_of_male_students'] ?? 0;
+        $class->number_of_female_students = $validated['number_of_female_students'] ?? 0;
         $class->save();
 
         if ($class) {

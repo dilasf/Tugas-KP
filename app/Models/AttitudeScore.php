@@ -24,4 +24,9 @@ class AttitudeScore extends Model
     {
         return $this->hasMany(Grade::class);
     }
+
+    public function rapor()
+    {
+        return $this->belongsTo(Rapor::class);
+    }
 }

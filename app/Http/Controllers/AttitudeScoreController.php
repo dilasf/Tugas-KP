@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\AttitudeScore;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class AttitudeScoreController extends Controller
 {
@@ -74,9 +75,16 @@ class AttitudeScoreController extends Controller
 
     public function destroy(string $id)
     {
-
         $assessmentType = AttitudeScore::findOrFail($id);
+
+        // Matikan constraint foreign key
+        DB::statement('SET FOREIGN_KEY_CHECKS=0');
+
+        // Hapus baris di tabel attitude_scores
         $data = $assessmentType->delete();
+
+        // Aktifkan kembali constraint foreign key
+        DB::statement('SET FOREIGN_KEY_CHECKS=1');
 
         if ($data) {
             $notification['alert-type'] = 'success';

@@ -1,54 +1,40 @@
-
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex items-center">
-            {{-- <a href="{{ route('grade.show-detail', ['studentId' => $student->id, 'classSubjectId' => $classSubject->id, 'semesterYearId' => $defaultSemesterYearId]) }}">
-                <img src="{{ asset('img/back_logo.png') }}" class="w-[30px] h-[30px] mr-3 cursor-pointer">
-            </a> --}}
-            <p class="font-semibold text-gray-800 leading-tight text-2xl">
-                {{ __('Edit Penilaian') }}
-            </p>
-        </div>
+        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            Edit Nilai Pengetahuan
+        </h2>
     </x-slot>
 
-    <div class="py-8">
+    <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg">
                 <div class="p-6 bg-white border-b border-gray-200">
-                    <form action="{{ route('grade.updateKnowledgeScore', ['studentId' => $studentId, 'classSubjectId' => $classSubjectId, 'semesterYearId' => $defaultSemesterYearId, 'assessmentType' => $assessmentType]) }}" method="POST">
+                    <form method="POST" action="{{ route('grade.updateKnowledgeScore', ['studentId' => $student->id, 'classSubjectId' => $classSubject->id, 'assessmentType' => $assessmentType, 'semesterYearId' => $semesterYear->id]) }}">
                         @csrf
-                        @method('PATCH')
+                        @method('patch')
 
-                        <div class="mb-4">
-                            <label for="assessment_type" class="block text-sm font-medium text-gray-700">Tipe Penilaian</label>
-                            <input type="text" name="assessment_type" id="assessment_type" value="{{ $assessmentType }}" class="mt-1 p-2 border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-indigo-200 focus:border-indigo-500 block w-full" readonly>
-                        </div>
-                        <div class="mb-4">
-                            <label for="score" class="block text-sm font-medium text-gray-700">Nilai</label>
-                            <input type="text" name="score" id="score" value="{{ $knowledgeScore->score ?? '' }}" class="mt-1 p-2 border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-indigo-200 focus:border-indigo-500 block w-full">
-                        </div>
-                        <div class="mb-4">
-                            <label for="final_score" class="block text-sm font-medium text-gray-700">Nilai Akhir</label>
-                            <input type="text" name="final_score" id="final_score" value="{{ $knowledgeScore->final_score ?? '' }}" class="mt-1 p-2 border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-indigo-200 focus:border-indigo-500 block w-full" readonly>
-                        </div>
-                        <div class="mb-4">
-                            <label for="grade" class="block text-sm font-medium text-gray-700">Grade</label>
-                            <input type="text" name="grade" id="grade" value="{{ $knowledgeScore->grade ?? '' }}" class="mt-1 p-2 border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-indigo-200 focus:border-indigo-500 block w-full" readonly>
-                        </div>
-                        <div class="mb-4">
-                            <label for="description" class="block text-sm font-medium text-gray-700">Deskripsi</label>
-                            <textarea name="description" id="description" rows="3" class="mt-1 p-2 border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-indigo-200 focus:border-indigo-500 block w-full">{{ $knowledgeScore->description ?? '' }}</textarea>
-                        </div>
-                        <div class="flex justify-end space-x-4 mt-4 w-full">
-                            <a href="{{ route('grade.detailKnowledgeScore', ['studentId' => $studentId, 'classSubjectId' => $classSubjectId, 'semesterYearId' => $defaultSemesterYearId]) }}"
-                                class="inline-flex items-center px-4 py-2 bg-light-gray border border-gray-300 rounded-md font-semibold text-xs text-slate-600 tracking-widest
-                                shadow-sm hover:bg-slate-400 focus:outline-none focus:ring-2 focus:ring-gray-200 focus:ring-offset-2 disabled:opacity-25 transition ease-in-out duration-150">
-                                Batal
-                            </a>
+                        <!-- Tambahkan input tersembunyi untuk menyertakan semesterYearId -->
+                        <input type="hidden" name="semesterYearId" value="{{ $semesterYear->id }}">
 
-                            <x-primary-button>Perbaharui</x-primary-button>
+                        <div class="max-w-3xl">
+                            <x-input-label for="score" value="Nilai" />
+                            <x-text-input id="score" type="text" name="score" class="mt-1 block w-full bg-zinc-100" value="{{ $knowledgeScore->score ?? old('score') }}" required />
+                            <x-input-error class="mt-2" :messages="$errors->get('score')" />
+                        </div>
+
+                        <div class="max-w-3xl">
+                            <x-input-label for="description" value="Deskripsi" />
+                            <x-text-input id="description" type="text" name="description" class="mt-1 block w-full bg-zinc-100" value="{{ $knowledgeScore->description ?? old('description') }}" />
+                            <x-input-error class="mt-2" :messages="$errors->get('description')" />
+                        </div>
+
+                        <div class="mt-4">
+                            <button type="submit" class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-500 active:bg-blue-700 focus:outline">
+                                Simpan
+                            </button>
                         </div>
                     </form>
+
                 </div>
             </div>
         </div>
