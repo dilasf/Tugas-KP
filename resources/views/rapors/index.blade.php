@@ -5,49 +5,93 @@
         </h2>
     </x-slot>
 
-    <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg p-6">
                 @if($rapors->count() > 0)
-                    <div class="mb-4">
-                        <p class="font-medium">Data Diri Singkat</p>
-                        <p>Nama: {{ $student->student_name }}</p>
-                        <p>NIS: {{ $student->nis }}</p>
-                        <p>Nama Sekolah: {{ $rapors->first()->school_name ?? 'SDN DAWUAN' }}</p>
-                        <p>Alamat Sekolah: {{ $rapors->first()->school_address ?? 'KP Pasir Eurih' }}</p>
-                        <p>Kelas: {{ optional($student->class)->level ?? 'N/A' }}</p>
-                        <p>
-                            Semester:
-                            <form action="{{ route('rapors.index', ['id' => $student->id]) }}" method="GET">
-                                <select name="semester_year_id" id="semester_year_id" onchange="this.form.submit();">
-                                    @foreach($semesters as $semester)
-                                        <option value="{{ $semester->id }}" {{ $semester->id == $selectedSemesterYearId ? 'selected' : '' }}>
-                                            Semester {{ $semester->semester }} Tahun {{ $semester->year }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </form>
-                        </p>
-                    </div>
+                @php
+                $numberWords = [
+                    1 => 'Satu',
+                    2 => 'Dua',
+                    3 => 'Tiga',
+                    4 => 'Empat',
+                    5 => 'Lima',
+                    6 => 'Enam',
+                ];
 
+                $classLevel = optional($student->class)->level ?? 'N/A';
+                $classLevelWord = is_numeric($classLevel) ? $numberWords[(int)$classLevel] ?? $classLevel : $classLevel;
+            @endphp
+
+                {{-- Data Diri --}}
+                <div class="mb-4">
+                    <p class="font-semibold text-xl text-center">RAPOR DAN PROFIL PESERTA DIDIK</p>
+                    <div class="flex justify-between">
+                        <div class="py-10">
+                            <div class="mb-2 flex items-center ">
+                                <p class="font-medium text-16px text-gray-800 mr-2 w-[200px]">Nama Peserta Didik</p>
+                                <p class="text-gray-800 text-16px mr-2">:</p>
+                                <p class="text-gray-900 font-medium text-16px">{{ strtoupper ($student->student_name ?? 'N/A') }}</p>
+                            </div>
+                            <div class="mb-2 flex items-center">
+                                <p class="font-medium text-16px text-gray-800 mr-2 w-[200px]">NIS</p>
+                                <p class="text-gray-800 text-16px mr-2">:</p>
+                                <p class="text-gray-900 font-medium text-16px">{{ $student->nis ?? 'N/A' }}</p>
+                            </div>
+                            <div class="mb-2 flex items-center">
+                                <p class="font-medium text-16px text-gray-800 mr-2 w-[200px]">Nama Sekolah</p>
+                                <p class="text-gray-800 text-16px mr-2">:</p>
+                                <p class="text-gray-900 font-medium text-16px">{{ strtoupper ($rapors->first()->school_name ?? 'SDN DAWUAN') }}</p>
+                            </div>
+                            <div class="mb-2 flex items-center">
+                                <p class="font-medium text-16px text-gray-800 mr-2 w-[200px]">Alamat Sekolah</p>
+                                <p class="text-gray-800 text-16px mr-2">:</p>
+                                <p class="text-gray-900 font-medium text-16px">{{ $rapors->first()->school_address ?? 'KP Pasir Eurih' }}</p>
+                            </div>
+                        </div>
+                        <div class="py-10">
+                            <div class="mb-2 flex items-center">
+                                <p class="font-medium text-16px text-gray-800 mr-2 w-[100px]">Kelas</p>
+                                <p class="text-gray-800 text-16px mr-2">:</p>
+                                <p class="text-gray-900 font-medium text-16px">{{ $classLevel }} ({{ $classLevelWord }})</p>
+                            </div>
+                            <div class="mb-2 flex items-center">
+                                <p class="font-medium text-16px text-gray-900 mr-2 w-[100px]">Semester</p>
+                                <p class="text-gray-800 text-16px mr-2">:</p>
+                                <form action="{{ route('rapors.index', ['id' => $student->id]) }}" method="GET" class="inline-block">
+                                    <select name="semester_year_id" id="semester_year_id" onchange="this.form.submit();" class="text-gray-900 font-medium text-16px">
+                                        @foreach($semesters as $semester)
+                                            <option value="{{ $semester->id }}" {{ $semester->id == $selectedSemesterYearId ? 'selected' : '' }}>
+                                                Semester {{ $semester->semester }} Tahun {{ $semester->year }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {{-- END Data Diri --}}
+
+                <p class="font-semibold text-md">B. Kompetensi Pengetahuan dan Keterampilan</p>
                     <!-- Tabel Nilai Mata Pelajaran -->
                     <div class="text-black max-h-[calc(100vh-200px)] overflow-y-auto">
-                        <table class="min-w-full divide-y divide-gray-200">
-                            <thead class="bg-gray-50">
+                        <x-table header="Header Content" :sidebarOpen="$sidebarOpen" class="overflow-x-auto mx-auto">
+                            <x-slot name="header">
                                 <tr>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Mata Pelajaran</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nilai Pengetahuan</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Predikat Pengetahuan</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nilai Sikap</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Predikat Sikap</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nilai Keterampilan</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Predikat Keterampilan</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">KKM</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
+                                    <th rowspan="2">No</th>
+                                    <th rowspan="2">Mata Pelajaran</th>
+                                    <th colspan="2">Pengetahuan</th>
+                                    <th rowspan="2">KKM</th>
+                                    <th colspan="2">Keterampilan</th>
+                                    <th rowspan="2">Aksi</th>
                                 </tr>
-                            </thead>
-                            <tbody class="bg-white divide-y divide-gray-200">
+                                <tr>
+                                    <th>Nilai</th>
+                                    <th>Predikat</th>
+                                    <th>Nilai</th>
+                                    <th>Predikat</th>
+                                </tr>
+                            </x-slot>
                                 @php $num = 1; @endphp
                                 @foreach($rapors->groupBy('grade.classSubject.subject.id') as $subjectRapors)
                                     @php
@@ -62,27 +106,26 @@
                                         $kkm = optional($firstRapor->grade->classSubject->subject)->kkm ?? 'N/A';
                                     @endphp
                                     <tr class="text-center">
-                                        <td class="px-6 py-4 whitespace-nowrap">{{ $num++ }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap">{{ $subject }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap">{{ $averageKnowledgeScore }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap">{{ $gradeKnowledge }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap">{{ $averageAttitudeScore }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap">{{ $gradeAttitude }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap">{{ $averageSkillScore }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap">{{ $gradeSkill }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap">{{ $kkm }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap">
-                                            {{-- Tambahkan tombol-tombol aksi di sini --}}
+                                        <td>{{ $num++ }}</td>
+                                        <td>{{ $subject }}</td>
+                                        <td class="{{ $averageKnowledgeScore < $kkm ? 'text-red-500' : 'text-gray-800' }}">{{ $averageKnowledgeScore }}</td>
+                                        <td class="{{ $averageKnowledgeScore < $kkm ? 'text-red-500' : 'text-gray-800' }}">{{ $gradeKnowledge }}</td>
+                                        <td>{{ $kkm }}</td>
+                                        {{-- <td>{{ $averageAttitudeScore }}</td>
+                                        <td>{{ $gradeAttitude }}</td> --}}
+                                        <td class="{{ $averageKnowledgeScore < $kkm ? 'text-red-500' : 'text-gray-800' }}">{{ $averageSkillScore }}</td>
+                                        <td class="{{ $averageKnowledgeScore < $kkm ? 'text-red-500' : 'text-gray-800' }}">{{ $gradeSkill }}</td>
+
+                                        <td>
                                         </td>
                                     </tr>
+
                                 @endforeach
-                            </tbody>
-                        </table>
+                        </x-table>
                     </div>
                 @else
                     <p class="text-red-500">Data rapor tidak ditemukan.</p>
                 @endif
             </div>
         </div>
-    </div>
 </x-app-layout>

@@ -27,6 +27,7 @@ class RaporController extends Controller
     {
         $selectedSemesterYearId = $request->input('semester_year_id', null);
         $semesters = SemesterYear::all();
+        $sidebarOpen = false;
 
         // Tentukan semester default berdasarkan waktu saat ini
         $currentMonth = now()->month;
@@ -64,7 +65,7 @@ class RaporController extends Controller
         // Load relationships
         $rapors->load('grade.classSubject.subject', 'grade.semesterYear');
 
-        return view('rapors.index', compact('student', 'rapors', 'semesters', 'selectedSemesterYearId'));
+        return view('rapors.index', compact('student', 'rapors', 'semesters', 'selectedSemesterYearId', 'sidebarOpen'));
     }
 
     // public function index(Request $request, $id)
