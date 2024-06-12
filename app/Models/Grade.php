@@ -17,6 +17,8 @@ class Grade extends Model
         'attitude_score_id',
         'skill_score_id',
         'average_knowledge_score',
+        'average_attitude_score',
+        'average_skill_score',
         'gradeKnowledges',
         'gradeAttitude',
         'gradeSkill'

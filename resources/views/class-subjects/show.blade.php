@@ -10,7 +10,7 @@
         </h2>
         </div>
     </x-slot>
-    <div class="bg-white rounded-lg shadow-md mx-4 overflow-hidden">
+    <div class="bg-white rounded-lg shadow-md mx-4 py-6 overflow-hidden">
         <div class="text-black max-h-[calc(100vh-200px)] overflow-y-auto">
             <x-table class="overflow-x-auto mx-auto">
                 <x-slot name="header">

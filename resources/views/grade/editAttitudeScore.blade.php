@@ -4,16 +4,16 @@
             Edit Nilai Sikap
         </h2>
     </x-slot>
-
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg">
-                <div class="p-6 bg-white border-b border-gray-200">
+    <div class="max-w-4xl mx-auto sm:px-6 lg:px-10">
+        <div class="top-0 left-0 w-full h-10 rounded-t-md bg-light-blue flex items-center justify-center text-white font-semibold text-md leading-tight">
+            {{ __('Formulir Nilai Siswa') }}
+        </div>
+        <div class="bg-white overflow-hidden shadow-sm">
+            <div class="p-6 text-black">
                     <form method="POST" action="{{ route('grade.updateAttitudeScore', ['studentId' => $student->id, 'classSubjectId' => $classSubject->id, 'assessmentType' => $assessmentType, 'semesterYearId' => $semesterYear->id]) }}">
                         @csrf
-                        @method('patch')
+                        @method('PATCH')
 
-                        <!-- Tambahkan input tersembunyi untuk menyertakan semesterYearId -->
                         <input type="hidden" name="semesterYearId" value="{{ $semesterYear->id }}">
 
                         <div class="max-w-3xl">
@@ -28,7 +28,7 @@
                             <x-input-error class="mt-2" :messages="$errors->get('description')" />
                         </div>
 
-                        <div class="mt-4">
+                        <div class="flex justify-end space-x-4 mt-4 w-full">
                             <button type="submit" class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-500 active:bg-blue-700 focus:outline">
                                 Simpan
                             </button>
@@ -38,5 +38,4 @@
                 </div>
             </div>
         </div>
-    </div>
 </x-app-layout>

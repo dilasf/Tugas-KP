@@ -1,6 +1,9 @@
 <x-app-layout>
     <x-slot name="header">
         <div class="flex items-center">
+            <a href="{{ route('grade.index', ['studentId' => $student->id, 'classSubjectId' => $classSubject->id]) }}">
+                <img src="{{ asset('img/back_logo.png') }}" class="w-[30px] h-[30px] mr-3 cursor-pointer">
+            </a>
             <p class="font-semibold text-gray-800 leading-tight text-2xl">
                 {{ __('Detail Penilaian Pengetahuan untuk ' . $classSubject->subject->subject_name . ' di ' . $classSubject->class->class_name) }}
             </p>
@@ -12,21 +15,23 @@
             <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg">
                 <div class="p-6 bg-white border-b border-gray-200">
 
-                    {{-- Data Diri Singkat --}}
-                    <div class="mr-4">
-                        <div class="mb-2 flex items-center">
-                            <p class="font-medium text-16px mr-2 inline-block">Nama Siswa</p>
-                            <p class="text-16px inline-block w-[10px]">:</p>
-                            <p class="text-gray-800 text-16px inline-block">{{ $student->student_name ?? 'N/A' }}</p>
+                   {{-- Data Diri Singkat --}}
+                    <div class="mb-4 flex items-start justify-between">
+                        <div>
+                            <div class="mb-2 flex items-center">
+                                <p class="font-medium text-16px text-gray-600 mr-2 inline-block w-[147px]">Nama Siswa</p>
+                                <p class="text-gray-500 text-16px inline-block w-[10px]">:</p>
+                                <p class="text-gray-800 text-16px inline-block">{{ $student->student_name ?? 'N/A' }}</p>
+                            </div>
+                            <div class="mb-2 flex items-center">
+                                <p class="font-medium text-16px text-gray-600 mr-2 inline-block w-[147px]">NIS</p>
+                                <p class="text-gray-500 text-16px inline-block w-[10px]">:</p>
+                                <p class="text-gray-800 text-16px inline-block">{{ $student->nis ?? 'N/A' }}</p>
+                            </div>
                         </div>
-                        <div class="mb-2 flex items-center">
-                            <p class="font-medium text-16px mr-2 inline-block">NIS</p>
-                            <p class="text-16px inline-block w-[10px]">:</p>
-                            <p class="text-gray-800 text-16px inline-block">{{ $student->nis ?? 'N/A' }}</p>
-                        </div>
-                        <div class="mb-2 flex items-center">
-                            <label for="semester" class="font-medium text-16px mr-2 inline-block">Semester</label>
-                            <form action="{{ route('grade.detailKnowledgeScore', ['studentId' => $student->id, 'classSubjectId' => $classSubject->id]) }}" method="GET">
+                        <div>
+                            <p class="font-medium text-16px text-gray-600 mr-2 inline-block">Semester:</p>
+                            <form action="{{ route('grade.detailAttitudeScore', ['studentId' => $student->id, 'classSubjectId' => $classSubject->id]) }}" method="GET">
                                 <select name="semester" id="semester" class="text-gray-800 text-16px inline-block" onchange="this.form.submit()">
                                     @foreach($semesters as $sem)
                                         <option value="{{ $sem->id }}" {{ $sem->id == $selectedSemesterYearId ? 'selected' : '' }}>
@@ -35,7 +40,6 @@
                                     @endforeach
                                 </select>
                             </form>
-
                         </div>
                     </div>
                     {{-- End - Data Diri Singkat --}}
@@ -61,11 +65,11 @@
                             @endphp
                             <tr>
                                 <td class="text-center">{{ $num++ }}</td>
-                                <td>{{ $assessmentType }}</td>
-                                <td class="text-center">{{ $knowledgeScore->score }}</td>
-                                <td class="text-center">{{ $knowledgeScore->grade }}</td>
-                                <td class="text-center">{{ $knowledgeScore->final_score }}</td>
-                                <td>{{ $knowledgeScore->description }}</td>
+                                <td>{{ $assessmentType ?? '-'}}</td>
+                                <td class="text-center">{{ $knowledgeScore->score ?? '0'}}</td>
+                                <td class="text-center">{{ $knowledgeScore->grade ?? '-'}}</td>
+                                <td class="text-center">{{ $knowledgeScore->final_score ?? '0'}}</td>
+                                <td>{{ $knowledgeScore->description ?? 'Tidak ada deskripsi'}}</td>
                                 <td class="text-center">
                                     <x-edit-primary-button tag="a" href="{{ route('grade.editKnowledgeScore', ['studentId' => $student->id, 'classSubjectId' => $classSubject->id, 'assessmentType' => $assessmentType, 'semesterYearId' => $selectedSemesterYearId]) }}"
                                         class="flex items-center justify-center min-w-[60px]">

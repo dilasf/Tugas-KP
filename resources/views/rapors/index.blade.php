@@ -37,10 +37,13 @@
                                 <tr>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">No</th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Mata Pelajaran</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nilai</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Predikat</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">KKM</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nilai Pengetahuan</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Predikat Pengetahuan</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nilai Sikap</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Predikat Sikap</th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nilai Keterampilan</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Predikat Keterampilan</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">KKM</th>
                                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
                                 </tr>
                             </thead>
@@ -51,25 +54,29 @@
                                         $firstRapor = $subjectRapors->first();
                                         $subject = optional($firstRapor->grade->classSubject->subject)->subject_name ?? 'N/A';
                                         $averageKnowledgeScore = $firstRapor->grade->average_knowledge_score ?? 'N/A';
+                                        $gradeKnowledge = $firstRapor->grade->gradeKnowledge ?? 'N/A';
+                                        $averageAttitudeScore = $firstRapor->grade->average_attitude_score ?? 'N/A';
+                                        $gradeAttitude = $firstRapor->grade->gradeAttitude ?? 'N/A';
                                         $averageSkillScore = $firstRapor->grade->average_skill_score ?? 'N/A';
-                                        $gradeKnowledge = $firstRapor->grade->gradeKnowledge ?? 'N/A'; // Menggunakan gradeKnowledge yang telah disimpan
+                                        $gradeSkill = $firstRapor->grade->gradeSkill ?? 'N/A';
                                         $kkm = optional($firstRapor->grade->classSubject->subject)->kkm ?? 'N/A';
                                     @endphp
                                     <tr class="text-center">
                                         <td class="px-6 py-4 whitespace-nowrap">{{ $num++ }}</td>
                                         <td class="px-6 py-4 whitespace-nowrap">{{ $subject }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap">{{ $averageSkillScore }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap">{{ $gradeKnowledge }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap">{{ $kkm }}</td>
                                         <td class="px-6 py-4 whitespace-nowrap">{{ $averageKnowledgeScore }}</td>
-
+                                        <td class="px-6 py-4 whitespace-nowrap">{{ $gradeKnowledge }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">{{ $averageAttitudeScore }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">{{ $gradeAttitude }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">{{ $averageSkillScore }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">{{ $gradeSkill }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">{{ $kkm }}</td>
                                         <td class="px-6 py-4 whitespace-nowrap">
                                             {{-- Tambahkan tombol-tombol aksi di sini --}}
                                         </td>
                                     </tr>
                                 @endforeach
                             </tbody>
-
                         </table>
                     </div>
                 @else

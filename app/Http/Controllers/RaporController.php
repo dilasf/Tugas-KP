@@ -12,11 +12,11 @@ class RaporController extends Controller
 {
     private function calculateGrade($value)
     {
-        if ($value >= 80) {
+        if ($value >= 90) {
             return 'A';
-        } elseif ($value >= 70) {
+        } elseif ($value >= 80) {
             return 'B';
-        } elseif ($value >= 60) {
+        } elseif ($value >= 70) {
             return 'C';
         } else {
             return 'D';
@@ -24,46 +24,48 @@ class RaporController extends Controller
     }
 
     public function index(Request $request, $id)
-{
-    $selectedSemesterYearId = $request->input('semester_year_id', null);
-    $semesters = SemesterYear::all();
+    {
+        $selectedSemesterYearId = $request->input('semester_year_id', null);
+        $semesters = SemesterYear::all();
 
-    // Tentukan semester default berdasarkan waktu saat ini
-    $currentMonth = now()->month;
-    if ($currentMonth >= 1 && $currentMonth <= 6) {
-        $defaultSemester = $semesters->firstWhere('semester', 1);
-    } else {
-        $defaultSemester = $semesters->firstWhere('semester', 2);
+        // Tentukan semester default berdasarkan waktu saat ini
+        $currentMonth = now()->month;
+        if ($currentMonth >= 1 && $currentMonth <= 6) {
+            $defaultSemester = $semesters->firstWhere('semester', 1);
+        } else {
+            $defaultSemester = $semesters->firstWhere('semester', 2);
+        }
+
+        if (!$selectedSemesterYearId) {
+            $selectedSemesterYearId = $defaultSemester->id;
+        }
+
+        $student = Student::findOrFail($id);
+
+        $grades = Grade::where('student_id', $id)
+            ->where('semester_year_id', $selectedSemesterYearId)
+            ->get();
+
+        // Hitung grade untuk setiap grade dan simpan ke database
+        $grades->each(function($grade) {
+            $gradeKnowledge = $this->calculateGrade($grade->average_knowledge_score);
+            $gradeAttitude = $this->calculateGrade($grade->average_attitude_score);
+            $gradeSkill = $this->calculateGrade($grade->average_skill_score);
+
+            // Save the grades to the model
+            $grade->gradeKnowledge = $gradeKnowledge;
+            $grade->gradeAttitude = $gradeAttitude;
+            $grade->gradeSkill = $gradeSkill;
+            $grade->save();
+        });
+
+        $rapors = Rapor::whereIn('grade_id', $grades->pluck('id'))->get();
+
+        // Load relationships
+        $rapors->load('grade.classSubject.subject', 'grade.semesterYear');
+
+        return view('rapors.index', compact('student', 'rapors', 'semesters', 'selectedSemesterYearId'));
     }
-
-    if (!$selectedSemesterYearId) {
-        $selectedSemesterYearId = $defaultSemester->id;
-    }
-
-    $student = Student::findOrFail($id);
-
-    $grades = Grade::where('student_id', $id)
-        ->where('semester_year_id', $selectedSemesterYearId)
-        ->get();
-
-    // Hitung grade untuk setiap grade dan simpan ke database
-    $grades->each(function($grade) {
-        $gradeKnowledge = $this->calculateGrade($grade->average_knowledge_score);
-        $gradeAttitude = $this->calculateGrade($grade->average_attitude_score);
-        $gradeSkill = $this->calculateGrade($grade->average_skill_score); // Hitung grade untuk attitude score
-        $grade->gradeKnowledge = $gradeKnowledge;
-        $grade->gradeAttitude = $gradeAttitude;
-        $grade->gradeAttitude = $gradeSkill;
-        $grade->save();
-    });
-
-    $rapors = Rapor::whereIn('grade_id', $grades->pluck('id'))->get();
-
-    // Load relationships
-    $rapors->load('grade.classSubject.subject', 'grade.semesterYear'); // Load attitude scores
-
-    return view('rapors.index', compact('student', 'rapors', 'semesters', 'selectedSemesterYearId'));
-}
 
     // public function index(Request $request, $id)
     // {
