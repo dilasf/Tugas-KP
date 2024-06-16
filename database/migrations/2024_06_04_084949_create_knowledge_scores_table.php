@@ -13,19 +13,21 @@ return new class extends Migration
     {
         Schema::create('knowledge_scores', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->unsignedBigInteger('student_id')->nullable();
-            $table->unsignedBigInteger('class_subject_id')->nullable();
-            $table->unsignedBigInteger('semester_year_id')->nullable();
+            $table->unsignedBigInteger('grade_id');
+            // $table->unsignedBigInteger('student_id')->nullable();
+            // $table->unsignedBigInteger('class_subject_id')->nullable();
+            // $table->unsignedBigInteger('semester_year_id')->nullable();
             $table->string('assessment_type', 100);
-            $table->integer('score')->default(0);
-            $table->integer('final_score')->default(0);
-            $table->string('grade', 1)->default('D');
-            $table->string('description', 255)->nullable()->default('No description');
+            $table->integer('score')->nullable()->default(0);
+            $table->integer('final_score')->nullable()->default(0);
+            $table->string('grade', 1)->nullable()->default('D');
+            $table->string('description', 255)->nullable()->default('Tidak Ada Deskripsi');
             $table->timestamps();
 
-            $table->foreign('student_id')->references('id')->on('students')->onDelete('cascade');
-            $table->foreign('class_subject_id')->references('id')->on('class_subjects')->onDelete('cascade');
-            $table->foreign('semester_year_id')->references('id')->on('semester_years');
+            $table->foreign('grade_id')->references('id')->on('grades')->onDelete('cascade');
+            // $table->foreign('student_id')->references('id')->on('students')->onDelete('cascade');
+            // $table->foreign('class_subject_id')->references('id')->on('class_subjects')->onDelete('cascade');
+            // $table->foreign('semester_year_id')->references('id')->on('semester_years');
         });
     }
 

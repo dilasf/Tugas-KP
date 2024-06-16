@@ -28,8 +28,8 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Student::observe(StudentObserver::class);
-        KnowledgeScore::observe(ScoreObserver::class);
-        AttitudeScore::observe(AttitudeScoreObserver::class);
-        SkillScore::observe(SkillScoreObserver::class);
+        // KnowledgeScore::observe(ScoreObserver::class);
+        // AttitudeScore::observe(AttitudeScoreObserver::class);
+        // SkillScore::observe(SkillScoreObserver::class);
     }
 }

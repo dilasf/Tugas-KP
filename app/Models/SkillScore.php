@@ -12,20 +12,21 @@ class SkillScore extends Model
     protected $table = 'skill_scores';
 
     protected $fillable = [
+        'grade_id',
         'assessment_type',
         'attendance_id',
         'score',
         'final_score',
         'grade',
         'description',
-        'student_id',
-        'class_subject_id',
-        'semester_year_id',
+        // 'student_id',
+        // 'class_subject_id',
+        // 'semester_year_id',
     ];
 
     public function grades()
     {
-        return $this->hasMany(Grade::class);
+        return $this->belongsTo(Grade::class);
     }
 
     public function attendance()

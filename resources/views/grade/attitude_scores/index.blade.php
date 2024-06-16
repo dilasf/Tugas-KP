@@ -20,29 +20,27 @@
                     </tr>
                 </x-slot>
                 @php $num=1; @endphp
-                @foreach($assessmentTypes as $type)
-                <tr class="text-center">
-                    <td>{{ $num++ }}</td>
-                    <td>{{ $type['assessment_type'] }}</td>
-                    <td :class="{ 'flex flex-row justify-center items-center gap-2': sidebarOpen, 'justify-center items-center gap-2': !sidebarOpen }">
-                        <x-edit-primary-button tag="a" :href="route('grade.attitude_scores.edit', ['id' => $type['id']])"
-                            class="flex items-center justify-center min-w-[60px]">
-                            <img src="{{ asset('img/edit-brush_logo.png') }}" class="w-[13px] h-[13px]">
-                            <span x-show="!sidebarOpen" class="ml-1 text-[10px]">{{ __('Edit') }}</span>
-                        </x-edit-primary-button>
+                @foreach($assessmentTypes as $assessmentType)
+                            <tr>
+                                <td class="text-center">{{ $num++ }}</td>
+                                <td>{{ $assessmentType->assessment_type }}</td>
+                                <td class="text-center">
+                                    <x-edit-primary-button tag="a" :href="route('grade.attitude_scores.edit', ['assessment_type' => $assessmentType->assessment_type])"
+                                        class="flex items-center justify-center min-w-[60px]">
+                                        <img src="{{ asset('img/edit-brush_logo.png') }}" class="w-[13px] h-[13px]">
+                                        <span x-show="!sidebarOpen" class="ml-1 text-[10px]">{{ __('Edit') }}</span>
+                                    </x-edit-primary-button>
 
-                        <x-danger-button
-                            x-data=""
-                            x-on:click.prevent="
-                                $dispatch('open-modal', 'confirm-assessment-type-deletion');
-                                $dispatch('set-action', '{{ route('grade.attitude_scores.destroy', $type['id']) }}');"
-                            class="flex items-center justify-center min-w-[60px]">
-                            <img src="{{ asset('img/garbage_logo.png') }}" class="w-[13px] h-[13px]">
-                            <span x-show="!sidebarOpen" class="ml-1 text-[10px]">{{ __('Hapus') }}</span>
-                        </x-danger-button>
-
-
-                    </td>
+                                    <x-danger-button
+                                    x-data=""
+                                    x-on:click.prevent="
+                                        $dispatch('open-modal', 'confirm-assessment-type-deletion');
+                                        $dispatch('set-action', '{{ route('grade.attitude_scores.destroy', ['assessment_type' => $assessmentType->assessment_type]) }}');"
+                                    class="flex items-center justify-center min-w-[60px]">
+                                    <img src="{{ asset('img/garbage_logo.png') }}" class="w-[13px] h-[13px]">
+                                    <span x-show="!sidebarOpen" class="ml-1 text-[10px]">{{ __('Hapus') }}</span>
+                                </x-danger-button>
+                        </td>
                 </tr>
                 @endforeach
             </x-table>

@@ -125,91 +125,67 @@ Route::middleware('auth')->group(function () {
     Route::get('/account/student', [AccountStudentController::class, 'index'])->name('account.student.index');
 });
 
-// //Nilai
-// Route::middleware('auth')->group(function () {
-//     Route::get('/grades/{studentId}/subjects/{classSubjectId}', [GradeController::class, 'index'])->name('grade.index');
-
-// Route::get('/grades/detail-knowledge-score/{studentId}/{classSubjectId}', [GradeController::class, 'showDetailKnowledgeScore'])->name('grade.detailKnowledgeScore');
-
-
-// Route::get('/grades/{studentId}/subjects/{classSubjectId}/edit/{semesterYearId}/{assessmentType}', [GradeController::class, 'editKnowledgeScore'])->name('grade.editKnowledgeScore');
-// Route::match(['put', 'patch'],'/grades/{studentId}/{classSubjectId}/{semesterYearId}/{assessmentType}', [GradeController::class, 'updateKnowledgeScore'])->name('grade.updateKnowledgeScore');
-
-
-
-//     //nilai sikap
-//     Route::get('/grades/detail-attitude-score/{studentId}/{classSubjectId}', [GradeController::class, 'showDetailAttitudeScore'])->name('grade.detailAttitudeScore');
-// Route::get('/grades/edit-attitude-score/{studentId}/{classSubjectId}/{semesterYearId}/{assessmentType}',[GradeController::class,'editAttitudeScore'])->name('grade.editAttitudeScore');
-// Route::match(['put', 'patch'],'/grades/update-attitude-score/{studentId}/{classSubjectId}/{semesterYearId}/{assessmentType}',  [GradeController::class,'updateAttitudeScore'])->name('grade.updateAttitudeScore');
-
-//     //nilai keterampilan
-//     Route::get('/grades/{studentId}/{classSubjectId}', [GradeController::class, 'showDetailSkillScore'])->name('grade.detailSkillScore');
-//     Route::get('/grades/edit-skill-score/{studentId}/{classSubjectId}/{semesterYearId}/{assessmentType}', [GradeController::class, 'editSkillScore'])->name('grade.editSkillScore');
-//     Route::match(['put', 'patch'],'/grades/{studentId}/{classSubjectId}/{semesterYearId}/{assessmentType}', [GradeController::class, 'updateSkillScore'])->name('grade.updateSkillScore');
-
-//     // kehadiran
-//     Route::patch('/attendance/{studentId}/{classSubjectId}/{semesterYearId}/{type}/{action}', [AttendanceController::class, 'update'])->name('attendance.update');
-
-
-// });
-
-Route::middleware('auth')->group(function () {
-    Route::get('/grades/{studentId}/subjects/{classSubjectId}', [GradeController::class, 'index'])->name('grade.index');
-    Route::get('/grades/detail-knowledge-score/{studentId}/{classSubjectId}', [GradeController::class, 'showDetailKnowledgeScore'])->name('grade.detailKnowledgeScore');
-    Route::get('/grades/{studentId}/subjects/{classSubjectId}/edit/{semesterYearId}/{assessmentType}', [GradeController::class, 'editKnowledgeScore'])->name('grade.editKnowledgeScore');
-    Route::match(['put', 'patch'],'/grades/{studentId}/{classSubjectId}/{semesterYearId}/{assessmentType}', [GradeController::class, 'updateKnowledgeScore'])->name('grade.updateKnowledgeScore');
-
-    //nilai sikap
-    Route::get('/grades/detail-attitude-score/{studentId}/{classSubjectId}', [GradeController::class, 'showDetailAttitudeScore'])->name('grade.detailAttitudeScore');
-    Route::get('/grades/edit-attitude-score/{studentId}/{classSubjectId}/{semesterYearId}/{assessmentType}',[GradeController::class,'editAttitudeScore'])->name('grade.editAttitudeScore');
-    Route::match(['put', 'patch'],'/grades/update-attitude-score/{studentId}/{classSubjectId}/{semesterYearId}/{assessmentType}',  [GradeController::class,'updateAttitudeScore'])->name('grade.updateAttitudeScore');
-
-    //nilai keterampilan
-    Route::get('/grades/{studentId}/{classSubjectId}', [GradeController::class, 'showDetailSkillScore'])->name('grade.detailSkillScore');
-    Route::get('/grades/edit-skill-score/{studentId}/{classSubjectId}/{semesterYearId}/{assessmentType}', [GradeController::class, 'editSkillScore'])->name('grade.editSkillScore');
-    Route::match(['put', 'patch'],'/grades/{studentId}/{classSubjectId}/{semesterYearId}/{assessmentType}', [GradeController::class, 'updateSkillScore'])->name('grade.updateSkillScore');
-
-    // kehadiran
-    Route::patch('/attendance/{studentId}/{classSubjectId}/{semesterYearId}/{type}/{action}', [AttendanceController::class, 'update'])->name('attendance.update');
-});
-
 
 //Jenis Nilai Pengetahuan
 Route::middleware('auth')->group(function () {
     Route::get('/knowledge-scores', [KnowledgeScoreController::class, 'index'])->name('grade.knowledge_scores.index');
     Route::get('/knowledge-scores/create', [KnowledgeScoreController::class, 'create'])->name('grade.knowledge_scores.create');
     Route::post('/knowledge-scores', [KnowledgeScoreController::class, 'store'])->name('grade.knowledge_scores.store');
-    Route::get('/knowledge-scores/{id}/edit', [KnowledgeScoreController::class, 'edit'])->name('grade.knowledge_scores.edit');
-    Route::match(['put', 'patch'],'/knowledge-scores/{id}', [KnowledgeScoreController::class, 'update'])->name('grade.knowledge_scores.update');
-    Route::delete('/knowledge-scores/{id}', [KnowledgeScoreController::class, 'destroy'])->name('grade.knowledge_scores.destroy');
+    Route::get('/knowledge-scores/{assessment_type}/edit', [KnowledgeScoreController::class, 'edit'])->name('grade.knowledge_scores.edit');
+    Route::match(['put', 'patch'],'/knowledge-scores/{assessment_type}', [KnowledgeScoreController::class, 'update'])->name('grade.knowledge_scores.update');
+    Route::delete('/knowledge-scores/{assessment_type}', [KnowledgeScoreController::class, 'destroy'])->name('grade.knowledge_scores.destroy');
 });
 
-//Jenis Nilai Pengetahuan
+//Jenis Nilai Sikap
 Route::middleware('auth')->group(function () {
     Route::get('/attitude-scores', [AttitudeScoreController::class, 'index'])->name('grade.attitude_scores.index');
     Route::get('/attitude-scores/create', [AttitudeScoreController::class, 'create'])->name('grade.attitude_scores.create');
     Route::post('/attitude-scores', [AttitudeScoreController::class, 'store'])->name('grade.attitude_scores.store');
-    Route::get('/attitude-scores/{id}/edit', [AttitudeScoreController::class, 'edit'])->name('grade.attitude_scores.edit');
-    Route::match(['put', 'patch'],'/attitude-scores/{id}', [AttitudeScoreController::class, 'update'])->name('grade.attitude_scores.update');
-    Route::delete('/attitude-scores/{id}', [AttitudeScoreController::class, 'destroy'])->name('grade.attitude_scores.destroy');
+    Route::get('/attitude-scores/{assessment_type}/edit', [AttitudeScoreController::class, 'edit'])->name('grade.attitude_scores.edit');
+    Route::match(['put', 'patch'],'/attitude-scores/{assessment_type}', [AttitudeScoreController::class, 'update'])->name('grade.attitude_scores.update');
+    Route::delete('/attitude-scores/{assessment_type}', [AttitudeScoreController::class, 'destroy'])->name('grade.attitude_scores.destroy');
 });
 
 
-//Jenis Nilai Pengetahuan
+//Jenis Nilai Keterampilan
 Route::middleware('auth')->group(function () {
     Route::get('/skill-scores', [skillScoreController::class, 'index'])->name('grade.skill_scores.index');
     Route::get('/skill-scores/create', [skillScoreController::class, 'create'])->name('grade.skill_scores.create');
     Route::post('/skill-scores', [skillScoreController::class, 'store'])->name('grade.skill_scores.store');
-    Route::get('/skill-scores/{id}/edit', [skillScoreController::class, 'edit'])->name('grade.skill_scores.edit');
-    Route::match(['put', 'patch'],'/skill-scores/{id}', [skillScoreController::class, 'update'])->name('grade.skill_scores.update');
-    Route::delete('/skill-scores/{id}', [skillScoreController::class, 'destroy'])->name('grade.skill_scores.destroy');
+    Route::get('/skill-scores/{assessment_type}/edit', [skillScoreController::class, 'edit'])->name('grade.skill_scores.edit');
+    Route::match(['put', 'patch'],'/skill-scores/{assessment_type}', [skillScoreController::class, 'update'])->name('grade.skill_scores.update');
+    Route::delete('/skill-scores/{assessment_type}', [skillScoreController::class, 'destroy'])->name('grade.skill_scores.destroy');
 });
 
+
 Route::middleware('auth')->group(function () {
-    // Route::get('/rapors', [RaporController::class, 'index'])->name('rapors.index');
-    // Route::post('/report/create', [RaporController::class, 'create'])->name('report.create');
-    Route::get('/rapor/{id}', [RaporController::class, 'index'])->name('rapors.index');
-    Route::get('/generate-rapor/{id}/{classSubjectId}', [RaporController::class, 'generateRapor']);
+    Route::get('/{studentId}/{classSubjectId}', [GradeController::class, 'index'])->name('grade.index');
+    // Route::get('/{studentId}/{classSubjectId}/detail', [GradeController::class, 'detailKnowledgeScore'])->name('grade.detailKnowledgeScore');
+    Route::get('/grade/{studentId}/{classSubjectId}/detail-knowledge-score', [GradeController::class, 'detailKnowledgeScore'])->name('grade.detailKnowledgeScore');
+    Route::get('/grade/{studentId}/{classSubjectId}/edit-knowledge-score/{assessmentType}', [GradeController::class, 'editKnowledgeScore'])->name('grade.editKnowledgeScore');
+    Route::match(['put', 'patch'],'/grade/{studentId}/{classSubjectId}/update-knowledge-score/{assessmentType}', [GradeController::class, 'updateKnowledgeScore'])->name('grade.updateKnowledgeScore');
+
+    //nilai sikap
+    Route::get('/grade/{studentId}/{classSubjectId}/detail-attitude-score', [GradeController::class, 'detailAttitudeScore'])->name('grade.detailAttitudeScore');
+    Route::get('/grade/{studentId}/{classSubjectId}/edit-attitude-score/{assessmentType}', [GradeController::class, 'editAttitudeScore'])->name('grade.editAttitudeScore');
+    Route::match(['put', 'patch'],'/grade/{studentId}/{classSubjectId}/update-attitude-score/{assessmentType}', [GradeController::class, 'updateAttitudeScore'])->name('grade.updateAttitudeScore');
+    //nilai keterampilan
+    Route::get('/grade/{studentId}/{classSubjectId}/detail-skill-score', [GradeController::class, 'detailSkillScore'])->name('grade.detailSkillScore');
+    Route::get('/grade/{studentId}/{classSubjectId}/edit-skill-score/{assessmentType}', [GradeController::class, 'editSkillScore'])->name('grade.editSkillScore');
+    Route::match(['put', 'patch'],'/grade/{studentId}/{classSubjectId}/update-skill-score/{assessmentType}', [GradeController::class, 'updateSkillScore'])->name('grade.updateSkillScore');
+
+
+    // kehadiran
+    Route::match(['put', 'patch'],'/attendance/{studentId}/{classSubjectId}/{semesterYearId}/{type}/{action}', [AttendanceController::class, 'update'])->name('attendance.update');
+});
+
+
+
+Route::middleware('auth')->group(function () {
+    Route::get('/{id}', [RaporController::class, 'index'])->name('rapors.index');
+    Route::get('/rapors/{studentId}/edit/{semesterYearId}', [RaporController::class, 'edit'])->name('rapors.edit');
+    Route::match(['put', 'patch'], '/rapors/{rapor}', [RaporController::class, 'update'])->name('rapors.update');
+
 });
 
 require __DIR__.'/auth.php';

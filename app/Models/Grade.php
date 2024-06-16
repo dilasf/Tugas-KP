@@ -13,15 +13,18 @@ class Grade extends Model
         'student_id',
         'class_subject_id',
         'semester_year_id',
-        'knowledge_score_id',
-        'attitude_score_id',
-        'skill_score_id',
+        // 'knowledge_score_id',
+        // 'attitude_score_id',
+        // 'skill_score_id',
         'average_knowledge_score',
         'average_attitude_score',
         'average_skill_score',
         'gradeKnowledges',
         'gradeAttitude',
-        'gradeSkill'
+        'gradeSkill',
+        'descriptionKnowledge',
+        'descriptionAttitude',
+        'descriptionSkill',
     ];
 
     protected static function boot()
@@ -29,21 +32,27 @@ class Grade extends Model
         parent::boot();
 
         static::saved(function ($grade) {
-            // Buat dan simpan instance Rapor
-            Rapor::updateOrCreate(
-                [
-                    'student_id' => $grade->student_id,
-                    'semester_year_id' => $grade->semester_year_id,
-                    'class_subject_id' => $grade->class_subject_id,
-                ],
-                [
-                    'grade_id' => $grade->id,
-                    'school_name' => 'SDN DAWUAN',
-                    'school_address' => 'KP Pasir Eurih',
-                ]
-            );
+            // Pastikan nilai semester_year_id ada sebelum disimpan ke dalam Rapor
+            if ($grade->semester_year_id) {
+                // Cari atau buat instance Rapor
+                Rapor::updateOrCreate(
+                    [
+                        // 'student_id' => $grade->student_id,
+                        'grade_id' => $grade->id,
+                        // 'class_subject_id' => $grade->class_subject_id,
+                    ],
+                    [
+                        'school_name' => 'SDN DAWUAN',
+                        'school_address' => 'KP Pasir Eurih',
+                        // 'semester_year_id' => $grade->semester_year_id,
+                    ]
+                );
+            }
         });
     }
+
+
+
     public function student()
     {
         return $this->belongsTo(Student::class);
@@ -59,19 +68,19 @@ class Grade extends Model
         return $this->belongsTo(SemesterYear::class);
     }
 
-    public function knowledgeScore()
+    public function knowledgeScores()
     {
-        return $this->belongsTo(KnowledgeScore::class);
+        return $this->hasMany(KnowledgeScore::class);
     }
 
     public function attitudeScore()
     {
-        return $this->belongsTo(AttitudeScore::class);
+        return $this->hasMany(AttitudeScore::class);
     }
 
     public function skillScore()
     {
-        return $this->belongsTo(SkillScore::class);
+        return $this->hasMany(SkillScore::class);
     }
 
     public function rapor()

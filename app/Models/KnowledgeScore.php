@@ -12,20 +12,21 @@ class KnowledgeScore extends Model
     protected $table = 'knowledge_scores';
 
     protected $fillable = [
+        'grade_id',
         'assessment_type',
         'score',
         'final_score',
         'grade',
         'description',
-        'student_id',
-        'class_subject_id',
-        'semester_year_id',
+        // 'student_id',
+        // 'class_subject_id',
+        // 'semester_year_id',
     ];
 
 
-    public function grades()
+    public function grade()
     {
-        return $this->hasMany(Grade::class);
+        return $this->belongsTo(Grade::class);
     }
 
     public function rapor()

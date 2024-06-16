@@ -80,47 +80,54 @@
                                 <tr>
                                     <th rowspan="2">No</th>
                                     <th rowspan="2">Mata Pelajaran</th>
-                                    <th colspan="2">Pengetahuan</th>
+                                    <th colspan="3">Pengetahuan</th>
                                     <th rowspan="2">KKM</th>
-                                    <th colspan="2">Keterampilan</th>
+                                    <th colspan="3">Keterampilan</th>
                                     <th rowspan="2">Aksi</th>
                                 </tr>
                                 <tr>
                                     <th>Nilai</th>
                                     <th>Predikat</th>
+                                    <th>Deskripsi</th>
                                     <th>Nilai</th>
                                     <th>Predikat</th>
+                                    <th>Deskripsi</th>
                                 </tr>
                             </x-slot>
-                                @php $num = 1; @endphp
-                                @foreach($rapors->groupBy('grade.classSubject.subject.id') as $subjectRapors)
-                                    @php
-                                        $firstRapor = $subjectRapors->first();
-                                        $subject = optional($firstRapor->grade->classSubject->subject)->subject_name ?? 'N/A';
-                                        $averageKnowledgeScore = $firstRapor->grade->average_knowledge_score ?? 'N/A';
-                                        $gradeKnowledge = $firstRapor->grade->gradeKnowledge ?? 'N/A';
-                                        $averageAttitudeScore = $firstRapor->grade->average_attitude_score ?? 'N/A';
-                                        $gradeAttitude = $firstRapor->grade->gradeAttitude ?? 'N/A';
-                                        $averageSkillScore = $firstRapor->grade->average_skill_score ?? 'N/A';
-                                        $gradeSkill = $firstRapor->grade->gradeSkill ?? 'N/A';
-                                        $kkm = optional($firstRapor->grade->classSubject->subject)->kkm ?? 'N/A';
-                                    @endphp
-                                    <tr class="text-center">
-                                        <td>{{ $num++ }}</td>
-                                        <td>{{ $subject }}</td>
-                                        <td class="{{ $averageKnowledgeScore < $kkm ? 'text-red-500' : 'text-gray-800' }}">{{ $averageKnowledgeScore }}</td>
-                                        <td class="{{ $averageKnowledgeScore < $kkm ? 'text-red-500' : 'text-gray-800' }}">{{ $gradeKnowledge }}</td>
-                                        <td>{{ $kkm }}</td>
-                                        {{-- <td>{{ $averageAttitudeScore }}</td>
-                                        <td>{{ $gradeAttitude }}</td> --}}
-                                        <td class="{{ $averageKnowledgeScore < $kkm ? 'text-red-500' : 'text-gray-800' }}">{{ $averageSkillScore }}</td>
-                                        <td class="{{ $averageKnowledgeScore < $kkm ? 'text-red-500' : 'text-gray-800' }}">{{ $gradeSkill }}</td>
-
-                                        <td>
-                                        </td>
-                                    </tr>
-
-                                @endforeach
+                            @php $num = 1; @endphp
+                            @foreach($rapors->groupBy('grade.classSubject.subject.id') as $subjectRapors)
+                                @php
+                                    $firstRapor = $subjectRapors->first();
+                                    $subject = optional($firstRapor->grade->classSubject->subject)->subject_name ?? 'N/A';
+                                    $averageKnowledgeScore = $firstRapor->grade->average_knowledge_score ?? '0';
+                                    $gradeKnowledge = $firstRapor->grade->gradeKnowledge ?? '-';
+                                    $descriptionKnowledge = $firstRapor->grade->descriptionKnowledge ?? 'Tidak Ada Deskripsi';
+                                    $averageAttitudeScore = $firstRapor->grade->average_attitude_score ?? '0';
+                                    $gradeAttitude = $firstRapor->grade->gradeAttitude ?? '-';
+                                    $descriptionAttitude = $firstRapor->grade->descriptionAttitude ?? 'Tidak Ada Deskripsi';
+                                    $averageSkillScore = $firstRapor->grade->average_skill_score ?? '0';
+                                    $gradeSkill = $firstRapor->grade->gradeSkill ?? '-';
+                                    $descriptionSkill = $firstRapor->grade->descriptionSkill ?? 'Tidak Ada Deskripsi';
+                                    $kkm = optional($firstRapor->grade->classSubject->subject)->kkm ?? '0';
+                                @endphp
+                                <tr class="text-center">
+                                    <td>{{ $num++ }}</td>
+                                    <td>{{ $subject }}</td>
+                                    <td class="{{ $averageKnowledgeScore < $kkm ? 'text-red-500' : 'text-gray-800' }}">{{ $averageKnowledgeScore }}</td>
+                                    <td class="{{ $averageKnowledgeScore < $kkm ? 'text-red-500' : 'text-gray-800' }}">{{ $gradeKnowledge }}</td>
+                                    <td>{{ $descriptionKnowledge }}</td>
+                                    <td>{{ $kkm }}</td>
+                                    <td class="{{ $averageKnowledgeScore < $kkm ? 'text-red-500' : 'text-gray-800' }}">{{ $averageSkillScore }}</td>
+                                    <td class="{{ $averageKnowledgeScore < $kkm ? 'text-red-500' : 'text-gray-800' }}">{{ $gradeSkill }}</td>
+                                    <td>{{ $descriptionSkill }}</td>
+                                    <td>
+                                        <x-edit-primary-button tag="a" href="{{ route('rapors.edit', ['studentId' => $student->id, 'semesterYearId' => $selectedSemesterYearId]) }}" class="flex items-center justify-center min-w-[60px]">
+                                            <img src="{{ asset('img/edit-brush_logo.png') }}" class="w-[13px] h-[13px]">
+                                            <span x-show="!sidebarOpen" class="ml-1 text-[10px]">{{ __('Edit') }}</span>
+                                        </x-edit-primary-button>
+                                    </td>
+                                </tr>
+                            @endforeach
                         </x-table>
                     </div>
                 @else
