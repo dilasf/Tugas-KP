@@ -10,10 +10,15 @@ class Extracurricular extends Model
     use HasFactory;
 
     protected $fillable = [
-        'student_id',
+        'rapor_id',
         'activity',
         'description',
     ];
+
+    public function student()
+    {
+        return $this->belongsTo(Student::class);
+    }
 
     public function rapor()
     {

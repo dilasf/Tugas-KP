@@ -2,12 +2,16 @@
 
 use App\Http\Controllers\AccountStudentController;
 use App\Http\Controllers\AccountTeacherController;
+use App\Http\Controllers\AchievementController;
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\AttitudeScoreController;
 use App\Http\Controllers\ClassSubjectController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\ExtracurricularController;
 use App\Http\Controllers\GradeController;
 use App\Http\Controllers\GuardianController;
+use App\Http\Controllers\HealthController;
+use App\Http\Controllers\HeightWeightController;
 use App\Http\Controllers\KnowledgeScoreController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RaporController;
@@ -157,7 +161,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/skill-scores/{assessment_type}', [skillScoreController::class, 'destroy'])->name('grade.skill_scores.destroy');
 });
 
-
+//Nilai
 Route::middleware('auth')->group(function () {
     Route::get('/{studentId}/{classSubjectId}', [GradeController::class, 'index'])->name('grade.index');
     // Route::get('/{studentId}/{classSubjectId}/detail', [GradeController::class, 'detailKnowledgeScore'])->name('grade.detailKnowledgeScore');
@@ -174,18 +178,54 @@ Route::middleware('auth')->group(function () {
     Route::get('/grade/{studentId}/{classSubjectId}/edit-skill-score/{assessmentType}', [GradeController::class, 'editSkillScore'])->name('grade.editSkillScore');
     Route::match(['put', 'patch'],'/grade/{studentId}/{classSubjectId}/update-skill-score/{assessmentType}', [GradeController::class, 'updateSkillScore'])->name('grade.updateSkillScore');
 
-
     // kehadiran
     Route::match(['put', 'patch'],'/attendance/{studentId}/{classSubjectId}/{semesterYearId}/{type}/{action}', [AttendanceController::class, 'update'])->name('attendance.update');
 });
 
+//prestasi
+Route::middleware('auth')->group(function () {
+    Route::get('/students/{studentId}/achievements/create/{semester_year_id}', [AchievementController::class, 'create'])->name('achievements.create');
+    // Route::get('/students/{studentId}/achievements/create/{semester_year_id}', [AchievementController::class, 'create'])->name('achievements.create');
+    Route::post('/students/{studentId}/achievements/store/{semester_year_id}', [AchievementController::class, 'store'])->name('achievements.store');
+    Route::get('/students/{studentId}/achievements/{achievementId}/edit', [AchievementController::class, 'edit'])->name('achievements.edit');
+    Route::match(['put', 'patch'], '/achievements/{studentId}/{achievementId}', [AchievementController::class, 'update'])->name('achievements.update');
+    Route::delete('/achievements/{achievementId}', [AchievementController::class, 'destroy'])->name('achievements.destroy');
+});
 
+//ekstrakulikuler
+Route::middleware('auth')->group(function () {
+    Route::get('/students/{studentId}/extracurriculars/create/{semester_year_id}', [ExtracurricularController::class, 'create'])->name('extracurriculars.create');
+    Route::post('/students/{studentId}/extracurriculars/store/{semester_year_id}', [ExtracurricularController::class, 'store']) ->name('extracurriculars.store');
+    Route::get('/students/{studentId}/extracurriculars/{extracurricularId}/edit', [ExtracurricularController::class, 'edit'])->name('extracurriculars.edit');
+    Route::match(['put', 'patch'], '/extracurricular/{studentId}/{extracurricularId}', [ExtracurricularController::class, 'update'])->name('extracurriculars.update');
+    Route::delete('/extracurricular/{extracurricularId}', [ExtracurricularController::class, 'destroy'])->name('extracurriculars.destroy');
+});
+
+//kesehatan
+Route::middleware('auth')->group(function () {
+    Route::get('students/{studentId}/healths/create/{semester_year_id}/{aspectName}', [HealthController::class, 'create'])->name('healths.create');
+    Route::get('students/{studentId}/healths/{healthId}/edit/{aspectName}', [HealthController::class, 'edit'])->name('healths.edit');
+    Route::post('students/{studentId}/healths/store/{semester_year_id}/{aspectName}', [HealthController::class, 'storeOrUpdate'])->name('healths.store');
+    Route::patch('students/{studentId}/healths/update/{healthId}/{aspectName}', [HealthController::class, 'storeOrUpdate'])->name('healths.update');
+
+});
+
+//Tinggi Badan
+Route::middleware('auth')->group(function () {
+    Route::get('/height_weights/{id}/edit', [HeightWeightController::class, 'edit'])->name('height_weights.edit');
+    Route::patch('/height_weights/{id}', [HeightWeightController::class, 'update'])->name('height_weights.update');
+
+});
 
 Route::middleware('auth')->group(function () {
-    Route::get('/{id}', [RaporController::class, 'index'])->name('rapors.index');
+    Route::get('rapors/lihat/{studentId}', [RaporController::class, 'index'])->name('rapors.index');
     Route::get('/rapors/{studentId}/edit/{semesterYearId}', [RaporController::class, 'edit'])->name('rapors.edit');
     Route::match(['put', 'patch'], '/rapors/{rapor}', [RaporController::class, 'update'])->name('rapors.update');
 
+    Route::get('/rapors/{studentId}/edit-suggestion', [RaporController::class, 'editSuggestion'])->name('rapors.editSuggestion');
+    Route::match(['put', 'patch'],'{studentId}/update-suggestion', [RaporController::class, 'updateSuggestion'])->name('rapors.updateSuggestion');
+
 });
+
 
 require __DIR__.'/auth.php';

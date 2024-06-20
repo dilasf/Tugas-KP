@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Extracurricular;
 use App\Models\Grade;
+use App\Models\HeightWeight;
 use App\Models\Rapor;
 use App\Models\SemesterYear;
 use App\Models\Student;
@@ -10,42 +12,34 @@ use Illuminate\Http\Request;
 
 class RaporController extends Controller
 {
-    private function calculateGrade($value)
-    {
-        if ($value >= 90) {
-            return 'A';
-        } elseif ($value >= 80) {
-            return 'B';
-        } elseif ($value >= 70) {
-            return 'C';
-        } else {
-            return 'D';
-        }
-    }
-
-    public function index(Request $request, $id)
+    public function index(Request $request, $studentId)
     {
         $selectedSemesterYearId = $request->input('semester_year_id', null);
         $semesters = SemesterYear::all();
         $sidebarOpen = false;
 
         $currentMonth = now()->month;
-        if ($currentMonth >= 1 && $currentMonth <= 6) {
-            $defaultSemester = $semesters->firstWhere('semester', 1);
-        } else {
-            $defaultSemester = $semesters->firstWhere('semester', 2);
-        }
+        $defaultSemester = $semesters->firstWhere('semester', ($currentMonth >= 1 && $currentMonth <= 6) ? 1 : 2);
 
         if (!$selectedSemesterYearId) {
             $selectedSemesterYearId = $defaultSemester->id;
         }
 
-        $student = Student::findOrFail($id);
+        $student = Student::with('heightWeight')->findOrFail($studentId);
 
-        $grades = Grade::where('student_id', $id)
+        // Check if heightWeight is loaded and contains the necessary data
+        if ($student->heightWeight) {
+            $heightWeight = $student->heightWeight;
+        } else {
+            $heightWeight = null;
+        }
+
+        // Ambil data grades hanya untuk semester_year_id yang dipilih
+        $grades = Grade::where('student_id', $studentId)
             ->where('semester_year_id', $selectedSemesterYearId)
             ->get();
 
+        // Lakukan perhitungan grade dan simpan ke dalam setiap objek grade
         $grades->each(function($grade) {
             $gradeKnowledge = $this->calculateGrade($grade->average_knowledge_score);
             $gradeAttitude = $this->calculateGrade($grade->average_attitude_score);
@@ -53,7 +47,6 @@ class RaporController extends Controller
 
             $grade->gradeKnowledge = $gradeKnowledge;
             $grade->descriptionKnowledge;
-            // $grade->descriptionKnowledge = $this->getGradeDescription($gradeKnowledge);
             $grade->gradeAttitude = $gradeAttitude;
             $grade->descriptionAttitude;
             $grade->gradeSkill = $gradeSkill;
@@ -61,13 +54,57 @@ class RaporController extends Controller
             $grade->save();
         });
 
-        $rapors = Rapor::whereIn('grade_id', $grades->pluck('id'))->get();
+        // Ambil rapors hanya untuk grade_id yang terkait dengan grades yang telah diproses
+        $rapors = Rapor::whereIn('grade_id', $grades->pluck('id'))
+            ->with('extracurricular', 'achievement', 'health')
+            ->get();
 
-        $rapors->load('grade.classSubject.subject', 'grade.semesterYear');
-
-        return view('rapors.index', compact('student', 'rapors', 'semesters', 'selectedSemesterYearId', 'sidebarOpen'));
+        return view('rapors.index',
+        compact('student', 'rapors',
+        'semesters', 'selectedSemesterYearId',
+        'heightWeight', 'sidebarOpen'));
     }
 
+
+    //saran
+    public function editSuggestion($studentId)
+    {
+        $rapor = Rapor::whereHas('grade', function ($query) use ($studentId) {
+            $query->where('student_id', $studentId);
+        })->first();
+
+        return view('rapors.edit-suggestion', [
+            'rapor' => $rapor,
+        ]);
+    }
+
+
+    public function updateSuggestion(Request $request, $studentId)
+    {
+        $validated = $request->validate([
+            'suggestion' => 'required|max:255',
+        ]);
+
+        // Temukan rapor berdasarkan student_id dari tabel Grade
+        $rapor = Rapor::whereHas('grade', function ($query) use ($studentId) {
+            $query->where('student_id', $studentId);
+        })->first();
+
+        // Update atau tambahkan saran dengan data terverifikasi
+        $rapor->suggestion = $validated['suggestion'];
+        $rapor->save();
+        if ($rapor) {
+            $notification['alert-type'] = 'success';
+            $notification['message'] = 'Data Saran Berhasil Dimasukkan';
+            return redirect()->route('rapors.index', ['studentId' => $studentId])->with($notification);
+        } else {
+            $notification['alert-type'] = 'error';
+            $notification['message'] = 'Data Saran Gagal Dimasukkan';
+            return redirect()->back()->with($notification);
+        }
+
+
+    }
     /**
      * Mendapatkan deskripsi dari predikat nilai.
      *
@@ -213,6 +250,33 @@ public function edit($studentId, $semesterYearId)
             ->with('success', 'Rapor successfully updated.');
     }
 
+    private function calculateGrade($value)
+    {
+        if ($value >= 90) {
+            return 'A';
+        } elseif ($value >= 80) {
+            return 'B';
+        } elseif ($value >= 70) {
+            return 'C';
+        } else {
+            return 'D';
+        }
+    }
+
+    public function Extracurricular($studentId)
+    {
+        // Retrieve the student
+        $student = Student::findOrFail($studentId);
+
+        // Retrieve extracurriculars for the student
+        $extracurriculars = Extracurricular::where('student_id', $studentId)->get();
+
+        // Pass data to the view
+        return view('rapors.index', [
+            'student' => $student,
+            'extracurriculars' => $extracurriculars,
+        ]);
+    }
 
 
 }

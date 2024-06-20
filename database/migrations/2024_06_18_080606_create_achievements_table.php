@@ -11,14 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('healths', function (Blueprint $table) {
+        Schema::create('achievements', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->unsignedBigInteger('student_id');
-            $table->string('physical_aspect', 50)->nullable();
+            $table->unsignedBigInteger('rapor_id');
+            $table->string('achievement_type', 200)->nullable();
             $table->string('description', 255)->nullable()->default('No description');
             $table->timestamps();
 
-            $table->foreign('student_id')->references('id')->on('students')->onDelete('cascade');
+            $table->foreign('rapor_id')->references('id')->on('rapors')->onDelete('cascade');
         });
     }
 
@@ -27,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('healths');
+        Schema::dropIfExists('achievements');
     }
 };

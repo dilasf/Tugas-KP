@@ -6,6 +6,7 @@
     </x-slot>
     <div class="bg-white rounded-lg shadow-md mx-4 overflow-hidden">
 
+        {{-- Fitur atas --}}
         <div class="flex justify-between items-center px-6 py-4">
             <div style="order: 1;">
                 <x-search-box>
@@ -27,7 +28,9 @@
                 </div>
             </div>
         </div>
+        {{-- End Fitur atas --}}
 
+        {{-- Data Siswa Singkat --}}
         <div class="text-black max-h-[calc(100vh-200px)] overflow-y-auto">
             <x-table header="Header Content" :sidebarOpen="$sidebarOpen" class="overflow-x-auto mx-auto">
                 <x-slot name="header">
@@ -92,7 +95,7 @@
                             <span x-show="!sidebarOpen" class="ml-1 text-[10px]">{{ __('Edit') }}</span>
                         </x-edit-primary-button>
 
-                        <a href="{{ route('rapors.index', ['id' => $siswa->id]) }}" class="inline-flex items-center px-4 py-2 bg-blue-500 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 focus:bg-blue-700 active:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                        <a href="{{ route('rapors.index', ['studentId' => $siswa->id]) }}" class="inline-flex items-center px-4 py-2 bg-blue-500 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 focus:bg-blue-700 active:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
                             Lihat Rapor
                         </a>
 
@@ -110,7 +113,9 @@
                 </tr>
                 @endforeach
             </x-table>
+            {{-- End Data Siswa Singkat --}}
 
+            {{-- Modal Hapus --}}
             <x-modal name="confirm-student-deletion" focusable maxWidth="xl">
                 <form method="post" x-bind:action="action" class="p-6 flex items-center">
                     @csrf
@@ -144,6 +149,9 @@
                     </div>
                 </form>
             </x-modal>
+            {{-- End Modal Hapus --}}
+
+            {{-- Modal Impor --}}
             <x-modal name="import-student" focusable maxWidth="xl">
                 <form method="post" action="{{ route('student_data.import') }}"
                    class="p-6" enctype="multipart/form-data">
@@ -166,10 +174,13 @@
                    </div>
                 </form>
              </x-modal>
+        {{-- End Modal Impor --}}
+
         </div>
     </div>
 </x-app-layout>
 
+{{-- Filter Search --}}
 <script>
     const searchInput = document.getElementById('searchInput');
 

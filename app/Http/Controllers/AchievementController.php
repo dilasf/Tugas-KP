@@ -3,89 +3,120 @@
 namespace App\Http\Controllers;
 
 use App\Models\Achievement;
+use App\Models\Rapor;
 use App\Models\Student;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class AchievementController extends Controller
 {
-    public function index()
+    public function create($studentId, $semester_year_id)
     {
-        $achievement = Achievement::with(['student'])->get();
-        $sidebarOpen = false;
-        return view('achievement.index', compact('achievements','sidebarOpen'));
+        $student = Student::findOrFail($studentId);
+
+        $rapors = Rapor::whereHas('grade', function ($query) use ($studentId, $semester_year_id) {
+            $query->where('student_id', $studentId)
+                ->where('semester_year_id', $semester_year_id);
+        })->get();
+
+        return view('achievement.create', [
+            'student' => $student,
+            'rapors' => $rapors,
+            'semester_year_id' => $semester_year_id,
+        ]);
     }
 
-    public function create()
-    {
-        $data['students'] = Student::pluck('student_name', 'id');
-        return view('achievement.create', $data);
-    }
-
-    public function store(Request $request)
+    public function store(Request $request, $studentId, $semester_year_id)
     {
         $validated = $request->validate([
             'achievement_type' => 'required|max:200',
             'description' => 'nullable|max:255',
-            'student_id' => 'required|exists:students,id',
         ]);
 
-        $data = Student::create($validated);
+        try {
+            // Cari rapor yang sesuai dengan studentId dan semester_year_id
+            $rapor = Rapor::whereHas('grade', function ($query) use ($studentId, $semester_year_id) {
+                $query->where('student_id', $studentId)
+                    ->where('semester_year_id', $semester_year_id);
+            })->firstOrFail();
 
-        if ($data) {
+            $achievementData = [
+                'rapor_id' => $rapor->id,
+                'achievement_type' => $validated['achievement_type'],
+                'description' => $validated['description'],
+            ];
+
+            Achievement::create($achievementData);
+
             $notification['alert-type'] = 'success';
             $notification['message'] = 'Data Prestasi Berhasil Disimpan';
-            return redirect()->route('achievement.index')->with($notification);
-        } else {
+            return redirect()->route('rapors.index', ['studentId' => $studentId])->with($notification);
+
+        } catch (\Exception $e) {
             $notification['alert-type'] = 'error';
-            $notification['message'] = 'Data Prestasi Gagal Disimpan';
-            return redirect()->route('achievement.create')->withInput()->with($notification);
+            $notification['message'] = 'Gagal menyimpan data Prestasi: ' . $e->getMessage();
+            return redirect()->route('achievements.create', ['studentId' => $studentId, 'semester_year_id' => $semester_year_id])->withInput()->with($notification);
         }
     }
 
-    public function edit(string $id)
+    public function edit($studentId, $extracurricularId)
     {
-        $data['achievements'] = Achievement::find($id);
-        $data['students'] = Student::pluck('student_name', 'id');
+        $student = Student::findOrFail($studentId);
+        $achievement = Achievement::findOrFail($extracurricularId);
 
-        return view('achievement.edit', $data);
+        $semester_year_id = $achievement->rapor->grade->semester_year_id;
+
+        $rapors = Rapor::whereHas('grade', function ($query) use ($studentId, $semester_year_id) {
+            $query->where('student_id', $studentId)
+                  ->where('semester_year_id', $semester_year_id);
+        })->get();
+
+        return view('achievement.edit', [
+            'student' => $student,
+            'achievement' => $achievement,
+            'rapors' => $rapors,
+            'semester_year_id' => $semester_year_id,
+        ]);
     }
 
-    public function update(Request $request, string $id)
+    public function update(Request $request, $studentId, $achievementId)
     {
-        $achievement = Achievement::findOrFail($id);
         $validated = $request->validate([
             'achievement_type' => 'required|max:200',
             'description' => 'nullable|max:255',
-            'student_id' => 'required|max:255',
         ]);
 
+        $achievement = Achievement::find($achievementId);
 
-        $data = $achievement->update($validated);
-
-        if ($data) {
-            $notification['alert-type'] = 'success';
-            $notification['message'] = 'Data Prestasi Berhasil Diperbaharui';
-            return redirect()->route('achievement.index')->with($notification);
-        } else {
+        if (!$achievement) {
             $notification['alert-type'] = 'error';
-            $notification['message'] = 'Data Prestasi Gagal Diperbaharui';
-            return redirect()->route('achievement.edit', $id)->withInput()->with($notification);
+            $notification['message'] = 'Prestasi tidak ditemukan';
+            return redirect()->route('rapors.index', ['studentId' => $studentId])->with($notification);
         }
+
+        // Update field achievement_type dan description
+        $achievement->achievement_type = $validated['achievement_type'];
+        $achievement->description = $validated['description'];
+        $achievement->save();
+
+        $notification['alert-type'] = 'success';
+        $notification['message'] = 'Data Prestasi Berhasil Diperbaharui';
+        return redirect()->route('rapors.index', ['studentId' => $studentId])->with($notification);
     }
 
-    public function destroy(string $id)
+    public function destroy($achievementId)
     {
-        $achievement = Achievement::findOrFail($id);
+        $achievement = Achievement::findOrFail($achievementId);
+        $rapor = $achievement->rapor;
 
-       $data = $achievement->delete();
-        if ($data) {
+        if ($achievement->delete()) {
             $notification['alert-type'] = 'success';
             $notification['message'] = 'Data Prestasi Berhasil Dihapus';
-            return redirect()->route('achievement.index')->with($notification);
         } else {
             $notification['alert-type'] = 'error';
             $notification['message'] = 'Data Prestasi Gagal Dihapus';
-            return redirect()->route('achievement.index')->withInput()->with($notification);
         }
+
+        return redirect()->route('rapors.index', ['studentId' => $rapor->grade->student_id])->with($notification);
     }
 }

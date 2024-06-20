@@ -16,9 +16,6 @@ return new class extends Migration
             $table->unsignedBigInteger('student_id')->nullable();
             $table->unsignedBigInteger('class_subject_id')->nullable();
             $table->unsignedBigInteger('semester_year_id')->nullable();
-            // $table->unsignedBigInteger('knowledge_score_id')->nullable();
-            // $table->unsignedBigInteger('attitude_score_id')->nullable();
-            // $table->unsignedBigInteger('skill_score_id')->nullable();
             $table->float('average_knowledge_score')->nullable()->default(0);
             $table->string('gradeKnowledge', 1)->nullable()->default('D');
             $table->string('descriptionKnowledge', 255)->nullable()->default('Tidak Ada Deskripsi');
@@ -33,9 +30,6 @@ return new class extends Migration
             $table->foreign('student_id')->references('id')->on('students')->onDelete('cascade');
             $table->foreign('class_subject_id')->references('id')->on('class_subjects')->onDelete('cascade');
             $table->foreign('semester_year_id')->references('id')->on('semester_years');
-            // $table->foreign('knowledge_score_id')->references('id')->on('knowledge_scores')->onDelete('cascade');
-            // $table->foreign('attitude_score_id')->references('id')->on('attitude_scores')->onDelete('cascade');
-            // $table->foreign('skill_score_id')->references('id')->on('skill_scores')->onDelete('cascade');
         });
     }
 

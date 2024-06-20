@@ -10,7 +10,7 @@ class Health extends Model
     use HasFactory;
 
     protected $fillable = [
-        'student_id',
+        'rapor_id',
         'physical_aspect',
         'description',
     ];

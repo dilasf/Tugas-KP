@@ -3,89 +3,133 @@
 namespace App\Http\Controllers;
 
 use App\Models\Extracurricular;
+use App\Models\Rapor;
 use App\Models\Student;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class ExtracurricularController extends Controller
 {
-    public function index()
+    public function create($studentId, $semester_year_id)
     {
-        $extracurricular = Extracurricular::with(['student'])->get();
-        $sidebarOpen = false;
-        return view('extracurricular.index', compact('healths','sidebarOpen'));
+        $student = Student::findOrFail($studentId);
+
+        $rapors = Rapor::whereHas('grade', function ($query) use ($studentId) {
+            $query->where('student_id', $studentId);
+        })
+        ->where('semester_year_id', $semester_year_id)
+        ->get();
+
+        return view('extracurricular.create', [
+            'student' => $student,
+            'rapors' => $rapors,
+            'semester_year_id' => $semester_year_id,
+        ]);
     }
 
-    public function create()
-    {
-        $data['students'] = Student::pluck('student_name', 'id');
-        return view('extracurricular.create', $data);
-    }
-
-    public function store(Request $request)
+    public function store(Request $request, $studentId, $semester_year_id)
     {
         $validated = $request->validate([
-            'activity' => 'required|max200',
+            'activity' => [
+                'required',
+                'max:200',
+                Rule::unique('extracurriculars')->where(function ($query) use ($studentId, $semester_year_id) {
+                    $query->whereIn('rapor_id', function ($query) use ($studentId, $semester_year_id) {
+                        $query->select('id')
+                            ->from('rapors')
+                            ->whereHas('grade', function ($query) use ($studentId) {
+                                $query->where('student_id', $studentId);
+                            })
+                            ->where('semester_year_id', $semester_year_id);
+                    });
+                }),
+            ],
             'description' => 'nullable|max:255',
-            'student_id' => 'required|exists:students,id',
         ]);
 
-        $data = Student::create($validated);
+        try {
+            $rapor = Rapor::whereHas('grade', function ($query) use ($studentId) {
+                $query->where('student_id', $studentId);
+            })
+            ->where('semester_year_id', $semester_year_id)
+            ->firstOrFail();
 
-        if ($data) {
+            $validated['rapor_id'] = $rapor->id;
+
+            Extracurricular::create($validated);
+
             $notification['alert-type'] = 'success';
-            $notification['message'] = 'Data Ekstrakulikuler Berhasil Disimpan';
-            return redirect()->route('extracurricular.index')->with($notification);
-        } else {
+            $notification['message'] = 'Data Ekstrakurikuler Berhasil Disimpan';
+            return redirect()->route('rapors.index', ['studentId' => $studentId])->with($notification);
+
+        } catch (\Exception $e) {
             $notification['alert-type'] = 'error';
-            $notification['message'] = 'Data Ekstrakulikuler Gagal Disimpan';
-            return redirect()->route('extracurricular.create')->withInput()->with($notification);
+            $notification['message'] = 'Gagal menyimpan data Ekstrakurikuler: ' . $e->getMessage();
+            return redirect()->route('extracurriculars.create', ['studentId' => $studentId, 'semester_year_id' => $semester_year_id])->withInput()->with($notification);
         }
     }
 
-    public function edit(string $id)
+    public function edit($studentId, $extracurricularId)
     {
-        $data['extracurriculars'] = Extracurricular::find($id);
-        $data['students'] = Student::pluck('student_name', 'id');
+        $student = Student::findOrFail($studentId);
+        $extracurricular = Extracurricular::findOrFail($extracurricularId);
 
-        return view('extracurricular.edit', $data);
+        $semester_year_id = $extracurricular->rapor->grade->semester_year_id;
+
+        $rapors = Rapor::whereHas('grade', function ($query) use ($studentId, $semester_year_id) {
+            $query->where('student_id', $studentId)
+                  ->where('semester_year_id', $semester_year_id);
+        })->get();
+
+        return view('extracurricular.edit', [
+            'student' => $student,
+            'extracurricular' => $extracurricular,
+            'rapors' => $rapors,
+            'semester_year_id' => $semester_year_id,
+        ]);
     }
 
-    public function update(Request $request, string $id)
+    public function update(Request $request, $studentId, $extracurricularId)
     {
-        $extracurricular = Extracurricular::findOrFail($id);
         $validated = $request->validate([
             'activity' => 'required|max:200',
             'description' => 'nullable|max:255',
-            'student_id' => 'required|max:255',
         ]);
 
+        $extracurricular = Extracurricular::find($extracurricularId);
 
-        $data = $extracurricular->update($validated);
-
-        if ($data) {
-            $notification['alert-type'] = 'success';
-            $notification['message'] = 'Data Ekstrakulikuler Berhasil Diperbaharui';
-            return redirect()->route('extracurricular.index')->with($notification);
-        } else {
+        if (!$extracurricular) {
             $notification['alert-type'] = 'error';
-            $notification['message'] = 'Data Ekstrakulikuler Gagal Diperbaharui';
-            return redirect()->route('extracurricular.edit', $id)->withInput()->with($notification);
+            $notification['message'] = 'Ekstrakurikuler tidak ditemukan';
+            return redirect()->route('rapors.index', ['studentId' => $studentId])->with($notification);
         }
+
+        // Update field activity dan description
+        $extracurricular->activity = $validated['activity'];
+        $extracurricular->description = $validated['description'];
+        $extracurricular->save();
+
+        $notification['alert-type'] = 'success';
+        $notification['message'] = 'Data Ekstrakurikuler Berhasil Diperbaharui';
+        return redirect()->route('rapors.index', ['studentId' => $studentId])->with($notification);
     }
 
-    public function destroy(string $id)
+    public function destroy($extracurricularId)
     {
-        $extracurricular = Extracurricular::findOrFail($id);
+        $extracurricular = Extracurricular::findOrFail($extracurricularId);
+        $studentId = $extracurricular->rapor->grade->student_id;
 
-       $data = $extracurricular->delete();
-        if ($data) {
+        if ($extracurricular->delete()) {
             $notification['alert-type'] = 'success';
-            $notification['message'] = 'Data Ekstrakulikuler Berhasil Dihapus';
-            return redirect()->route('extracurricular.index')->with($notification);
+            $notification['message'] = 'Data Ekstrakurikuler Berhasil Dihapus';
         } else {
             $notification['alert-type'] = 'error';
-            $notification['message'] = 'Data Ekstrakulikuler Gagal Dihapus';
-            return redirect()->route('extracurricular.index')->withInput()->with($notification);
+            $notification['message'] = 'Data Ekstrakurikuler Gagal Dihapus';
         }
+
+        return redirect()->route('rapors.index', ['studentId' => $studentId])->with($notification);
     }
+
+
 }
+

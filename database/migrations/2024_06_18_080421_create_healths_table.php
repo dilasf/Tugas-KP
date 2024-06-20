@@ -11,14 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('achievements', function (Blueprint $table) {
+        Schema::create('healths', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->unsignedBigInteger('student_id');
-            $table->string('achievement_type', 200)->nullable();
-            $table->string('description', 255)->nullable()->default('No description');
+            $table->unsignedBigInteger('rapor_id');
+            $table->string('hearing', 150)->nullable();
+            $table->string('vision', 150)->nullable();
+            $table->string('tooth', 150)->nullable();
             $table->timestamps();
 
-            $table->foreign('student_id')->references('id')->on('students')->onDelete('cascade');
+            $table->foreign('rapor_id')->references('id')->on('rapors')->onDelete('cascade');
         });
     }
 
@@ -27,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('achievements');
+        Schema::dropIfExists('healths');
     }
 };

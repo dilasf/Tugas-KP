@@ -10,7 +10,7 @@ class Achievement extends Model
     use HasFactory;
 
     protected $fillable = [
-        'student_id',
+        'rapor_id',
         'achievement_type',
         'description',
     ];

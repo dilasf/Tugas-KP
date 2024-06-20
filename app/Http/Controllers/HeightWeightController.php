@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\HeightWeight;
+use App\Models\Rapor;
 use Illuminate\Http\Request;
 
 class HeightWeightController extends Controller
@@ -40,48 +41,38 @@ class HeightWeightController extends Controller
         }
     }
 
-    public function edit(string $id)
+    public function edit($id, Request $request)
     {
-        $data['heightWeight'] = HeightWeight::find($id);
+        $selectedSemesterYearId = $request->input('semester_year_id');
+        $rapor = Rapor::with(['grade.student', 'heightWeight'])->findOrFail($id);
+        $heightWeight = $rapor->heightWeight;
 
-        return view('height_weight.edit', $data);
+        // Mendapatkan student dari relasi
+        $student = $rapor->grade->student;
+
+        return view('heightWeight.edit', compact('rapor', 'heightWeight', 'selectedSemesterYearId', 'student'));
     }
 
-    public function update(Request $request, string $id)
+    public function update(Request $request, $id)
     {
-        $heightWeight = HeightWeight::findOrFail($id);
-        $validated = $request->validate([
-            'height' => 'nullable|integer|digits_between:1,3',
-            'weight' => 'nullable|integer|digits_between:1,3',
-            'head_size' => 'nullable|integer|digits_between:1,3',
+        $request->validate([
+            'height' => 'required|integer',
+            'weight' => 'required|integer',
+            'head_size' => 'required|integer',
         ]);
 
-        $data = $heightWeight->update($validated);
+        $rapor = Rapor::findOrFail($id);
 
-        if ($data) {
-            $notification['alert-type'] = 'success';
-            $notification['message'] = 'Data Tinggi dan Berat Badan Berhasil Diperbaharui';
-            return redirect()->route('student_data.index')->with($notification);
+        // Update atau buat baru untuk HeightWeight
+        if ($rapor->heightWeight) {
+            $rapor->heightWeight->update($request->only('height', 'weight', 'head_size'));
         } else {
-            $notification['alert-type'] = 'error';
-            $notification['message'] = 'Data Tinggi dan Berat Badan Gagal Diperbaharui';
-            return redirect()->route('student_data.edit', $id)->withInput()->with($notification);
+            $heightWeight = HeightWeight::create($request->only('height', 'weight', 'head_size'));
+            $rapor->height_weight_id = $heightWeight->id;
+            $rapor->save();
         }
-    }
 
-    public function destroy(string $id)
-    {
-        $heightWeight = HeightWeight::findOrFail($id);
-
-        $data = $heightWeight->delete();
-        if ($data) {
-            $notification['alert-type'] = 'success';
-            $notification['message'] = 'Data Tinggi dan Berat Badan Berhasil Disimpan';
-            return redirect()->route('student_data.index')->with($notification);
-        } else {
-            $notification['alert-type'] = 'error';
-            $notification['message'] = 'Data Tinggi dan Berat Badan Gagal Disimpan';
-            return redirect()->route('student_data.index')->with($notification);
-        }
+        return redirect()->route('height_weights.edit', ['id' => $rapor->id, 'semester_year_id' => $request->input('semester_year_id')])
+                         ->with('success', 'Height and weight updated successfully.');
     }
 }

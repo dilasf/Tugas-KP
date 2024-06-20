@@ -9,18 +9,16 @@ class Subject extends Model
 {
     use HasFactory;
 
-
-    public function classes()
-    {
-        return $this->belongsToMany(StudentClass::class, 'class_subjects', 'subject_id', 'class_id');
-    }
-
-
     protected $fillable = [
         'subject_name',
         'kkm',
     ];
 
+
+    public function classes()
+    {
+        return $this->belongsToMany(StudentClass::class, 'class_subjects', 'subject_id', 'class_id');
+    }
     // public static function getDataSubject()
     // {
     //     $subjects = Subject::all();
