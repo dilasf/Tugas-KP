@@ -76,6 +76,9 @@ class Rapor extends Model
     {
         return $this->belongsTo(SemesterYear::class);
     }
-
+    public function attendances()
+    {
+        return $this->hasMany(Attendance::class);
+    }
 
 }

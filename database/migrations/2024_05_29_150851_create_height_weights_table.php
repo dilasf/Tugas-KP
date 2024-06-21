@@ -17,7 +17,7 @@ return new class extends Migration
             $table->integer('weight')->nullable();
             $table->integer('head_size')->nullable();
             $table->timestamps();
-        });
+        });             
 
     }
 

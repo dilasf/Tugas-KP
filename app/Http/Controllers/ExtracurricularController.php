@@ -14,11 +14,10 @@ class ExtracurricularController extends Controller
     {
         $student = Student::findOrFail($studentId);
 
-        $rapors = Rapor::whereHas('grade', function ($query) use ($studentId) {
-            $query->where('student_id', $studentId);
-        })
-        ->where('semester_year_id', $semester_year_id)
-        ->get();
+        $rapors = Rapor::whereHas('grade', function ($query) use ($studentId, $semester_year_id) {
+            $query->where('student_id', $studentId)
+                ->where('semester_year_id', $semester_year_id);
+        })->get();
 
         return view('extracurricular.create', [
             'student' => $student,
@@ -35,12 +34,11 @@ class ExtracurricularController extends Controller
                 'max:200',
                 Rule::unique('extracurriculars')->where(function ($query) use ($studentId, $semester_year_id) {
                     $query->whereIn('rapor_id', function ($query) use ($studentId, $semester_year_id) {
-                        $query->select('id')
+                        $query->select('rapors.id')
                             ->from('rapors')
-                            ->whereHas('grade', function ($query) use ($studentId) {
-                                $query->where('student_id', $studentId);
-                            })
-                            ->where('semester_year_id', $semester_year_id);
+                            ->join('grades', 'grades.id', '=', 'rapors.grade_id')
+                            ->where('grades.student_id', $studentId)
+                            ->where('grades.semester_year_id', $semester_year_id);
                     });
                 }),
             ],
@@ -48,11 +46,11 @@ class ExtracurricularController extends Controller
         ]);
 
         try {
-            $rapor = Rapor::whereHas('grade', function ($query) use ($studentId) {
-                $query->where('student_id', $studentId);
-            })
-            ->where('semester_year_id', $semester_year_id)
-            ->firstOrFail();
+            $rapor = Rapor::whereHas('grade', function ($query) use ($studentId, $semester_year_id) {
+                        $query->where('student_id', $studentId)
+                            ->where('semester_year_id', $semester_year_id);
+                    })
+                    ->firstOrFail();
 
             $validated['rapor_id'] = $rapor->id;
 

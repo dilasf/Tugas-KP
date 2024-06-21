@@ -17,9 +17,7 @@
         <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
             <form method="POST" action="{{ $action }}">
                 @csrf
-                @if ($action === route('healths.update', ['studentId' => $student->id, 'healthId' => $health->id, 'aspectName' => $aspectName]))
-                    @method('PATCH')
-                @endif
+                @method(isset($health) ? 'PATCH' : 'POST')
 
                 @if ($aspectName == 'Pendengaran')
                     <div class="max-w-3xl">

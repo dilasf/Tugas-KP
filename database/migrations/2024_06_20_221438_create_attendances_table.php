@@ -16,14 +16,16 @@ return new class extends Migration
             $table->unsignedBigInteger('student_id');
             $table->unsignedBigInteger('class_subject_id');
             $table->unsignedBigInteger('semester_year_id');
-            $table->integer('sick')->default(0);
-            $table->integer('permission')->default(0);
-            $table->integer('unexcused')->default(0);
+            $table->unsignedBigInteger('rapor_id')->nullable();
+            $table->integer('sick')->nullable()->default(0);
+            $table->integer('permission')->nullable()->default(0);
+            $table->integer('unexcused')->nullable()->default(0);
             $table->timestamps();
 
             $table->foreign('student_id')->references('id')->on('students')->onDelete('cascade');
             $table->foreign('class_subject_id')->references('id')->on('class_subjects')->onDelete('cascade');
             $table->foreign('semester_year_id')->references('id')->on('semester_years');
+            $table->foreign('rapor_id')->references('id')->on('rapors')->onDelete('cascade'); // Define rapor_id as foreign key
         });
     }
 

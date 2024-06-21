@@ -42,25 +42,26 @@ class HealthController extends Controller
     }
 
     public function edit($studentId, $healthId, $aspectName)
-    {
-        try {
-            $student = Student::findOrFail($studentId);
-            $health = Health::findOrFail($healthId);
-            $semester_year_id = $health->rapor->grade->semester_year_id;
+{
+    try {
+        $student = Student::findOrFail($studentId);
+        $health = Health::findOrFail($healthId);
+        $semester_year_id = $health->rapor->grade->semester_year_id;
 
-            $action = route('healths.update', ['studentId' => $studentId, 'healthId' => $healthId, 'aspectName' => $aspectName]); // default action is update
+        $action = route('healths.update', ['studentId' => $studentId, 'healthId' => $healthId, 'aspectName' => $aspectName]); // default action is update
 
-            return view('health.edit', [
-                'student' => $student,
-                'health' => $health,
-                'semester_year_id' => $semester_year_id,
-                'aspectName' => $aspectName,
-                'action' => $action, // pass action untuk update
-            ]);
-        } catch (ModelNotFoundException $e) {
-            abort(404, 'Student or Health data not found.');
-        }
+        return view('health.edit', [
+            'student' => $student,
+            'health' => $health, // Ensure $health is passed to the view
+            'semester_year_id' => $semester_year_id,
+            'aspectName' => $aspectName,
+            'action' => $action,
+        ]);
+    } catch (ModelNotFoundException $e) {
+        abort(404, 'Student or Health data not found.');
     }
+}
+
 
     public function storeOrUpdate(Request $request, $studentId, $semester_year_id, $aspectName)
     {

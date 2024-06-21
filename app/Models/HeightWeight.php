@@ -19,4 +19,9 @@ class HeightWeight extends Model
     {
         return $this->hasOne(Student::class, 'height_weight_id');
     }
+
+    public function rapor()
+    {
+        return $this->hasOne(Rapor::class, 'height_weight_id');
+    }
 }

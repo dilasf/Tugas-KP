@@ -13,57 +13,79 @@ use Illuminate\Http\Request;
 class RaporController extends Controller
 {
     public function index(Request $request, $studentId)
-    {
-        $selectedSemesterYearId = $request->input('semester_year_id', null);
-        $semesters = SemesterYear::all();
-        $sidebarOpen = false;
+{
+    $selectedSemesterYearId = $request->input('semester_year_id', null);
+    $semesters = SemesterYear::all();
+    $sidebarOpen = false;
 
-        $currentMonth = now()->month;
-        $defaultSemester = $semesters->firstWhere('semester', ($currentMonth >= 1 && $currentMonth <= 6) ? 1 : 2);
+    $currentMonth = now()->month;
+    $defaultSemester = $semesters->firstWhere('semester', ($currentMonth >= 1 && $currentMonth <= 6) ? 1 : 2);
 
-        if (!$selectedSemesterYearId) {
-            $selectedSemesterYearId = $defaultSemester->id;
-        }
-
-        $student = Student::with('heightWeight')->findOrFail($studentId);
-
-        // Check if heightWeight is loaded and contains the necessary data
-        if ($student->heightWeight) {
-            $heightWeight = $student->heightWeight;
-        } else {
-            $heightWeight = null;
-        }
-
-        // Ambil data grades hanya untuk semester_year_id yang dipilih
-        $grades = Grade::where('student_id', $studentId)
-            ->where('semester_year_id', $selectedSemesterYearId)
-            ->get();
-
-        // Lakukan perhitungan grade dan simpan ke dalam setiap objek grade
-        $grades->each(function($grade) {
-            $gradeKnowledge = $this->calculateGrade($grade->average_knowledge_score);
-            $gradeAttitude = $this->calculateGrade($grade->average_attitude_score);
-            $gradeSkill = $this->calculateGrade($grade->average_skill_score);
-
-            $grade->gradeKnowledge = $gradeKnowledge;
-            $grade->descriptionKnowledge;
-            $grade->gradeAttitude = $gradeAttitude;
-            $grade->descriptionAttitude;
-            $grade->gradeSkill = $gradeSkill;
-            $grade->descriptionSkill;
-            $grade->save();
-        });
-
-        // Ambil rapors hanya untuk grade_id yang terkait dengan grades yang telah diproses
-        $rapors = Rapor::whereIn('grade_id', $grades->pluck('id'))
-            ->with('extracurricular', 'achievement', 'health')
-            ->get();
-
-        return view('rapors.index',
-        compact('student', 'rapors',
-        'semesters', 'selectedSemesterYearId',
-        'heightWeight', 'sidebarOpen'));
+    if (!$selectedSemesterYearId) {
+        $selectedSemesterYearId = $defaultSemester->id;
     }
+
+    $student = Student::with('heightWeight')->findOrFail($studentId);
+
+    // Ambil data grades hanya untuk semester_year_id yang dipilih
+    $grades = Grade::where('student_id', $studentId)
+        ->where('semester_year_id', $selectedSemesterYearId)
+        ->get();
+
+    // Lakukan perhitungan grade dan simpan ke dalam setiap objek grade
+    $grades->each(function($grade) {
+        $gradeKnowledge = $this->calculateGrade($grade->average_knowledge_score);
+        $gradeAttitude = $this->calculateGrade($grade->average_attitude_score);
+        $gradeSkill = $this->calculateGrade($grade->average_skill_score);
+
+        $grade->gradeKnowledge = $gradeKnowledge;
+        $grade->descriptionKnowledge;
+        $grade->gradeAttitude = $gradeAttitude;
+        $grade->descriptionAttitude;
+        $grade->gradeSkill = $gradeSkill;
+        $grade->descriptionSkill;
+        $grade->save();
+    });
+
+    // Ambil rapors hanya untuk grade_id yang terkait dengan grades yang telah diproses
+    $rapors = Rapor::whereIn('grade_id', $grades->pluck('id'))
+        ->with('extracurricular', 'achievement', 'health', 'attendances')
+        ->get();
+
+    $uniqueSickDates = [];
+    $uniquePermissionDates = [];
+    $uniqueUnexcusedDates = [];
+
+    foreach ($rapors as $rapor) {
+        foreach ($rapor->attendances as $attendance) {
+            if ($attendance->sick > 0 && !in_array($attendance->date, $uniqueSickDates)) {
+                $uniqueSickDates[] = $attendance->date;
+            }
+            if ($attendance->permission > 0 && !in_array($attendance->date, $uniquePermissionDates)) {
+                $uniquePermissionDates[] = $attendance->date;
+            }
+            if ($attendance->unexcused > 0 && !in_array($attendance->date, $uniqueUnexcusedDates)) {
+                $uniqueUnexcusedDates[] = $attendance->date;
+            }
+        }
+    }
+
+    // menghitung beradasarkan hari
+    $totalSick = count($uniqueSickDates);
+    $totalPermission = count($uniquePermissionDates);
+    $totalUnexcused = count($uniqueUnexcusedDates);
+
+    return view('rapors.index', [
+        'student' => $student,
+        'rapors' => $rapors,
+        'semesters' => $semesters,
+        'selectedSemesterYearId' => $selectedSemesterYearId,
+        'sidebarOpen' => $sidebarOpen,
+        'totalSick' => $totalSick,
+        'totalPermission' => $totalPermission,
+        'totalUnexcused' => $totalUnexcused,
+    ]);
+}
 
 
     //saran

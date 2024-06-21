@@ -5,42 +5,43 @@
                 <img src="{{ asset('img/back_logo.png') }}" class="w-[30px] h-[30px] mr-3 cursor-pointer">
             </a>
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                Edit Data Tinggi dan Berat Badan
+                {{ isset($heightWeight) ? 'Edit' : 'Tambah' }} Data {{ $aspectName }}
             </h2>
         </div>
     </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 bg-white border-b border-gray-200">
-                    <form method="POST" action="{{ route('height_weights.update', ['id' => $rapor->id, 'semester_year_id' => $selectedSemesterYearId]) }}">
-                        @csrf
-                        @method('PATCH')
+    <div class="max-w-4xl mx-auto sm:px-6 lg:px-8 py-10">
+        <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
+            <form method="POST" action="{{ route('height_weights.update', ['studentId' => $studentId, 'heightWeightId' => $heightWeight->id, 'aspectName' => $aspectName]) }}">
+                @csrf
+                @method('PATCH')
 
-                        <div class="mb-4">
-                            <label for="height" class="block font-medium text-sm text-gray-700">Height (cm)</label>
-                            <input type="text" id="height" name="height" value="{{ $heightWeight->height ?? '' }}" class="form-input rounded-md shadow-sm mt-1 block w-full" required>
-                        </div>
+                @if ($aspectName == 'Tinggi Badan')
+                    <div class="max-w-3xl">
+                        <x-input-label for="height" value="Tinggi Badan (cm)" />
+                        <x-text-input id="height" type="number" name="height" class="mt-1 block w-full bg-zinc-100" value="{{ $heightWeight->height ?? old('height') }}" required />
+                        <x-input-error class="mt-2" :messages="$errors->get('height')" />
+                    </div>
+                @elseif ($aspectName == 'Berat Badan')
+                    <div class="max-w-3xl">
+                        <x-input-label for="weight" value="Berat Badan (kg)" />
+                        <x-text-input id="weight" type="number" name="weight" class="mt-1 block w-full bg-zinc-100" value="{{ $heightWeight->weight ?? old('weight') }}" required />
+                        <x-input-error class="mt-2" :messages="$errors->get('weight')" />
+                    </div>
+                @elseif ($aspectName == 'Ukuran Kepala')
+                    <div class="max-w-3xl">
+                        <x-input-label for="head_size" value="Ukuran Kepala (cm)" />
+                        <x-text-input id="head_size" type="number" name="head_size" class="mt-1 block w-full bg-zinc-100" value="{{ $heightWeight->head_size ?? old('head_size') }}" required />
+                        <x-input-error class="mt-2" :messages="$errors->get('head_size')" />
+                    </div>
+                @endif
 
-                        <div class="mb-4">
-                            <label for="weight" class="block font-medium text-sm text-gray-700">Weight (kg)</label>
-                            <input type="text" id="weight" name="weight" value="{{ $heightWeight->weight ?? '' }}" class="form-input rounded-md shadow-sm mt-1 block w-full" required>
-                        </div>
-
-                        <div class="mb-4">
-                            <label for="head_size" class="block font-medium text-sm text-gray-700">Head Size (cm)</label>
-                            <input type="text" id="head_size" name="head_size" value="{{ $heightWeight->head_size ?? '' }}" class="form-input rounded-md shadow-sm mt-1 block w-full" required>
-                        </div>
-
-                        <div class="flex items-center justify-end mt-4">
-                            <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                                Update Height and Weight
-                            </button>
-                        </div>
-                    </form>
+                <div class="flex justify-end space-x-4 mt-4 w-full">
+                    <x-primary-button type="submit">
+                        <span>{{ __('Simpan') }}</span>
+                    </x-primary-button>
                 </div>
-            </div>
+            </form>
         </div>
     </div>
 </x-app-layout>

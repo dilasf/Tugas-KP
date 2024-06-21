@@ -10,9 +10,12 @@ class Attendance extends Model
         'student_id',
         'class_subject_id',
         'semester_year_id',
+        'rapor_id',
+        'date',
         'sick',
         'permission',
         'unexcused',
+
     ];
 
     public function student()

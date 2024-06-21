@@ -91,7 +91,7 @@
                                 $attendances = [
                                     'sick' => 'Sakit',
                                     'permission' => 'Ijin',
-                                    'unexcused' => 'Apha'
+                                    'unexcused' => 'Alpha'
                                 ];
                                 $num = 1;
                                 $attendance = $attendance ?? (object)['sick' => 0, 'permission' => 0, 'unexcused' => 0];
@@ -102,20 +102,11 @@
                                     <td>{{ $label }}</td>
                                     <td class="text-center" id="{{ $type }}-count">{{ $attendance->$type }}</td>
                                     <td class="flex flex-col items-center gap-2 text-center">
-                                        <div class="flex flex-row gap-2" style="display: flex; flex-direction: row; justify-content: center; align-items: center;">
-                                            <form class="update-attendance-form" method="POST" action="{{ route('attendance.update', ['studentId' => $student->id, 'classSubjectId' => $classSubject->id, 'semesterYearId' => $selectedSemesterYearId, 'type' => $type, 'action' => 'increment']) }}" style="margin: 0 5px;">
-                                                @csrf
-                                                @method('PATCH')
-                                                <button type="submit" class="bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-3 rounded increment-btn" data-type="{{ $type }}" data-action="increment">+</button>
-                                            </form>
-                                            <form class="update-attendance-form" method="POST" action="{{ route('attendance.update', ['studentId' => $student->id, 'classSubjectId' => $classSubject->id, 'semesterYearId' => $selectedSemesterYearId, 'type' => $type, 'action' => 'decrement']) }}" style="margin: 0 5px;">
-                                                @csrf
-                                                @method('PATCH')
-                                                <button type="submit" class="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-3 rounded decrement-btn" data-type="{{ $type }}" data-action="decrement">-</button>
-                                            </form>
+                                        <div class="flex flex-row gap-2 justify-center items-center">
+                                            <button type="button" class="bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-3 rounded update-attendance-btn" data-type="{{ $type }}" data-action="increment">+</button>
+                                            <button type="button" class="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-3 rounded update-attendance-btn" data-type="{{ $type }}" data-action="decrement">-</button>
                                         </div>
                                     </td>
-
                                 </tr>
                             @endforeach
                         </x-table>
@@ -128,34 +119,46 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            document.querySelectorAll('.update-attendance-form').forEach(function(form) {
-                form.addEventListener('submit', function(event) {
-                    event.preventDefault();
-
-                    var formData = new FormData(form);
-                    var type = form.querySelector('button').getAttribute('data-type');
-                    var action = form.querySelector('button').getAttribute('data-action');
+            document.querySelectorAll('.update-attendance-btn').forEach(function(button) {
+                button.addEventListener('click', function() {
+                    var type = this.getAttribute('data-type');
+                    var action = this.getAttribute('data-action');
                     var countElement = document.getElementById(type + '-count');
 
-                    fetch(form.action, {
+                    var formData = new FormData();
+                    formData.append('_token', '{{ csrf_token() }}');
+                    formData.append('_method', 'PATCH');
+
+                    var url = `{{ route('attendance.update', ['studentId' => $student->id, 'classSubjectId' => $classSubject->id, 'semesterYearId' => $selectedSemesterYearId, 'type' => 'typePlaceholder', 'action' => 'actionPlaceholder']) }}`;
+                    url = url.replace('typePlaceholder', type).replace('actionPlaceholder', action);
+
+                    console.log('Sending request to:', url);
+
+                    fetch(url, {
                         method: 'POST',
                         headers: {
-                            'X-CSRF-TOKEN': formData.get('_token'),
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
                             'X-Requested-With': 'XMLHttpRequest',
                             'Accept': 'application/json'
                         },
                         body: formData
                     })
-                    .then(response => response.json())
+                    .then(response => {
+                        console.log('Response status:', response.status);
+                        return response.json();
+                    })
                     .then(data => {
                         if (data.success) {
+                            console.log('Updated count:', data.new_value);
                             countElement.innerText = data.new_value;
                         } else {
                             console.error('Failed to update attendance.');
+                            alert('Failed to update attendance.');
                         }
                     })
                     .catch(error => {
-                        console.error('Error:', error);
+                        console.error('Error:', error); // Debug log
+                        alert('An error occurred. See console for details.');
                     });
                 });
             });

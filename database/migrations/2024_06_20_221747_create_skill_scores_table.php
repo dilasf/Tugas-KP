@@ -14,9 +14,7 @@ return new class extends Migration
         Schema::create('skill_scores', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->unsignedBigInteger('grade_id')->nullable();
-            // $table->unsignedBigInteger('student_id')->nullable();
-            // $table->unsignedBigInteger('class_subject_id')->nullable();
-            // $table->unsignedBigInteger('semester_year_id')->nullable();
+
             $table->string('assessment_type', 100);
             $table->unsignedBigInteger('attendance_id')->nullable();
             $table->integer('score')->nullable()->default(0);
