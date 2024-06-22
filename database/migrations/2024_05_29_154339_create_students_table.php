@@ -28,7 +28,7 @@ return new class extends Migration
             $table->string('address', 255);
             $table->boolean('special_needs')->default(false);
             $table->string('previous_school', 255)->nullable();
-            $table->unsignedBigInteger('height_weight_id');
+            // $table->unsignedBigInteger('height_weight_id');
             $table->string('birth_certificate_number', 60)->unique();
             $table->string('residence_type', 25);
             $table->unsignedBigInteger('guardian_id');
@@ -41,7 +41,7 @@ return new class extends Migration
 
             // Foreign keys
             $table->foreign('class_id')->references('id')->on('classes');
-            $table->foreign('height_weight_id')->references('id')->on('height_weights')->onDelete('cascade');
+            // $table->foreign('height_weight_id')->references('id')->on('height_weights')->onDelete('cascade');
             $table->foreign('guardian_id')->references('id')->on('guardians')->onDelete('cascade');
         });
     }

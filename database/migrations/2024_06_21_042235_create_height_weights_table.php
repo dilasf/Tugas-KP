@@ -13,12 +13,18 @@ return new class extends Migration
     {
         Schema::create('height_weights', function (Blueprint $table) {
             $table->bigIncrements('id');
+            $table->unsignedBigInteger('student_id');
+            $table->unsignedBigInteger('semester_year_id')->nullable();
+            $table->unsignedBigInteger('rapor_id')->nullable();
             $table->integer('height')->nullable();
             $table->integer('weight')->nullable();
             $table->integer('head_size')->nullable();
             $table->timestamps();
-        });             
 
+            $table->foreign('student_id')->references('id')->on('students')->onDelete('cascade');
+            $table->foreign('semester_year_id')->references('id')->on('semester_years');
+            $table->foreign('rapor_id')->references('id')->on('rapors');
+        });
     }
 
     /**
@@ -26,6 +32,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('height_weight');
+        Schema::dropIfExists('height_weights');
     }
 };

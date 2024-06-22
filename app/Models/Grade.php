@@ -83,9 +83,13 @@ class Grade extends Model
         return $this->hasMany(SkillScore::class);
     }
 
+    // public function rapor()
+    // {
+    //     return $this->hasMany(Rapor::class);
+    // }
+
     public function rapor()
     {
-        return $this->hasMany(Rapor::class);
+        return $this->hasOne(Rapor::class, 'grade_id');
     }
-
 }

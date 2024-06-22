@@ -22,7 +22,7 @@
 
                     <div class="max-w-3xl">
                         <x-input-label for="activity" value="Kegiatan Ekstrakurikuler" />
-                        <x-text-input id="activity" type="text" name="activity" class="mt-1 block w-full bg-zinc-100" value="{{ $extracurricular->activity ?? old('activity') }}" required />
+                        <x-text-input id="activity" type="text" name="activity" class="mt-1 block w-full bg-zinc-100" value="{{ $extracurricular->activity ?? old('activity')  }}" required />
                         <x-input-error class="mt-2" :messages="$errors->get('activity')" />
                     </div>
 

@@ -138,21 +138,22 @@
                         <!-- Form edit untuk data tinggi dan berat badan -->
                         <div class="max-w-3xl mb-4">
                             <x-input-label for="height" value="Tinggi Badan (cm)" />
-                            <x-text-input id="height" type="number" name="height" class="mt-1 block w-full bg-zinc-100" value="{{ old('height', $student->heightWeight->height) }}" required />
+                            <x-text-input id="height" type="number" name="height" class="mt-1 block w-full bg-zinc-100" value="{{ old('height', optional($student->latestHeightWeight)->height) }}" required />
                             <x-input-error class="mt-2" :messages="$errors->get('height')" />
                         </div>
 
                         <div class="max-w-3xl mb-4">
                             <x-input-label for="weight" value="Berat Badan (kg)" />
-                            <x-text-input id="weight" type="number" name="weight" class="mt-1 block w-full bg-zinc-100" value="{{ old('weight', $student->heightWeight->weight) }}" required />
+                            <x-text-input id="weight" type="number" name="weight" class="mt-1 block w-full bg-zinc-100" value="{{ old('weight', optional($student->latestHeightWeight)->weight) }}" required />
                             <x-input-error class="mt-2" :messages="$errors->get('weight')" />
                         </div>
 
                         <div class="max-w-3xl mb-4">
                             <x-input-label for="head_size" value="Ukuran Kepala (cm)" />
-                            <x-text-input id="head_size" type="number" name="head_size" class="mt-1 block w-full bg-zinc-100" value="{{ old('head_size', $student->heightWeight->head_size) }}" required />
+                            <x-text-input id="head_size" type="number" name="head_size" class="mt-1 block w-full bg-zinc-100" value="{{ old('head_size', optional($student->latestHeightWeight)->head_size) }}" required />
                             <x-input-error class="mt-2" :messages="$errors->get('head_size')" />
                         </div>
+
                         <!-- End Form edituntuk data tinggi dan berat badan -->
 
                         <!-- Lanjut Form update untuk data siswa -->

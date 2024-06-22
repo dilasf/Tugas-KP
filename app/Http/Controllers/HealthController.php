@@ -12,7 +12,7 @@ class HealthController extends Controller
 {
     public function create($studentId, $semester_year_id, $aspectName)
     {
-        try {
+
             $student = Student::findOrFail($studentId);
 
             // Ambil rapor yang sesuai dengan studentId dan semester_year_id
@@ -21,11 +21,6 @@ class HealthController extends Controller
                       ->where('semester_year_id', $semester_year_id);
             })->get();
 
-            // Jika tidak ada rapor yang ditemukan, lemparkan 404
-            if ($rapors->isEmpty()) {
-                abort(404, 'Rapor not found for this student in the specified semester year.');
-            }
-
             // Set action untuk form
             $action = route('healths.store', ['studentId' => $studentId, 'semester_year_id' => $semester_year_id, 'aspectName' => $aspectName]);
 
@@ -33,34 +28,28 @@ class HealthController extends Controller
                 'student' => $student,
                 'aspectName' => $aspectName,
                 'semester_year_id' => $semester_year_id,
-                'action' => $action, // set action untuk create
+                'action' => $action,
             ]);
 
-        } catch (ModelNotFoundException $e) {
-            abort(404, 'Student not found.');
-        }
+
     }
 
     public function edit($studentId, $healthId, $aspectName)
-{
-    try {
-        $student = Student::findOrFail($studentId);
-        $health = Health::findOrFail($healthId);
-        $semester_year_id = $health->rapor->grade->semester_year_id;
+    {
+            $student = Student::findOrFail($studentId);
+            $health = Health::findOrFail($healthId);
+            $semester_year_id = $health->rapor->grade->semester_year_id;
 
-        $action = route('healths.update', ['studentId' => $studentId, 'healthId' => $healthId, 'aspectName' => $aspectName]); // default action is update
+            $action = route('healths.update', ['studentId' => $studentId, 'healthId' => $healthId, 'aspectName' => $aspectName]); // default action is update
 
-        return view('health.edit', [
-            'student' => $student,
-            'health' => $health, // Ensure $health is passed to the view
-            'semester_year_id' => $semester_year_id,
-            'aspectName' => $aspectName,
-            'action' => $action,
-        ]);
-    } catch (ModelNotFoundException $e) {
-        abort(404, 'Student or Health data not found.');
+            return view('health.edit', [
+                'student' => $student,
+                'health' => $health,
+                'semester_year_id' => $semester_year_id,
+                'aspectName' => $aspectName,
+                'action' => $action,
+            ]);
     }
-}
 
 
     public function storeOrUpdate(Request $request, $studentId, $semester_year_id, $aspectName)
@@ -99,14 +88,11 @@ class HealthController extends Controller
                     $health->tooth = $validated['tooth'];
                     break;
                 default:
-                    // Handle default case if any
                     break;
             }
 
-            // Simpan data kesehatan
             $health->save();
 
-            // Redirect dengan pesan sukses
             $notification['alert-type'] = 'success';
             $notification['message'] = 'Data Kesehatan Berhasil Disimpan';
 

@@ -25,7 +25,7 @@ class Student extends Model
         'birth_certificate_number',
         'residence_type',
         'guardian_id',
-        'height_weight_id',
+        // 'height_weight_id',
         'no_kk',
         'child_number',
         'number_of_siblings',
@@ -40,10 +40,41 @@ class Student extends Model
         return $this->belongsTo(Guardian::class, 'guardian_id');
     }
 
-    public function heightWeight()
+    public function heightWeights()
     {
-        return $this->belongsTo(HeightWeight::class, 'height_weight_id');
+        return $this->hasMany(HeightWeight::class);
     }
+
+    public function latestHeightWeight()
+    {
+        return $this->hasOne(HeightWeight::class)->latestOfMany();
+    }
+     // Mencari Method terbaru tak null bagian tinggi
+     public function latestNonNullHeight()
+     {
+         return $this->hasMany(HeightWeight::class)
+                     ->whereNotNull('height')
+                     ->latest()
+                     ->first();
+     }
+
+     // Mencari Method terbaru tak null bagian berat
+     public function latestNonNullWeight()
+     {
+         return $this->hasMany(HeightWeight::class)
+                     ->whereNotNull('weight')
+                     ->latest()
+                     ->first();
+     }
+
+     // Mencari Method terbaru tak null bagian kepala
+     public function latestNonNullHeadSize()
+     {
+         return $this->hasMany(HeightWeight::class)
+                     ->whereNotNull('head_size')
+                     ->latest()
+                     ->first();
+     }
 
     public function class()
     {

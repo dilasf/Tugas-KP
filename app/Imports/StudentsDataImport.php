@@ -14,7 +14,6 @@ class StudentsDataImport implements ToModel, WithHeadingRow
 {
     private function transformDate($value, $format = 'Y-m-d')
     {
-
         try {
             if (preg_match('/^\d{2}\/\d{2}\/\d{4}$/', $value)) {
                 return Carbon::createFromFormat('d/m/Y', $value)->format($format);
@@ -30,16 +29,9 @@ class StudentsDataImport implements ToModel, WithHeadingRow
 
     public function model(array $row)
     {
-        // Pastikan nis tidak kosong
+        // Ensure 'nis' is not empty
         if (!empty($row['nis'])) {
-            $heightWeight = new HeightWeight([
-                'height' => $row['tinggi'] ?? null,
-                'weight' => $row['berat'] ?? null,
-                'head_size' => $row['ukuran_kepala'] ?? null,
-            ]);
-            $heightWeight->save();
-
-            // Impor data wali (guardian)
+            // Import guardian data
             $guardianData = [
                 'father_name' => $row['nama_ayah'] ?? null,
                 'mother_name' => $row['nama_ibu'] ?? null,
@@ -65,17 +57,17 @@ class StudentsDataImport implements ToModel, WithHeadingRow
                 'guardian_email' => $row['email_wali'] ?? null,
             ];
 
-            // Jika semua nilai null, set guardian_id ke null di student
+            // Create guardian if data is not null
+            $guardianId = null;
             if (array_filter($guardianData)) {
                 $guardian = new Guardian($guardianData);
                 $guardian->save();
                 $guardianId = $guardian->id;
-            } else {
-                $guardianId = null;
             }
 
             $specialNeedsValue = $row['kebutuhan_khusus'] === 'Tidak' ? 0 : 1;
-            // Impor data siswa dan set height_weight_id serta guardian_id
+
+            // Create student record
             $student = new Student([
                 'nis' => $row['nis'],
                 'nisn' => $row['nisn'],
@@ -97,10 +89,18 @@ class StudentsDataImport implements ToModel, WithHeadingRow
                 'number_of_siblings' => $row['jml_saudara'],
                 'transportation' => $row['transportasi'],
                 'distance_to_school' => $row['jarak_sekolah'],
-                'height_weight_id' => $heightWeight->id,
                 'guardian_id' => $guardianId,
             ]);
             $student->save();
+
+            // Create heightWeight record with the student_id
+            $heightWeight = new HeightWeight([
+                'student_id' => $student->id,
+                'height' => $row['tinggi'] ?? null,
+                'weight' => $row['berat'] ?? null,
+                'head_size' => $row['ukuran_kepala'] ?? null,
+            ]);
+            $heightWeight->save();
 
             return $student;
         }

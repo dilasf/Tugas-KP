@@ -7,7 +7,6 @@
 
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg p-6">
-                @if($rapors->count() > 0)
                 @php
                 $numberWords = [
                     1 => 'Satu',
@@ -72,9 +71,69 @@
                 </div>
                 {{-- END Data Diri --}}
 
+                {{-- Kompetensi Sikap --}}
+                <div class="flex justify-between items-center">
+                    <p class="font-semibold text-md">A. Kompetensi Sikap</p>
+                </div>
+                <div class="text-black max-h-[calc(100vh-200px)] overflow-y-auto">
+                    <x-table header="Header Content" :sidebarOpen="$sidebarOpen" class="overflow-x-auto mx-auto">
+                        <x-slot name="header">
+                            <tr>
+                                <th colspan="4">Deskripsi</th>
+                            </tr>
+                        </x-slot>
+                        @php $num = 1; @endphp
+                        {{-- Sikap Spiritual --}}
+                        <tr>
+                            <td class="text-center">{{ $num++ }}</td>
+                            <td class="font-semibold">Sikap Spiritual</td>
+                            <td>
+                                @if ($rapors->isNotEmpty() && $rapors->first()->spiritual_attitude !== null)
+                                    {{ $rapors->first()->spiritual_attitude }}
+                                @else
+                                    <span class="text-gray-400">Data tidak tersedia</span>
+                                @endif
+
+                            </td>
+                            <td class="text-center">
+                                @if ($rapors->isNotEmpty() && $rapors->first()->spiritual_attitude !== null)
+                                    <x-edit-primary-button tag="a" href="{{ route('rapors.editAspect', ['studentId' => $student->id, 'raporId' => $rapors->first()->id, 'aspectName' => 'Sikap Spiritual']) }}" class="flex items-center justify-center min-w-[60px]">
+                                        <img src="{{ asset('img/edit-brush_logo.png') }}" class="w-[13px] h-[13px]">
+                                        <span x-show="!$sidebarOpen" class="ml-1 text-[10px]">{{ __('Edit') }}</span>
+                                    </x-edit-primary-button>
+                                @endif
+                            </td>
+                        </tr>
+
+                        {{-- Sikap Sosial --}}
+                        <tr>
+                            <td class="text-center">{{ $num++ }}</td>
+                            <td class="font-semibold">Sikap Sosial</td>
+                            <td>
+                                @if ($rapors->isNotEmpty() && $rapors->first()->social_attitudes !== null)
+                                    {{ $rapors->first()->social_attitudes }}
+                                @else
+                                    <span class="text-gray-400">Data tidak tersedia</span>
+                                @endif
+                            </td>
+                            <td class="text-center">
+                                @if ($rapors->isNotEmpty() && $rapors->first()->social_attitudes !== null)
+                                    <x-edit-primary-button tag="a" href="{{ route('rapors.editAspect', ['studentId' => $student->id, 'raporId' => $rapors->first()->id, 'aspectName' => 'Sikap Sosial']) }}" class="flex items-center justify-center min-w-[60px]">
+                                        <img src="{{ asset('img/edit-brush_logo.png') }}" class="w-[13px] h-[13px]">
+                                        <span x-show="!$sidebarOpen" class="ml-1 text-[10px]">{{ __('Edit') }}</span>
+                                    </x-edit-primary-button>
+                                @endif
+                            </td>
+                        </tr>
+
+                    </x-table>
+                </div>
+                {{-- End Kompetensi Sikap --}}
+
+
                 {{-- Tabel Nilai --}}
+                <div class="mt-8">
                 <p class="font-semibold text-md">B. Kompetensi Pengetahuan dan Keterampilan</p>
-                    <!-- Tabel Nilai Mata Pelajaran -->
                     <div class="text-black max-h-[calc(100vh-200px)] overflow-y-auto">
                         <x-table header="Header Content" :sidebarOpen="$sidebarOpen" class="overflow-x-auto mx-auto">
                             <x-slot name="header">
@@ -126,11 +185,13 @@
                                             <img src="{{ asset('img/edit-brush_logo.png') }}" class="w-[13px] h-[13px]">
                                             <span x-show="!sidebarOpen" class="ml-1 text-[10px]">{{ __('Edit') }}</span>
                                         </x-edit-primary-button>
+
                                     </td>
                                 </tr>
                             @endforeach
                         </x-table>
                     </div>
+                </div>
                     {{-- End Tabel Nilai --}}
 
                     {{-- Ekstrakurikuler --}}
@@ -201,7 +262,7 @@
                   <div class="mt-8">
                     <div class="flex justify-between items-center mb-4">
                         <p class="font-semibold text-md">D. Saran</p>
-                        <x-primary-button tag="a" href="{{ route('rapors.editSuggestion', ['studentId' => $student->id]) }}">
+                        <x-primary-button tag="a" href="{{ route('rapors.editSuggestion', ['studentId' => $student->id, 'semesterYearId' => $selectedSemesterYearId]) }}">
                             <span>{{ __('Masukkan Saran') }}</span>
                         </x-primary-button>
                     </div>
@@ -213,226 +274,332 @@
                   </div>
                   {{-- End Saran --}}
 
-{{-- Tabel Tinggi Berat Badan --}}
-<div class="mt-8">
-    <p class="font-semibold text-md">E. Data Tinggi Berat Badan</p>
-    <div class="text-black max-h-[calc(100vh-200px)] overflow-y-auto">
-        <x-table header="Header Content" :sidebarOpen="$sidebarOpen" class="overflow-x-auto mx-auto">
-            <x-slot name="header">
-                <tr>
-                    <th>No</th>
-                    <th>Aspek yang dinilai</th>
-                    <th>Jumlah</th>
-                    <th>Aksi</th>
-                </tr>
-            </x-slot>
-            @php $num = 1; @endphp
+                    {{--Tinggi Badan --}}
+                    <div class="mt-8">
+                        <p class="font-semibold text-md">E. Data Tinggi Berat Badan</p>
+                        <div class="text-black max-h-[calc(100vh-200px)] overflow-y-auto">
+                            <x-table header="Header Content" :sidebarOpen="$sidebarOpen" class="overflow-x-auto mx-auto">
+                                <x-slot name="header">
+                                    <tr>
+                                        <th>No</th>
+                                        <th>Aspek yang dinilai</th>
+                                        <th>Jumlah</th>
+                                        <th>Aksi</th>
+                                    </tr>
+                                </x-slot>
 
-            <tr>
-                <td class="text-center">{{ $num++ }}</td>
-                <td class="font-semibold">Tinggi Badan</td>
-                <td class="text-center">{{ $student->heightWeight ? $student->heightWeight->height ?? '-' : '-' }} cm</td>
-                <td class="text-center">
-                    @if ($student->heightWeight)
-                        <x-edit-primary-button tag="a" href="{{ route('height_weights.edit', ['studentId' => $student->id, 'heightWeightId' => $student->heightWeight->id, 'aspectName' => 'Tinggi Badan']) }}" class="flex items-center justify-center min-w-[60px]">
-                            <img src="{{ asset('img/edit-brush_logo.png') }}" class="w-[13px] h-[13px]">
-                            <span x-show="!$sidebarOpen" class="ml-1 text-[10px]">{{ __('Edit') }}</span>
-                        </x-edit-primary-button>
-                    @else
-                        <span class="text-gray-400">Data tidak tersedia</span>
-                    @endif
-                </td>
-            </tr>
-            <tr>
-                <td class="text-center">{{ $num++ }}</td>
-                <td class="font-semibold">Berat Badan</td>
-                <td class="text-center">{{ $student->heightWeight ? $student->heightWeight->weight ?? '-' : '-' }} kg</td>
-                <td class="text-center">
-                    <x-edit-primary-button tag="a"  href="{{ route('height_weights.edit', ['studentId' => $student->id, 'heightWeightId' => $student->heightWeight->id, 'aspectName' => 'Berat Badan']) }}" class="flex items-center justify-center min-w-[60px]">
-                        <img src="{{ asset('img/edit-brush_logo.png') }}" class="w-[13px] h-[13px]">
-                        <span x-show="!$sidebarOpen" class="ml-1 text-[10px]">{{ __('Edit') }}</span>
-                    </x-edit-primary-button>
-                </td>
-            </tr>
-            <tr>
-                {{-- <td class="text-center">{{ $num++ }}</td>
-                <td class="font-semibold">Ukuran Kepala</td>
-                <td class="text-center">{{ $student->heightWeight ? $student->heightWeight->head_size ?? '-' : '-' }} cm</td>
-                <td class="text-center">
-                    <x-edit-primary-button tag="a" href="{{ $student->heightWeight ? route('height_weights.edit', ['studentId' => $student->id, 'heightWeightId' => $student->heightWeight->id, 'aspectName' => 'Ukuran Kepala']) : route('height_weights.create', ['studentId' => $student->id, 'semester_year_id' => $selectedSemesterYearId, 'aspectName' => 'Ukuran Kepala']) }}" class="flex items-center justify-center min-w-[60px]">
-                        <img src="{{ asset('img/edit-brush_logo.png') }}" class="w-[13px] h-[13px]">
-                        <span x-show="!$sidebarOpen" class="ml-1 text-[10px]">{{ __('Edit') }}</span>
-                    </x-edit-primary-button>
-                </td> --}}
-            </tr>
+                                @php $num = 1; @endphp
 
-        </x-table>
-    </div>
-</div>
-{{-- End Tabel Height Weights --}}
+                                <tr>
+                                    <td class="text-center">{{ $num++ }}</td>
+                                    <td class="font-semibold">Tinggi Badan</td>
+                                    <td class="text-center">
+                                        @if ($student->heightWeights->isNotEmpty())
+                                            @php
+                                                $heightWeight = $student->heightWeights->firstWhere(function ($heightWeight) use ($selectedSemesterYearId) {
+                                                    return $heightWeight->rapor && $heightWeight->rapor->grade && $heightWeight->rapor->grade->semester_year_id == $selectedSemesterYearId;
+                                                });
+                                            @endphp
+
+                                            @if ($heightWeight && $heightWeight->height !== null)
+                                                {{ $heightWeight->height }} cm
+                                            @else
+                                                <span class="text-gray-400">Data tidak tersedia</span>
+                                            @endif
+                                        @else
+                                            <span class="text-gray-400">Data tidak tersedia</span>
+                                        @endif
+                                    </td>
+                                    <td class="text-center">
+                                        @if ($student->heightWeights->isNotEmpty())
+                                        <x-edit-primary-button tag="a" href="{{ route('height_weights.edit', ['studentId' => $student->id, 'heightWeightId' => $student->heightWeights->first()->id ?? null, 'aspectName' => 'Tinggi Badan', 'semester_year_id' => $selectedSemesterYearId]) }}" class="flex items-center justify-center min-w-[60px]">
+                                            <img src="{{ asset('img/edit-brush_logo.png') }}" class="w-[13px] h-[13px]">
+                                            <span x-show="!sidebarOpen" class="ml-1 text-[10px]">{{ __('Edit') }}</span>
+                                        </x-edit-primary-button>
+                                        @else
+                                            <span class="text-gray-400">Data tidak tersedia</span>
+                                        @endif
+
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td class="text-center">{{ $num++ }}</td>
+                                    <td class="font-semibold">Berat Badan</td>
+                                    <td class="text-center">
+                                        @if ($student->heightWeights->isNotEmpty())
+                                            @php
+                                                $heightWeight = $student->heightWeights->firstWhere(function ($heightWeight) use ($selectedSemesterYearId) {
+                                                    return $heightWeight->rapor && $heightWeight->rapor->grade && $heightWeight->rapor->grade->semester_year_id == $selectedSemesterYearId;
+                                                });
+                                            @endphp
+
+                                            @if ($heightWeight && $heightWeight->weight !== null)
+                                                {{ $heightWeight->weight }} cm
+                                            @else
+                                                <span class="text-gray-400">Data tidak tersedia</span>
+                                            @endif
+                                        @else
+                                            <span class="text-gray-400">Data tidak tersedia</span>
+                                        @endif
+                                    </td>
+                                    <td class="text-center">
+                                        @if ($student->heightWeights->isNotEmpty())
+                                            <x-edit-primary-button tag="a" href="{{ route('height_weights.edit', ['studentId' => $student->id, 'heightWeightId' => $student->heightWeights->first()->id ?? null, 'aspectName' => 'Berat Badan', 'semester_year_id' => $selectedSemesterYearId]) }}" class="flex items-center justify-center min-w-[60px]">
+                                                <img src="{{ asset('img/edit-brush_logo.png') }}" class="w-[13px] h-[13px]">
+                                                <span x-show="!sidebarOpen" class="ml-1 text-[10px]">{{ __('Edit') }}</span>
+                                            </x-edit-primary-button>
+                                        @else
+                                            <span class="text-gray-400">Data tidak tersedia</span>
+                                        @endif
+                                    </td>
+                                </tr>
+                            </x-table>
+                        </div>
+                    </div>
+
+                     {{-- End Tinggi Badan --}}
+
+                     {{-- Kesehatan --}}
+                    <div class="mt-8">
+                        <div class="flex justify-between items-center">
+                            <p class="font-semibold text-md">F. Kondisi Kesehatan</p>
+                            {{-- Tambah Data Button --}}
+                        </div>
+                        <div class="text-black max-h-[calc(100vh-200px)] overflow-y-auto">
+                            <x-table header="Header Content" :sidebarOpen="$sidebarOpen" class="overflow-x-auto mx-auto">
+                                <x-slot name="header">
+                                    <tr>
+                                        <th>No</th>
+                                        <th>Aspek Fisik</th>
+                                        <th>Keterangan</th>
+                                        <th>Aksi</th>
+                                    </tr>
+                                </x-slot>
+                                @php $num = 1; @endphp
+
+                                <tr>
+                                    <td class="text-center">{{ $num++ }}</td>
+                                    <td class="font-semibold">Pendengaran</td>
+                                    <td class="text-center">
+                                        @if ($rapors->isNotEmpty() && $rapors[0]->health && $rapors[0]->health->hearing !== null)
+                                            {{ $rapors[0]->health->hearing }}
+                                        @else
+                                            Data Tidak Tersedia
+                                        @endif
+                                    </td>
+                                    <td class="text-center">
+                                        @if ($rapors->isNotEmpty() && $rapors[0]->health)
+                                            <x-edit-primary-button tag="a" href="{{ route('healths.edit', ['studentId' => $student->id, 'healthId' => $rapors[0]->health->id, 'aspectName' => 'Pendengaran']) }}" class="flex items-center justify-center min-w-[60px]">
+                                                <img src="{{ asset('img/edit-brush_logo.png') }}" class="w-[13px] h-[13px]">
+                                                <span x-show="!$sidebarOpen" class="ml-1 text-[10px]">{{ __('Edit') }}</span>
+                                            </x-edit-primary-button>
+                                        @else
+                                            <x-edit-primary-button tag="a" href="{{ route('healths.create', ['studentId' => $student->id, 'semester_year_id' => $selectedSemesterYearId, 'aspectName' => 'Pendengaran']) }}" class="flex items-center justify-center min-w-[60px]">
+                                                <img src="{{ asset('img/edit-brush_logo.png') }}" class="w-[13px] h-[13px]">
+                                                <span x-show="!$sidebarOpen" class="ml-1 text-[10px]">{{ __('Edit') }}</span>
+                                            </x-edit-primary-button>
+                                        @endif
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="text-center">{{ $num++ }}</td>
+                                    <td class="font-semibold">Penglihatan</td>
+                                    <td class="text-center">
+                                        @if ($rapors->isNotEmpty() && $rapors[0]->health && $rapors[0]->health->vision !== null)
+                                            {{ $rapors[0]->health->vision }}
+                                        @else
+                                            Data Tidak Tersedia
+                                        @endif
+                                    </td>
+                                    <td class="text-center">
+                                        @if ($rapors->isNotEmpty() && $rapors[0]->health)
+                                            <x-edit-primary-button tag="a" href="{{ route('healths.edit', ['studentId' => $student->id, 'healthId' => $rapors[0]->health->id, 'aspectName' => 'Penglihatan']) }}" class="flex items-center justify-center min-w-[60px]">
+                                                <img src="{{ asset('img/edit-brush_logo.png') }}" class="w-[13px] h-[13px]">
+                                                <span x-show="!$sidebarOpen" class="ml-1 text-[10px]">{{ __('Edit') }}</span>
+                                            </x-edit-primary-button>
+                                        @else
+                                            <x-edit-primary-button tag="a" href="{{ route('healths.create', ['studentId' => $student->id, 'semester_year_id' => $selectedSemesterYearId, 'aspectName' => 'Penglihatan']) }}" class="flex items-center justify-center min-w-[60px]">
+                                                <img src="{{ asset('img/edit-brush_logo.png') }}" class="w-[13px] h-[13px]">
+                                                <span x-show="!$sidebarOpen" class="ml-1 text-[10px]">{{ __('Edit') }}</span>
+                                            </x-edit-primary-button>
+                                        @endif
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="text-center">{{ $num++ }}</td>
+                                    <td class="font-semibold">Gigi</td>
+                                    <td class="text-center">
+                                        @if ($rapors->isNotEmpty() && $rapors[0]->health && $rapors[0]->health->tooth !== null)
+                                            {{ $rapors[0]->health->tooth }}
+                                        @else
+                                            Data Tidak Tersedia
+                                        @endif
+                                    </td>
+                                    <td class="text-center">
+                                        @if ($rapors->isNotEmpty() && $rapors[0]->health)
+                                            <x-edit-primary-button tag="a" href="{{ route('healths.edit', ['studentId' => $student->id, 'healthId' => $rapors[0]->health->id, 'aspectName' => 'Gigi']) }}" class="flex items-center justify-center min-w-[60px]">
+                                                <img src="{{ asset('img/edit-brush_logo.png') }}" class="w-[13px] h-[13px]">
+                                                <span x-show="!$sidebarOpen" class="ml-1 text-[10px]">{{ __('Edit') }}</span>
+                                            </x-edit-primary-button>
+                                        @else
+                                            <x-edit-primary-button tag="a" href="{{ route('healths.create', ['studentId' => $student->id, 'semester_year_id' => $selectedSemesterYearId, 'aspectName' => 'Gigi']) }}" class="flex items-center justify-center min-w-[60px]">
+                                                <img src="{{ asset('img/edit-brush_logo.png') }}" class="w-[13px] h-[13px]">
+                                                <span x-show="!$sidebarOpen" class="ml-1 text-[10px]">{{ __('Edit') }}</span>
+                                            </x-edit-primary-button>
+                                        @endif
+                                    </td>
+                                </tr>
+                            </x-table>
+                        </div>
+                    </div>
+                    {{-- End Kesehatan --}}
 
 
-            {{-- Kesehatan --}}
-            <div class="mt-8">
-                <div class="flex justify-between items-center">
-                    <p class="font-semibold text-md">F. Kesehatan</p>
-                    {{-- Tambah Data Button --}}
-                </div>
-                <div class="text-black max-h-[calc(100vh-200px)] overflow-y-auto">
-                    <x-table header="Header Content" :sidebarOpen="$sidebarOpen" class="overflow-x-auto mx-auto">
-                        <x-slot name="header">
-                            <tr>
-                                <th>No</th>
-                                <th>Aspek Fisik</th>
-                                <th>Keterangan</th>
-                                <th>Aksi</th>
-                            </tr>
-                        </x-slot>
-                        @php $num = 1; @endphp
+                    {{-- Prestasi --}}
+                    <div class="mt-8">
+                        <div class="flex justify-between items-center">
+                            <p class="font-semibold text-md">G. Prestasi</p>
 
-                            <tr>
-                                <td class="text-center">{{ $num++ }}</td>
-                                <td class="font-semibold">Pendengaran</td>
-                                <td class="text-center">{{ $rapors[0]->health ? $rapors[0]->health->hearing ?? '-' : '-' }}</td>
-                                <td class="text-center">
-                                    <x-edit-primary-button tag="a" href="{{ $rapors[0]->health ? route('healths.edit', ['studentId' => $student->id, 'healthId' => $rapors[0]->health->id, 'aspectName' => 'Pendengaran']) : route('healths.create', ['studentId' => $student->id, 'semester_year_id' => $selectedSemesterYearId, 'aspectName' => 'Pendengaran']) }}"
-                                        class="flex items-center justify-center min-w-[60px]">
-                                        <img src="{{ asset('img/edit-brush_logo.png') }}" class="w-[13px] h-[13px]">
-                                        <span x-show="!sidebarOpen" class="ml-1 text-[10px]">{{ __('Edit') }}</span>
-                                    </x-edit-primary-button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="text-center">{{ $num++ }}</td>
-                                <td class="font-semibold">Penglihatan</td>
-                                <td class="text-center">{{ $rapors[0]->health ? $rapors[0]->health->vision ?? '-' : '-' }}</td>
-                                <td class="text-center">
-                                    <x-edit-primary-button tag="a" href="{{ $rapors[0]->health ? route('healths.edit', ['studentId' => $student->id, 'healthId' => $rapors[0]->health->id, 'aspectName' => 'Penglihatan']) : route('healths.create', ['studentId' => $student->id, 'semester_year_id' => $selectedSemesterYearId, 'aspectName' => 'Penglihatan']) }}"
-                                        class="flex items-center justify-center min-w-[60px]">
-                                        <img src="{{ asset('img/edit-brush_logo.png') }}" class="w-[13px] h-[13px]">
-                                        <span x-show="!sidebarOpen" class="ml-1 text-[10px]">{{ __('Edit') }}</span>
-                                    </x-edit-primary-button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="text-center">{{ $num++ }}</td>
-                                <td class="font-semibold">Gigi</td>
-                                <td class="text-center">{{ $rapors[0]->health ? $rapors[0]->health->tooth ?? '-' : '-' }}</td>
-                                <td class="text-center">
-                                    <x-edit-primary-button tag="a" href="{{ $rapors[0]->health ? route('healths.edit', ['studentId' => $student->id, 'healthId' => $rapors[0]->health->id, 'aspectName' => 'Gigi']) : route('healths.create', ['studentId' => $student->id, 'semester_year_id' => $selectedSemesterYearId, 'aspectName' => 'Gigi']) }}"
-                                        class="flex items-center justify-center min-w-[60px]">
-                                        <img src="{{ asset('img/edit-brush_logo.png') }}" class="w-[13px] h-[13px]">
-                                        <span x-show="!sidebarOpen" class="ml-1 text-[10px]">{{ __('Edit') }}</span>
-                                    </x-edit-primary-button>
-                                </td>
-                            </tr>
+                            <x-primary-button tag="a" href="{{ route('achievements.create', ['studentId' => $student->id, 'semester_year_id' => $selectedSemesterYearId]) }}" class="font-semibold inline-flex items-center"
+                                style="padding: 0.5rem 1rem;">
+                                <span class="text-12px">{{ __('+ Tambah Data') }}</span>
+                            </x-primary-button>
+                        </div>
+                        <div class="text-black max-h-[calc(100vh-200px)] overflow-y-auto">
+                            <x-table header="Header Content" :sidebarOpen="$sidebarOpen" class="overflow-x-auto mx-auto">
+                                <x-slot name="header">
+                                    <tr>
+                                        <th>No</th>
+                                        <th>Jenis Prestasi</th>
+                                        <th>Keterangan</th>
+                                        <th>Aksi</th>
+                                    </tr>
+                                </x-slot>
+                                @php $num = 1; @endphp
+                                @php $hasAchievements = false; @endphp
+                                @foreach ($rapors as $rapor)
+                                    @foreach ($rapor->achievement ?? [] as $achievement)
+                                        <tr>
+                                            <td>{{ $num++ }}</td>
+                                            <td>{{ $achievement->achievement_type }}</td>
+                                            <td>{{ $achievement->description }}</td>
+                                            <td class="text-center">
+                                                <!-- Tombol Edit -->
+                                                <x-edit-primary-button tag="a" href="{{ route('achievements.edit', ['studentId' => $student->id, 'achievementId' => $achievement->id]) }}" class="flex items-center justify-center min-w-[60px]">
+                                                    <img src="{{ asset('img/edit-brush_logo.png') }}" class="w-[13px] h-[13px]">
+                                                    <span x-show="!sidebarOpen" class="ml-1 text-[10px]">{{ __('Edit') }}</span>
+                                                </x-edit-primary-button>
 
-                    </x-table>
-                </div>
-            </div>
-            {{-- End Kesehatan --}}
+                                                <!-- Tombol Hapus -->
+                                                <x-danger-button
+                                                    x-data=""
+                                                    x-on:click.prevent="
+                                                        $dispatch('open-modal', 'confirm-data-deletion');
+                                                        $dispatch('set-action', '{{ route('achievements.destroy', ['achievementId' => $achievement->id]) }}');
+                                                    "
+                                                    class="flex items-center justify-center min-w-[60px]">
+                                                    <img src="{{ asset('img/garbage_logo.png') }}" class="w-[13px] h-[13px]">
+                                                    <span x-show="!sidebarOpen" class="ml-1 text-[10px]">{{ __('Hapus') }}</span>
+                                                </x-danger-button>
+                                            </td>
+                                        </tr>
+                                        @php $hasAchievements = true; @endphp
+                                    @endforeach
+                                @endforeach
 
-    {{-- Prestasi --}}
-    <div class="mt-8">
-        <div class="flex justify-between items-center">
-            <p class="font-semibold text-md">G. Prestasi</p>
+                                @if (!$hasAchievements)
+                                    @for ($i = $num; $i <= 3; $i++)
+                                        <tr>
+                                            <td>{{ $i }}</td>
+                                            <td colspan="3" class="text-center">-</td>
+                                        </tr>
+                                    @endfor
+                                @endif
+                            </x-table>
+                    </div>
+                    {{-- End Prestasi --}}
 
-            <x-primary-button tag="a" href="{{ route('achievements.create', ['studentId' => $student->id, 'semester_year_id' => $selectedSemesterYearId]) }}" class="font-semibold inline-flex items-center"
-                style="padding: 0.5rem 1rem;">
-                <span class="text-12px">{{ __('+ Tambah Data') }}</span>
-            </x-primary-button>
-        </div>
-        <div class="text-black max-h-[calc(100vh-200px)] overflow-y-auto">
-            <x-table header="Header Content" :sidebarOpen="$sidebarOpen" class="overflow-x-auto mx-auto">
-                <x-slot name="header">
-                    <tr>
-                        <th>No</th>
-                        <th>Jenis Prestasi</th>
-                        <th>Keterangan</th>
-                        <th>Aksi</th>
-                    </tr>
-                </x-slot>
-                @php $num = 1; @endphp
-                @php $hasAchievements = false; @endphp
-                @foreach ($rapors as $rapor)
-                    @foreach ($rapor->achievement ?? [] as $achievement)
-                        <tr>
-                            <td>{{ $num++ }}</td>
-                            <td>{{ $achievement->achievement_type }}</td>
-                            <td>{{ $achievement->description }}</td>
-                            <td class="text-center">
-                                <!-- Tombol Edit -->
-                                <x-edit-primary-button tag="a" href="{{ route('achievements.edit', ['studentId' => $student->id, 'achievementId' => $achievement->id]) }}" class="flex items-center justify-center min-w-[60px]">
-                                    <img src="{{ asset('img/edit-brush_logo.png') }}" class="w-[13px] h-[13px]">
-                                    <span x-show="!sidebarOpen" class="ml-1 text-[10px]">{{ __('Edit') }}</span>
-                                </x-edit-primary-button>
+                    {{-- Tabel Ketidakhadiran --}}
+                    <div class="mt-8">
+                        <p class="font-semibold text-md">H. Ketidakhadiran</p>
+                        <div class="text-black max-h-[calc(100vh-200px)] overflow-y-auto">
+                            <x-table header="Header Content" :sidebarOpen="$sidebarOpen" class="overflow-x-auto mx-auto">
+                                <x-slot name="header">
+                                    <tr>
+                                        <th>No</th>
+                                        <th>Keterangan</th>
+                                        <th>Jumlah</th>
+                                    </tr>
+                                </x-slot>
+                                    <tr>
+                                        <td class="text-center">1</td>
+                                        <td class="font-semibold">Sakit</td>
+                                        <td class="text-center">{{ $totalSick }} hari</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-center">2</td>
+                                        <td class="font-semibold">Ijin</td>
+                                        <td class="text-center">{{ $totalPermission }} hari</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="text-center">3</td>
+                                        <td class="font-semibold">Tanpa Keterangan</td>
+                                        <td class="text-center">{{ $totalUnexcused }} hari</td>
+                                    </tr>
 
-                                <!-- Tombol Hapus -->
-                                <x-danger-button
-                                    x-data=""
-                                    x-on:click.prevent="
-                                        $dispatch('open-modal', 'confirm-data-deletion');
-                                        $dispatch('set-action', '{{ route('achievements.destroy', ['achievementId' => $achievement->id]) }}');
-                                    "
-                                    class="flex items-center justify-center min-w-[60px]">
-                                    <img src="{{ asset('img/garbage_logo.png') }}" class="w-[13px] h-[13px]">
-                                    <span x-show="!sidebarOpen" class="ml-1 text-[10px]">{{ __('Hapus') }}</span>
-                                </x-danger-button>
-                            </td>
-                        </tr>
-                        @php $hasAchievements = true; @endphp
-                    @endforeach
-                @endforeach
+                            </x-table>
+                        </div>
+                    </div>
+                    {{-- End Tabel Ketidakhadiran --}}
 
-                @if (!$hasAchievements)
-                    @for ($i = $num; $i <= 3; $i++)
-                        <tr>
-                            <td>{{ $i }}</td>
-                            <td colspan="3" class="text-center">-</td>
-                        </tr>
-                    @endfor
-                @endif
-            </x-table>
-    </div>
-    {{-- End Prestasi --}}
+                    {{-- Additional text below the table --}}
+                    <div class="text-md text-gray-800 mt-10 px-8 float-right">
+                        Cianjur,
+                        @if ($rapors->isEmpty())
+                            Belum Dicetak
+                        @else
+                            {{ $rapors->first()->print_date ? \Carbon\Carbon::parse($rapors->first()->print_date)->locale('id')->isoFormat('DD MMMM YYYY') : 'Belum Dicetak' }}
+                        @endif
+                    </div>
 
-        {{-- Tabel Ketidakhadiran --}}
-        <div class="mt-8">
-            <p class="font-semibold text-md">H. Ketidakhadiran</p>
-            <div class="text-black max-h-[calc(100vh-200px)] overflow-y-auto">
-                <x-table header="Header Content" :sidebarOpen="$sidebarOpen" class="overflow-x-auto mx-auto">
-                    <x-slot name="header">
-                        <tr>
-                            <th>No</th>
-                            <th>Keterangan</th>
-                            <th>Jumlah</th>
-                        </tr>
-                    </x-slot>
-                        <tr>
-                            <td class="text-center">1</td>
-                            <td class="font-semibold">Sakit</td>
-                            <td class="text-center">{{ $totalSick }} hari</td>
-                        </tr>
-                        <tr>
-                            <td class="text-center">2</td>
-                            <td class="font-semibold">Ijin</td>
-                            <td class="text-center">{{ $totalPermission }} hari</td>
-                        </tr>
-                        <tr>
-                            <td class="text-center">3</td>
-                            <td class="font-semibold">Tanpa Keterangan</td>
-                            <td class="text-center">{{ $totalUnexcused }} hari</td>
-                        </tr>
 
-                </x-table>
-            </div>
-        </div>
-        {{-- End Tabel Ketidakhadiran --}}
+                    <div class="flex justify-between mt-20">
+                        <div class="text-md text-gray-800 px-8">
+                            <p class="text-center">Orang Tua/Wali</p>
+                            <hr class="mt-20 w-1/8 border border-dotted border-gray-800 mx-auto my-1">
+                        </div>
+                        <div class="text-md text-gray-800 px-8">
+                            <p class="text-center">Guru Kelas</p>
+                            <div class="flex flex-col items-center">
+                                <p class="font-semibold underline mt-20 text-center">
+                                    {{ ucwords(strtolower($student->class->teacher->prefix ?? '')) }}
+                                    {{ ucwords(strtolower($student->class->teacher->teacher_name ?? '')) }}
+                                    {{ ucwords(strtolower($student->class->teacher->suffix ?? '')) }}
+                                </p>
+                                <p class="text-center">NIP: {{ $student->class->teacher->nip ?? '-' }}</p>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="text-center text-md text-gray-800 mt-8">
+                        @if ($headmaster && $headmaster->typesOfCAR === 'Kepala Sekolah')
+                            <p>Mengetahui</p>
+                            <p>Kepala Sekolah</p>
+                            <div class="flex flex-col items-center">
+                                <p class="font-semibold underline underline-offset-2 mt-20 text-center">
+                                    {{ ucwords(strtolower($headmaster->prefix ?? '')) }}
+                                    {{ ucwords(strtolower($headmaster->teacher_name ?? '')) }}
+                                    {{ ucwords(strtolower($headmaster->suffix ?? '')) }}
+                                </p>
+                                <p class="font-weight-bold text-center">NIP: {{ $headmaster->nip ?? '-' }}</p>
+                            </div>
+                        @endif
+                    </div>
+
 
                     </div>
-                @else
-                    <p class="text-red-500">Data rapor tidak ditemukan.</p>
-                @endif
             </div>
         </div>
 

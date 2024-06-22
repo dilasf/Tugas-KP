@@ -204,19 +204,6 @@ Route::middleware('auth')->group(function () {
     Route::delete('/extracurricular/{extracurricularId}', [ExtracurricularController::class, 'destroy'])->name('extracurriculars.destroy');
 });
 
-
-
-//Tinggi Badan
-Route::middleware('auth')->group(function () {
-    Route::get('students/{studentId}/height_weights/create/{semester_year_id}/{aspectName}', [HeightWeightController::class, 'create'])->name('height_weights.create');
-    Route::post('students/{studentId}/height_weights/store/{semester_year_id}/{aspectName}', [HeightWeightController::class, 'store'])->name('height_weights.store');
-    Route::get('students/{studentId}/height_weights/edit/{heightWeightId}/{aspectName}', [HeightWeightController::class, 'edit'])->name('height_weights.edit');
-Route::patch('students/{studentId}/height_weights/update/{heightWeightId}/{aspectName}', [HeightWeightController::class, 'update'])->name('height_weights.update');
-
-
-
-});
-
 //kesehatan
 Route::middleware('auth')->group(function () {
     Route::get('students/{studentId}/healths/create/{semester_year_id}/{aspectName}', [HealthController::class, 'create'])->name('healths.create');
@@ -226,15 +213,35 @@ Route::middleware('auth')->group(function () {
 
 });
 
+//Tinggi Badan
+Route::middleware('auth')->group(function () {
+    // Route::get('/students/{studentId}/height_weights/{heightWeightId}/edit/{aspectName}', [HeightWeightController::class, 'edit'])
+    // ->name('height_weights.edit');
+    Route::get('/students/{studentId}/height_weights/{heightWeightId}/edit/{aspectName}', [HeightWeightController::class, 'edit'])
+    ->name('height_weights.edit');
+
+    Route::patch('/students/{studentId}/height_weights/{heightWeightId}/update/{aspectName}', [HeightWeightController::class, 'update'])
+    ->name('height_weights.update');
+
+});
+
 Route::middleware('auth')->group(function () {
     Route::get('rapors/lihat/{studentId}', [RaporController::class, 'index'])->name('rapors.index');
     Route::get('/rapors/{studentId}/edit/{semesterYearId}', [RaporController::class, 'edit'])->name('rapors.edit');
     Route::match(['put', 'patch'], '/rapors/{rapor}', [RaporController::class, 'update'])->name('rapors.update');
 
-    Route::get('/rapors/{studentId}/edit-suggestion', [RaporController::class, 'editSuggestion'])->name('rapors.editSuggestion');
-    Route::match(['put', 'patch'],'{studentId}/update-suggestion', [RaporController::class, 'updateSuggestion'])->name('rapors.updateSuggestion');
+    Route::get('/rapors/{studentId}/edit-suggestion/{semesterYearId}', [RaporController::class, 'editSuggestion'])->name('rapors.editSuggestion');
+    Route::match(['put', 'patch'],'/rapors/{studentId}/update-suggestion/{semesterYearId}', [RaporController::class, 'updateSuggestion'])->name('rapors.updateSuggestion');
+
+    // Edit
+Route::get('/rapors/{studentId}/edit/{raporId}/{aspectName}', [RaporController::class, 'editAspect'])->name('rapors.editAspect');
+// Update
+Route::match(['put', 'patch'],'/rapors/{studentId}/update/{raporId}/{aspectName}', [RaporController::class, 'updateAspect'])->name('rapors.updateAspect');
+
 
 });
+
+
 
 
 require __DIR__.'/auth.php';

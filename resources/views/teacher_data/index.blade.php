@@ -60,7 +60,7 @@
                             </td>
                             <td>{{ $teach->nip }}</td>
                             <td>{{ $teach->nuptk }}</td>
-                            <td>{{ $teach->teacher_name }}</td>
+                            <td>{{ucwords(strtolower($teach->teacher_name)) }}</td>
                             <td>{{ $teach->gender === 'Perempuan' ? 'P' : 'L' }}</td>
                             <td>{{ $teach->typesOfCAR }}</td>
                             <td class="size-px whitespace-nowrap">
@@ -223,7 +223,7 @@
                                     const teacherDetails = JSON.parse(this.getAttribute('data-teacher-details'));
                                      const teacherId = this.getAttribute('data-teacher-id');
                                     document.getElementById('teacher-photo').src = teacherDetails.photo ? `{{ asset('storage/photos') }}/${teacherDetails.photo}` : `{{ asset('img/profil.png') }}`;
-                                    document.getElementById('teacher-name').innerText = teacherDetails.teacher_name;
+                                    document.getElementById('teacher-name').innerText = teacherDetails.teacher_name.toUpperCase();
                                     document.getElementById('teacher-status').innerHTML = ` :
                                     ${
                                         teacherDetails.status === 1 ?

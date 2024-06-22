@@ -16,13 +16,12 @@
         </div>
         <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
             <div class="p-6 bg-white">
-
-                <form method="POST" action="{{ route('rapors.updateSuggestion', ['studentId' => $rapor->grade->student_id]) }}">
+                <form method="POST" action="{{ route('rapors.updateSuggestion', ['studentId' => $rapor->grade->student_id, 'semesterYearId' => $rapor->grade->semester_year_id]) }}">
                     @csrf
                     @method('PATCH')
 
                     <div class="max-w-3xl">
-                        <x-input-label for="suggestion" value="Saran" />
+                        <x-input-label for="suggestion" value="Deskripsi" />
                         <x-text-input id="suggestion" type="text" name="suggestion" class="mt-1 block w-full bg-zinc-100" value="{{ $rapor->suggestion ?? old('suggestion') }}"/>
                         <x-input-error class="mt-2" :messages="$errors->get('suggestion')" />
                     </div>
@@ -32,6 +31,7 @@
                         </x-primary-button>
                     </div>
                 </form>
+
             </div>
         </div>
     </div>

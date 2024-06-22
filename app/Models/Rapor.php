@@ -12,7 +12,7 @@ class Rapor extends Model
     protected $fillable = [
         'student_id',
         'grade_id',
-        'height_weight_id',
+        // 'height_weight_id',
         'school_name',
         'school_address',
         'suggestion',
@@ -34,9 +34,9 @@ class Rapor extends Model
 
     public function heightWeight()
     {
-        return $this->belongsTo(HeightWeight::class);
+        return $this->hasOne(HeightWeight::class);
     }
-
+    
     public function extracurricular()
     {
         return $this->hasMany(Extracurricular::class);

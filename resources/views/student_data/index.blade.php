@@ -59,7 +59,7 @@
                         @endif
                 </td>
                     <td>{{ $siswa->nis }}</td>
-                    <td>{{ $siswa->student_name }}</td>
+                    <td>{{ ucwords(strtolower($siswa->student_name))}}</td>
                     <td>{{ $siswa->gender === 'Perempuan' ? 'P' : 'L' }}</td>
                     <td>{{ $siswa->nipd }}</td>
                     <td>{{ $siswa->class->class_name }}</td>

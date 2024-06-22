@@ -10,18 +10,26 @@ class HeightWeight extends Model
     use HasFactory;
 
     protected $fillable = [
+        'student_id',
+        'rapor_id',
+        'semester_year_id',
         'height',
         'weight',
-        'head_size',
+        'head_size'
     ];
 
     public function student()
     {
-        return $this->hasOne(Student::class, 'height_weight_id');
+        return $this->belongsTo(Student::class);
     }
 
     public function rapor()
     {
-        return $this->hasOne(Rapor::class, 'height_weight_id');
+        return $this->belongsTo(Rapor::class);
+    }
+
+    public function semesterYear()
+    {
+        return $this->belongsTo(SemesterYear::class);
     }
 }

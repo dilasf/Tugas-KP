@@ -12,6 +12,7 @@ export default {
 
     theme: {
         extend: {
+
             fontFamily: {
                 sans: ['Inter', ...defaultTheme.fontFamily.sans],
             },
@@ -19,7 +20,6 @@ export default {
                 '10px': '10px',
                 '12px': '12px',
                 '16px': '16px',
-                // Tambahkan ukuran teks lainnya jika diperlukan
               },
 
             colors: {

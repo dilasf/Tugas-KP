@@ -15,17 +15,24 @@ class StudentController extends Controller
 {
     public function index()
     {
-        $students = Student::with(['class', 'guardian', 'heightWeight'])->get();
+        $students = Student::with(['class', 'guardian', 'latestHeightWeight'])->get();
+
         $sidebarOpen = false;
         return view('student_data.index', compact('students','sidebarOpen'), ['guardians' => $students]);
     }
 
     //detail informasi siswa
     public function show($id)
-    {
-        $student = Student::with(['guardian', 'heightWeight'])->findOrFail($id);
-        return view('student_data.show-detail', compact('student'));
-    }
+{
+    $student = Student::with(['guardian'])->findOrFail($id);
+
+    $latestHeight = $student->latestNonNullHeight();
+    $latestWeight = $student->latestNonNullWeight();
+    $latestHeadSize = $student->latestNonNullHeadSize();
+
+    return view('student_data.show-detail', compact('student', 'latestHeight', 'latestWeight', 'latestHeadSize'));
+}
+
 
     //Data Orang Tua
     public function createParent()
@@ -94,130 +101,138 @@ class StudentController extends Controller
     }
 
     public function store(Request $request)
-    {
-        $validated = $request->validate([
-            'student_photo' => 'nullable|image',
-            'status' => 'required|boolean',
-            'nis' => 'required|unique:students|numeric|digits_between:1,11',
-            'nisn' => 'required|unique:students|numeric|digits_between:1,11',
-            'nipd' => 'required|unique:students|numeric|digits_between:1,10',
-            'class_id' => 'required|exists:classes,id',
-            'student_name' => 'required|max:255',
-            'gender' => 'required|in:Laki-laki,Perempuan',
-            'nik' => 'required|unique:students|numeric|digits_between:1,17',
-            'place_of_birth' => 'required|max:50',
-            'date_of_birth' => 'required|date',
-            'religion' => 'required|max:10',
-            'address' => 'required|max:255',
-            'special_needs' => 'nullable',
-            'previous_school' => 'nullable|max:255',
-            'birth_certificate_number' => 'nullable|max:60',
-            'residence_type' => 'nullable|max:25',
-            'no_kk' => 'required|unique:students|numeric|digits_between:1,17',
-            'child_number' => 'nullable|numeric|digits_between:1,2',
-            'number_of_siblings' => 'nullable|numeric|digits_between:1,2',
-            'transportation' => 'nullable|max:20',
-            'distance_to_school' => 'nullable|numeric|digits_between:1,2',
-        ]);
+{
+    $validated = $request->validate([
+        'student_photo' => 'nullable|image',
+        'status' => 'required|boolean',
+        'nis' => 'required|unique:students|numeric|digits_between:1,11',
+        'nisn' => 'required|unique:students|numeric|digits_between:1,11',
+        'nipd' => 'required|unique:students|numeric|digits_between:1,10',
+        'class_id' => 'required|exists:classes,id',
+        'student_name' => 'required|max:255',
+        'gender' => 'required|in:Laki-laki,Perempuan',
+        'nik' => 'required|unique:students|numeric|digits_between:1,17',
+        'place_of_birth' => 'required|max:50',
+        'date_of_birth' => 'required|date',
+        'religion' => 'required|max:10',
+        'address' => 'required|max:255',
+        'special_needs' => 'nullable',
+        'previous_school' => 'nullable|max:255',
+        'birth_certificate_number' => 'nullable|max:60',
+        'residence_type' => 'nullable|max:25',
+        'no_kk' => 'required|unique:students|numeric|digits_between:1,17',
+        'child_number' => 'nullable|numeric|digits_between:1,2',
+        'number_of_siblings' => 'nullable|numeric|digits_between:1,2',
+        'transportation' => 'nullable|max:20',
+        'distance_to_school' => 'nullable|numeric|digits_between:1,2',
+    ]);
 
-        if ($request->hasFile('student_photo')) {
-            $path = $request->file('student_photo')->storeAs(
-                'public/photos',
-                'student_photo_' . time() . '.' . $request->file('student_photo')->extension()
-            );
-            $validated['student_photo'] = basename($path);
-        }
-
-        $heightWeightData = $request->validate([
-            'height' => 'nullable|integer',
-            'weight' => 'nullable|integer',
-            'head_size' => 'nullable|integer',
-        ]);
-
-        $heightWeight = HeightWeight::create($heightWeightData);
-
-        $parentData = session('parent_data', []);
-        $guardianData = session('guardian_data', []);
-
-        if (empty($parentData) && empty($guardianData)) {
-            return redirect()->back()->withInput()->withErrors(['message' => 'Please provide either parent or guardian data.']);
-        }
-
-        $parentData = array_merge([
-            'father_name' => null,
-            'mother_name' => null,
-            'father_nik' => null,
-            'mother_nik' => null,
-            'father_birth_year' => null,
-            'mother_birth_year' => null,
-            'father_education' => null,
-            'mother_education' => null,
-            'father_occupation' => null,
-            'mother_occupation' => null,
-            'father_income' => null,
-            'mother_income' => null,
-            'parent_phone_number' => null,
-            'parent_email' => null,
-        ], $parentData);
-
-        $guardianData = array_merge([
-            'guardian_name' => null,
-            'guardian_nik' => null,
-            'guardian_birth_year' => null,
-            'guardian_education' => null,
-            'guardian_occupation' => null,
-            'guardian_income' => null,
-            'guardian_phone_number' => null,
-            'guardian_email' => null,
-        ], $guardianData);
-
-        $guardian = Guardian::create(array_merge($parentData, $guardianData));
-
-        $validated['height_weight_id'] = $heightWeight->id;
-        $validated['guardian_id'] = $guardian->id;
-
-        $student = Student::create($validated);
-
-        if ($student) {
-            session()->forget(['parent_data', 'guardian_data']);
-
-            $notification['alert-type'] = 'success';
-            $notification['message'] = 'Data Siswa Berhasil Disimpan';
-            return redirect()->route('student_data.index')->with($notification);
-        } else {
-            $notification['alert-type'] = 'error';
-            $notification['message'] = 'Data Siswa Gagal Disimpan';
-            return redirect()->route('student_data.create')->withInput()->with($notification);
-        }
+    if ($request->hasFile('student_photo')) {
+        $path = $request->file('student_photo')->storeAs(
+            'public/photos',
+            'student_photo_' . time() . '.' . $request->file('student_photo')->extension()
+        );
+        $validated['student_photo'] = basename($path);
     }
+
+    $heightWeightData = $request->validate([
+        'height' => 'nullable|integer',
+        'weight' => 'nullable|integer',
+        'head_size' => 'nullable|integer',
+    ]);
+
+    $parentData = session('parent_data', []);
+    $guardianData = session('guardian_data', []);
+
+    if (empty($parentData) && empty($guardianData)) {
+        return redirect()->back()->withInput()->withErrors(['message' => 'Please provide either parent or guardian data.']);
+    }
+
+    // Merge parent and guardian data, and ensure there are no duplicate unique fields
+    $mergedData = array_merge([
+        'father_name' => null,
+        'mother_name' => null,
+        'father_nik' => null,
+        'mother_nik' => null,
+        'father_birth_year' => null,
+        'mother_birth_year' => null,
+        'father_education' => null,
+        'mother_education' => null,
+        'father_occupation' => null,
+        'mother_occupation' => null,
+        'father_income' => null,
+        'mother_income' => null,
+        'parent_phone_number' => null,
+        'parent_email' => null,
+        'guardian_name' => null,
+        'guardian_nik' => null,
+        'guardian_birth_year' => null,
+        'guardian_education' => null,
+        'guardian_occupation' => null,
+        'guardian_income' => null,
+        'guardian_phone_number' => null,
+        'guardian_email' => null,
+    ], $parentData, $guardianData);
+
+    // Remove duplicates from merged data
+    $uniqueFields = ['guardian_nik', 'parent_phone_number', 'parent_email'];
+    foreach ($uniqueFields as $field) {
+        $values = array_filter([$parentData[$field] ?? null, $guardianData[$field] ?? null]);
+        if (count($values) > 1) {
+            return redirect()->back()->withInput()->withErrors(['message' => "Duplicate value for unique field: $field"]);
+        }
+        $mergedData[$field] = array_pop($values);
+    }
+
+    $guardian = Guardian::create($mergedData);
+
+    $student = Student::create(array_merge($validated, [
+        'guardian_id' => $guardian->id,
+    ]));
+
+    $heightWeightData['student_id'] = $student->id;
+    HeightWeight::create($heightWeightData);
+
+    if ($student) {
+        session()->forget(['parent_data', 'guardian_data']);
+
+        $notification['alert-type'] = 'success';
+        $notification['message'] = 'Data Siswa Berhasil Disimpan';
+        return redirect()->route('student_data.index')->with($notification);
+    } else {
+        $notification['alert-type'] = 'error';
+        $notification['message'] = 'Data Siswa Gagal Disimpan';
+        return redirect()->route('student_data.create')->withInput()->with($notification);
+    }
+}
+
 
     // epdate data sisea
     public function edit(string $id)
     {
-        $student = Student::findOrFail($id);
-        $height_weights = HeightWeight::all();
-        $guardians = Guardian :: all();
+        $student = Student::with(['latestHeightWeight', 'guardian', 'class'])->findOrFail($id);
+        $guardians = Guardian::all();
         $classes = StudentClass::all();
 
-        return view('student_data.edit', compact('student', 'height_weights', 'guardians', 'classes'));
+        return view('student_data.edit', compact('student', 'guardians', 'classes'));
     }
 
 
     public function update(Request $request, string $id)
     {
-        $student = Student::findOrFail($id);
+        $student = Student::with('latestHeightWeight', 'guardian')->findOrFail($id);
 
         // Validasi data siswa
         $validated = $request->validate([
             'student_photo' => 'nullable|image',
             'status' => 'required|boolean',
-            'nis' => 'required|numeric|digits_between:1,11' . $student->id,
-            'nisn' => 'required|numeric|digits_between:1,11' . $student->id,
+            'nis' => 'required|numeric|digits_between:1,11,' . $student->id,
+            'nisn' => 'required|numeric|digits_between:1,11,' . $student->id,
             'nipd' => 'required|numeric|digits_between:1,10,' . $student->id,
             'class_id' => 'required|exists:classes,id',
             'student_name' => 'required|max:255',
             'gender' => 'required|in:Laki-laki,Perempuan',
-            'nik' => 'required|numeric|digits_between:1,17' . $student->id,
+            'nik' => 'required|numeric|digits_between:1,17,' . $student->id,
             'place_of_birth' => 'required|max:50',
             'date_of_birth' => 'required|date',
             'religion' => 'required|max:10',
@@ -226,7 +241,7 @@ class StudentController extends Controller
             'previous_school' => 'nullable|max:255',
             'birth_certificate_number' => 'nullable|max:60',
             'residence_type' => 'nullable|max:25',
-            'no_kk' => 'required|numeric|digits_between:1,17' . $student->id,
+            'no_kk' => 'required|numeric|digits_between:1,17,' . $student->id,
             'child_number' => 'nullable|numeric|digits_between:1,2',
             'number_of_siblings' => 'nullable|numeric|digits_between:1,2',
             'transportation' => 'nullable|max:20',
@@ -279,7 +294,13 @@ class StudentController extends Controller
         $student->update($validated);
 
         // Perbarui data berat badan
-        $student->heightWeight()->update($heightWeightData);
+        if ($student->latestHeightWeight) {
+            $student->latestHeightWeight->update($heightWeightData);
+        } else {
+            // Create a new HeightWeight record if it doesn't exist
+            $heightWeightData['student_id'] = $student->id;
+            HeightWeight::create($heightWeightData);
+        }
 
         // Perbarui atau buat data wali/orang tua
         if ($student->guardian) {

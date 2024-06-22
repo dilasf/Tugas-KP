@@ -82,23 +82,33 @@
                                 <p class="text-gray-500 text-16px inline-block">{{ $student->gender ?? 'N/A'}}</p>
                             </div>
 
+                            {{-- Data Tinggi Badan --}}
                             <div class="mb-2">
                                 <p class="font-medium text-16px text-gray-600 mr-2 inline-block w-[147px]">Tinggi Badan</p>
                                 <p class="text-gray-500 text-16px inline-block w-[10px]">:</p>
-                                <p class="text-gray-500 text-16px inline-block">{{ $student->heightWeight->height.' Cm' ?? 'N/A'}}</p>
+                                <p class="text-gray-500 text-16px inline-block">
+                                    {{ $latestHeight ? $latestHeight->height . ' Cm' : 'N/A' }}
+                                </p>
                             </div>
 
                             <div class="mb-2">
                                 <p class="font-medium text-16px text-gray-600 mr-2 inline-block w-[147px]">Berat Badan</p>
                                 <p class="text-gray-500 text-16px inline-block w-[10px]">:</p>
-                                <p class="text-gray-500 text-16px inline-block">{{ $student->heightWeight->weight.' Kg' ?? 'N/A'}}</p>
+                                <p class="text-gray-500 text-16px inline-block">
+                                    {{ $latestWeight ? $latestWeight->weight . ' Kg' : 'N/A' }}
+                                </p>
                             </div>
 
                             <div class="mb-2">
                                 <p class="font-medium text-16px text-gray-600 mr-2 inline-block w-[147px]">Besar Kepala</p>
                                 <p class="text-gray-500 text-16px inline-block w-[10px]">:</p>
-                                <p class="text-gray-500 text-16px inline-block">{{ $student->heightWeight->head_size.' Cm' ?? 'N/A'}}</p>
+                                <p class="text-gray-500 text-16px inline-block">
+                                    {{ $latestHeadSize ? $latestHeadSize->head_size . ' Cm' : 'N/A' }}
+                                </p>
                             </div>
+
+                              {{-- End Data Tinggi Badan --}}
+
 
                             <div class="mb-2">
                                 <p class="font-medium text-16px text-gray-600 mr-2 inline-block w-[147px]">NIK</p>
