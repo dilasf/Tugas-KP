@@ -17,16 +17,13 @@ return new class extends Migration
 
             $table->string('assessment_type', 100);
             $table->unsignedBigInteger('attendance_id')->nullable();
-            $table->integer('score')->nullable()->default(0);
-            $table->integer('final_score')->nullable()->default(0);
-            $table->string('grade', 1)->nullable()->default('D');
-            $table->string('description', 255)->nullable()->default('Tidak Ada Deskripsi');
+            $table->integer('score')->nullable();
+            $table->integer('final_score')->nullable();
+            $table->string('grade', 1)->nullable();
+            $table->string('description', 255)->nullable();
             $table->timestamps();
 
             $table->foreign('grade_id')->references('id')->on('grades')->onDelete('cascade');
-            // $table->foreign('student_id')->references('id')->on('students')->onDelete('cascade');
-            // $table->foreign('class_subject_id')->references('id')->on('class_subjects')->onDelete('cascade');
-            // $table->foreign('semester_year_id')->references('id')->on('semester_years');
         });
     }
 

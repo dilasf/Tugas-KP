@@ -43,7 +43,7 @@ Route::middleware('auth')->group(function () {
 });
 
 //Data Guru
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'verified', 'role:admin'])->group(function () {
     Route::get('/teacher', [TeacherController::class, 'index'])->name('teacher_data.index');;
     Route::get('/teacher/create', [TeacherController::class, 'create'])->name('teacher_data.create');
     Route::post('/teacher/store', [TeacherController::class, 'store'])->name('teacher_data.store');
@@ -58,7 +58,7 @@ Route::middleware('auth')->group(function () {
 
 
 //Data Siswa
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'verified', 'role:admin'])->group(function () {
     Route::get('/student', [StudentController::class, 'index'])->name('student_data.index');
     Route::get('/student/create', [StudentController::class, 'create'])->name('student_data.create');
     Route::post('/student/store', [StudentController::class, 'store'])->name('student_data.store');
@@ -82,7 +82,7 @@ Route::middleware('auth')->group(function () {
 
 
 //Data Mapel
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'verified', 'role:admin'])->group(function () {
     Route::get('/subject', [SubjectController::class, 'index'])->name('subject.index');
     Route::get('/subject/create', [SubjectController::class, 'create'])->name('subject.create');
     Route::post('/subject/store', [SubjectController::class, 'store'])->name('subject.store');
@@ -92,7 +92,7 @@ Route::middleware('auth')->group(function () {
 });
 
 //Data Semester
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'verified', 'role:admin'])->group(function () {
     Route::get('/subject/semester_year', [SemesterYearController::class, 'index'])->name('subject.semester_year.index');
     Route::get('/subject/semester_year/create', [SemesterYearController::class, 'create'])->name('subject.semester_year.create');
     Route::post('/subject/semester_year/store', [SemesterYearController::class, 'store'])->name('subject.semester_year.store');
@@ -102,7 +102,7 @@ Route::middleware('auth')->group(function () {
 });
 
 //Data Kelas
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'verified', 'role:admin'])->group(function () {
     Route::get('/class', [StudentClassController::class, 'index'])->name('class.index');
     Route::get('/class/create', [StudentClassController::class, 'create'])->name('class.create');
     Route::post('/class/store', [StudentClassController::class, 'store'])->name('class.store');
@@ -131,7 +131,7 @@ Route::middleware('auth')->group(function () {
 
 
 //Jenis Nilai Pengetahuan
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'verified', 'role:guru_mapel|guru_kelas'])->group(function () {
     Route::get('/knowledge-scores', [KnowledgeScoreController::class, 'index'])->name('grade.knowledge_scores.index');
     Route::get('/knowledge-scores/create', [KnowledgeScoreController::class, 'create'])->name('grade.knowledge_scores.create');
     Route::post('/knowledge-scores', [KnowledgeScoreController::class, 'store'])->name('grade.knowledge_scores.store');
@@ -141,7 +141,7 @@ Route::middleware('auth')->group(function () {
 });
 
 //Jenis Nilai Sikap
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'verified', 'role:guru_mapel|guru_kelas'])->group(function () {
     Route::get('/attitude-scores', [AttitudeScoreController::class, 'index'])->name('grade.attitude_scores.index');
     Route::get('/attitude-scores/create', [AttitudeScoreController::class, 'create'])->name('grade.attitude_scores.create');
     Route::post('/attitude-scores', [AttitudeScoreController::class, 'store'])->name('grade.attitude_scores.store');
@@ -152,7 +152,7 @@ Route::middleware('auth')->group(function () {
 
 
 //Jenis Nilai Keterampilan
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'verified', 'role:guru_mapel|guru_kelas'])->group(function () {
     Route::get('/skill-scores', [skillScoreController::class, 'index'])->name('grade.skill_scores.index');
     Route::get('/skill-scores/create', [skillScoreController::class, 'create'])->name('grade.skill_scores.create');
     Route::post('/skill-scores', [skillScoreController::class, 'store'])->name('grade.skill_scores.store');
@@ -164,7 +164,7 @@ Route::middleware('auth')->group(function () {
 });
 
 //Nilai
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'verified', 'role:guru_mapel|guru_kelas'])->group(function () {
     Route::get('/{studentId}/{classSubjectId}', [GradeController::class, 'index'])->name('grade.index');
     // Route::get('/{studentId}/{classSubjectId}/detail', [GradeController::class, 'detailKnowledgeScore'])->name('grade.detailKnowledgeScore');
     Route::get('/grade/{studentId}/{classSubjectId}/detail-knowledge-score', [GradeController::class, 'detailKnowledgeScore'])->name('grade.detailKnowledgeScore');
@@ -186,7 +186,7 @@ Route::middleware('auth')->group(function () {
 });
 
 //prestasi
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'verified', 'role:guru_mapel'])->group(function () {
     Route::get('/students/{studentId}/achievements/create/{semester_year_id}', [AchievementController::class, 'create'])->name('achievements.create');
     // Route::get('/students/{studentId}/achievements/create/{semester_year_id}', [AchievementController::class, 'create'])->name('achievements.create');
     Route::post('/students/{studentId}/achievements/store/{semester_year_id}', [AchievementController::class, 'store'])->name('achievements.store');
@@ -196,7 +196,7 @@ Route::middleware('auth')->group(function () {
 });
 
 //ekstrakulikuler
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'verified', 'role:guru_mapel'])->group(function () {
     Route::get('/students/{studentId}/extracurriculars/create/{semester_year_id}', [ExtracurricularController::class, 'create'])->name('extracurriculars.create');
     Route::post('/students/{studentId}/extracurriculars/store/{semester_year_id}', [ExtracurricularController::class, 'store']) ->name('extracurriculars.store');
     Route::get('/students/{studentId}/extracurriculars/{extracurricularId}/edit', [ExtracurricularController::class, 'edit'])->name('extracurriculars.edit');
@@ -205,7 +205,7 @@ Route::middleware('auth')->group(function () {
 });
 
 //kesehatan
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'verified', 'role:guru_mapel'])->group(function () {
     Route::get('students/{studentId}/healths/create/{semester_year_id}/{aspectName}', [HealthController::class, 'create'])->name('healths.create');
     Route::get('students/{studentId}/healths/{healthId}/edit/{aspectName}', [HealthController::class, 'edit'])->name('healths.edit');
     Route::post('students/{studentId}/healths/store/{semester_year_id}/{aspectName}', [HealthController::class, 'storeOrUpdate'])->name('healths.store');
@@ -214,7 +214,7 @@ Route::middleware('auth')->group(function () {
 });
 
 //Tinggi Badan
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'verified', 'role:guru_mapel'])->group(function () {
     // Route::get('/students/{studentId}/height_weights/{heightWeightId}/edit/{aspectName}', [HeightWeightController::class, 'edit'])
     // ->name('height_weights.edit');
     Route::get('/students/{studentId}/height_weights/{heightWeightId}/edit/{aspectName}', [HeightWeightController::class, 'edit'])
@@ -225,7 +225,7 @@ Route::middleware('auth')->group(function () {
 
 });
 
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'verified', 'role:guru_mapel|kepala_sekolah|siswa'])->group(function () {
     Route::get('rapors/lihat/{studentId}', [RaporController::class, 'index'])->name('rapors.index');
     Route::get('/rapors/{studentId}/edit/{semesterYearId}', [RaporController::class, 'edit'])->name('rapors.edit');
     Route::match(['put', 'patch'], '/rapors/{rapor}', [RaporController::class, 'update'])->name('rapors.update');

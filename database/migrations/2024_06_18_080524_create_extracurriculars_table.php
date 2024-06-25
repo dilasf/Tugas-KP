@@ -13,9 +13,9 @@ return new class extends Migration
     {
         Schema::create('extracurriculars', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->unsignedBigInteger('rapor_id');
+            $table->unsignedBigInteger('rapor_id')->nullable();
             $table->string('activity', 200)->nullable();
-            $table->string('description', 255)->nullable()->default('No description');
+            $table->string('description', 255)->nullable();
             $table->timestamps();
 
             $table->foreign('rapor_id')->references('id')->on('rapors')->onDelete('cascade');

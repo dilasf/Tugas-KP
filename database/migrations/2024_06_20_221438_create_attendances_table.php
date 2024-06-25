@@ -13,19 +13,19 @@ return new class extends Migration
     {
         Schema::create('attendances', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->unsignedBigInteger('student_id');
-            $table->unsignedBigInteger('class_subject_id');
-            $table->unsignedBigInteger('semester_year_id');
+            $table->unsignedBigInteger('student_id')->nullable();
+            $table->unsignedBigInteger('class_subject_id')->nullable();
+            $table->unsignedBigInteger('semester_year_id')->nullable();
             $table->unsignedBigInteger('rapor_id')->nullable();
-            $table->integer('sick')->nullable()->default(0);
-            $table->integer('permission')->nullable()->default(0);
-            $table->integer('unexcused')->nullable()->default(0);
+            $table->integer('sick')->nullable();
+            $table->integer('permission')->nullable();
+            $table->integer('unexcused')->nullable();
             $table->timestamps();
 
             $table->foreign('student_id')->references('id')->on('students')->onDelete('cascade');
             $table->foreign('class_subject_id')->references('id')->on('class_subjects')->onDelete('cascade');
             $table->foreign('semester_year_id')->references('id')->on('semester_years');
-            $table->foreign('rapor_id')->references('id')->on('rapors')->onDelete('cascade'); // Define rapor_id as foreign key
+            $table->foreign('rapor_id')->references('id')->on('rapors')->onDelete('cascade'); 
         });
     }
 
