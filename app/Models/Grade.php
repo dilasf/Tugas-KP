@@ -26,7 +26,6 @@ class Grade extends Model
         'descriptionAttitude',
         'descriptionSkill',
     ];
-
     protected static function boot()
     {
         parent::boot();
@@ -35,16 +34,24 @@ class Grade extends Model
             // Pastikan nilai semester_year_id ada sebelum disimpan ke dalam Rapor
             if ($grade->semester_year_id) {
                 // Cari atau buat instance Rapor
-                Rapor::updateOrCreate(
+                $rapor = Rapor::updateOrCreate(
                     [
-                        // 'student_id' => $grade->student_id,
                         'grade_id' => $grade->id,
-                        // 'class_subject_id' => $grade->class_subject_id,
                     ],
                     [
                         'school_name' => 'SDN DAWUAN',
                         'school_address' => 'KP Pasir Eurih',
-                        // 'semester_year_id' => $grade->semester_year_id,
+                    ]
+                );
+
+                // Update atau buat HeightWeight
+                HeightWeight::updateOrCreate(
+                    [
+                        'rapor_id' => $rapor->id,
+                        'student_id' => $grade->student_id,
+                    ],
+                    [
+                        // tambahkan field lain jika diperlukan
                     ]
                 );
             }

@@ -35,5 +35,19 @@ class Teacher extends Model
         'status',
     ];
 
+    // public function user()
+    // {
+    //     return $this->belongsTo(User::class);
+    // }
+
+    public function user()
+    {
+        return $this->hasOne(User::class);
+    }
+
+    public function classes()
+    {
+        return $this->hasMany(StudentClass::class, 'homeroom_teacher_id');
+    }
 
 }

@@ -51,16 +51,12 @@
                         </div> --}}
 
                         <div class="max-w-3xl">
-                            <x-input-label for="teacher_name" value="Guru Wali"/>
-                            <x-select-input id="teacher_name" name="homeroom_teacher_id" class="mt-1 block w-full bg-zinc-100" required>
-                            <option value="">Pilih Guru Wali</option>
-                            @foreach($teachers as $key => $value)
-                                @if(old('homeroom_teacher_id', $classes->homeroom_teacher_id)== $key)
-                                    <option value="{{ $key }}" selected>{{$value }}</option>
-                                @else
-                                    <option value="{{ $key }}">{{ $value}}</option>
-                                @endif
-                            @endforeach
+                            <x-input-label for="teacher_name" value="Guru Wali" />
+                            <x-select-input id="teacher_name" name="homeroom_teacher_id" class="mt-1 block w-full bg-zinc-100"  required>
+                                <option value="">Pilih Guru Wali</option>
+                                @foreach($teachers as $key => $value)
+                                    <option value="{{ $key }}" {{ old('homeroom_teacher_id', $class->homeroom_teacher_id) == $key ? 'selected' : '' }}>{{ $value }}</option>
+                                @endforeach
                             </x-select-input>
                         </div>
 

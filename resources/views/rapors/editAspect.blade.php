@@ -1,21 +1,21 @@
 <x-app-layout>
-        <x-slot name="header">
-            <div class="flex items-center">
-                <a href="{{ route('rapors.index', ['studentId' => $student]) }}">
-                    <img src="{{ asset('img/back_logo.png') }}" class="w-[30px] h-[30px] mr-3 cursor-pointer">
-                </a>
-                <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                    Edit Kompetensi - {{ $aspectName }}
-                </h2>
-            </div>
-        </x-slot>
+    <x-slot name="header">
+        <div class="flex items-center">
+            <a href="{{ route('rapors.index', ['studentId' => $student]) }}">
+                <img src="{{ asset('img/back_logo.png') }}" class="w-[30px] h-[30px] mr-3 cursor-pointer">
+            </a>
+            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+                Edit Kompetensi - {{ $aspectName }}
+            </h2>
+        </div>
+    </x-slot>
 
-        <div class="max-w-4xl mx-auto sm:px-6 lg:px-8 py-10">
-            <div class="top-0 left-0 w-full h-10 rounded-t-md bg-light-blue flex items-center justify-center text-white font-semibold text-md leading-tight">
-                {{ __('Formulir '. $aspectName)}}
-            </div>
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 bg-white">
+    <div class="max-w-4xl mx-auto sm:px-6 lg:px-8 py-10">
+        <div class="top-0 left-0 w-full h-10 rounded-t-md bg-light-blue flex items-center justify-center text-white font-semibold text-md leading-tight">
+            {{ __('Formulir '. $aspectName)}}
+        </div>
+        <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+            <div class="p-6 bg-white">
                 <form method="POST" action="{{ $action }}">
                     @csrf
                     @method('PATCH')

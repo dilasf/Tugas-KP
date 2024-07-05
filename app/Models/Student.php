@@ -111,4 +111,9 @@ class Student extends Model
     return $this->hasMany(Rapor::class);
 }
 
+public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
 }

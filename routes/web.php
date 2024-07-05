@@ -58,7 +58,7 @@ Route::middleware(['auth', 'verified', 'role:admin'])->group(function () {
 
 
 //Data Siswa
-Route::middleware(['auth', 'verified', 'role:admin'])->group(function () {
+Route::middleware(['auth', 'verified', 'role:admin|guru_mapel|guru_kelas'])->group(function () {
     Route::get('/student', [StudentController::class, 'index'])->name('student_data.index');
     Route::get('/student/create', [StudentController::class, 'create'])->name('student_data.create');
     Route::post('/student/store', [StudentController::class, 'store'])->name('student_data.store');
@@ -115,14 +115,17 @@ Route::middleware(['auth', 'verified', 'role:admin'])->group(function () {
 
 
 //Kelas dan mapel
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'verified', 'role:guru_mapel|guru_kelas'])->group(function () {
     Route::get('/class-subjects', [ClassSubjectController::class, 'index'])->name('class-subjects.index');
     Route::get('/class-subjects/{id}', [ClassSubjectController::class, 'show'])->name('class-subjects.show');
 });
 
 
-Route::middleware('auth')->group(function () {
+
+Route::middleware(['auth', 'verified', 'role:admin'])->group(function () {
     Route::get('/account/teacher', [AccountTeacherController::class, 'index'])->name('account.teacher.index');
+    Route::get('/account/teacher/{id}/edit', [AccountTeacherController::class, 'edit'])->name('account.teacher.edit');
+    Route::patch('/account/teacher/{id}', [AccountTeacherController::class, 'update'])->name('account.teacher.update');
 });
 
 Route::middleware('auth')->group(function () {
@@ -182,11 +185,12 @@ Route::middleware(['auth', 'verified', 'role:guru_mapel|guru_kelas'])->group(fun
     Route::match(['put', 'patch'],'/grade/{studentId}/{classSubjectId}/update-skill-score/{assessmentType}', [GradeController::class, 'updateSkillScore'])->name('grade.updateSkillScore');
 
     // kehadiran
-    Route::patch('attendance/update/{studentId}/{classSubjectId}/{semesterYearId}/{type}/{action}', [AttendanceController::class, 'update'])->name('attendance.update');
+    Route::patch('/attendance/update/{studentId}/{classSubjectId}/{semesterYearId}/{type}/{action}', [AttendanceController::class, 'update'])->name('attendance.update');
+
 });
 
 //prestasi
-Route::middleware(['auth', 'verified', 'role:guru_mapel'])->group(function () {
+Route::middleware(['auth', 'verified', 'role:guru_kelas'])->group(function () {
     Route::get('/students/{studentId}/achievements/create/{semester_year_id}', [AchievementController::class, 'create'])->name('achievements.create');
     // Route::get('/students/{studentId}/achievements/create/{semester_year_id}', [AchievementController::class, 'create'])->name('achievements.create');
     Route::post('/students/{studentId}/achievements/store/{semester_year_id}', [AchievementController::class, 'store'])->name('achievements.store');
@@ -196,7 +200,7 @@ Route::middleware(['auth', 'verified', 'role:guru_mapel'])->group(function () {
 });
 
 //ekstrakulikuler
-Route::middleware(['auth', 'verified', 'role:guru_mapel'])->group(function () {
+Route::middleware(['auth', 'verified', 'role:guru_kelas'])->group(function () {
     Route::get('/students/{studentId}/extracurriculars/create/{semester_year_id}', [ExtracurricularController::class, 'create'])->name('extracurriculars.create');
     Route::post('/students/{studentId}/extracurriculars/store/{semester_year_id}', [ExtracurricularController::class, 'store']) ->name('extracurriculars.store');
     Route::get('/students/{studentId}/extracurriculars/{extracurricularId}/edit', [ExtracurricularController::class, 'edit'])->name('extracurriculars.edit');
@@ -205,27 +209,36 @@ Route::middleware(['auth', 'verified', 'role:guru_mapel'])->group(function () {
 });
 
 //kesehatan
-Route::middleware(['auth', 'verified', 'role:guru_mapel'])->group(function () {
+Route::middleware(['auth', 'verified', 'role:guru_kelas'])->group(function () {
     Route::get('students/{studentId}/healths/create/{semester_year_id}/{aspectName}', [HealthController::class, 'create'])->name('healths.create');
     Route::get('students/{studentId}/healths/{healthId}/edit/{aspectName}', [HealthController::class, 'edit'])->name('healths.edit');
-    Route::post('students/{studentId}/healths/store/{semester_year_id}/{aspectName}', [HealthController::class, 'storeOrUpdate'])->name('healths.store');
-    Route::patch('students/{studentId}/healths/update/{healthId}/{aspectName}', [HealthController::class, 'storeOrUpdate'])->name('healths.update');
+    Route::post('/healths/storeOrUpdate/{studentId}/{semester_year_id}/{aspectName}', [HealthController::class, 'storeOrUpdate'])->name('healths.storeOrUpdate');
+    // Route::patch('students/{studentId}/healths/update/{healthId}/{aspectName}', [HealthController::class, 'storeOrUpdate'])->name('healths.update');
 
 });
 
 //Tinggi Badan
-Route::middleware(['auth', 'verified', 'role:guru_mapel'])->group(function () {
+Route::middleware(['auth', 'verified'])->group(function () {
     // Route::get('/students/{studentId}/height_weights/{heightWeightId}/edit/{aspectName}', [HeightWeightController::class, 'edit'])
     // ->name('height_weights.edit');
-    Route::get('/students/{studentId}/height_weights/{heightWeightId}/edit/{aspectName}', [HeightWeightController::class, 'edit'])
+    // Route::get('/students/{studentId}/height_weights/{heightWeightId}/edit/{aspectName}', [HeightWeightController::class, 'edit'])
+    // ->name('height_weights.edit');
+
+    // Route::get('/students/{studentId}/height_weights/{heightWeightId}/edit/{aspectName}', [HeightWeightController::class, 'edit'])
+    // ->name('height_weights.edit');
+
+    // Route::patch('/students/{studentId}/height_weights/{heightWeightId?}/update/{aspectName}', [HeightWeightController::class, 'update'])
+    // ->name('height_weights.update');
+    Route::get('/height_weights/{studentId}/{heightWeightId}/{aspectName}/{semester_year_id}/edit', [HeightWeightController::class, 'edit'])
     ->name('height_weights.edit');
 
-    Route::patch('/students/{studentId}/height_weights/{heightWeightId}/update/{aspectName}', [HeightWeightController::class, 'update'])
+Route::patch('/height_weights/{studentId}/{heightWeightId}/{aspectName}/{semester_year_id}', [HeightWeightController::class, 'update'])
     ->name('height_weights.update');
 
 });
 
-Route::middleware(['auth', 'verified', 'role:guru_mapel|kepala_sekolah|siswa'])->group(function () {
+
+Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('rapors/lihat/{studentId}', [RaporController::class, 'index'])->name('rapors.index');
     Route::get('/rapors/{studentId}/edit/{semesterYearId}', [RaporController::class, 'edit'])->name('rapors.edit');
     Route::match(['put', 'patch'], '/rapors/{rapor}', [RaporController::class, 'update'])->name('rapors.update');
@@ -233,10 +246,17 @@ Route::middleware(['auth', 'verified', 'role:guru_mapel|kepala_sekolah|siswa'])-
     Route::get('/rapors/{studentId}/edit-suggestion/{semesterYearId}', [RaporController::class, 'editSuggestion'])->name('rapors.editSuggestion');
     Route::match(['put', 'patch'],'/rapors/{studentId}/update-suggestion/{semesterYearId}', [RaporController::class, 'updateSuggestion'])->name('rapors.updateSuggestion');
 
-    // Edit
+// Route untuk create aspect form
+Route::get('/rapors/{studentId}/create/{aspectName}', [RaporController::class, 'createAspect'])->name('rapors.createAspect');
+
+// Route untuk menyimpan aspek baru
+Route::post('/rapors/{studentId}/store/{aspectName}', [RaporController::class, 'storeAspect'])->name('rapors.storeAspect');
+
+// Route untuk edit aspect form
 Route::get('/rapors/{studentId}/edit/{raporId}/{aspectName}', [RaporController::class, 'editAspect'])->name('rapors.editAspect');
-// Update
-Route::match(['put', 'patch'],'/rapors/{studentId}/update/{raporId}/{aspectName}', [RaporController::class, 'updateAspect'])->name('rapors.updateAspect');
+
+// Route untuk memperbarui aspek yang ada
+Route::patch('/rapors/{studentId}/update/{raporId}/{aspectName}', [RaporController::class, 'updateAspect'])->name('rapors.updateAspect');
 
 
 });

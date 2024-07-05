@@ -12,37 +12,45 @@ use App\Models\Teacher;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class RaporController extends Controller
 {
+
     public function index(Request $request, $studentId)
     {
-        $selectedSemesterYearId = $request->input('semester_year_id');
-        $semesters = SemesterYear::all();
-        $sidebarOpen = false;
-
+        $currentYear = now()->year;
         $currentMonth = now()->month;
-        $defaultSemester = $semesters->firstWhere('semester', ($currentMonth >= 1 && $currentMonth <= 6) ? 1 : 2);
+
+        $defaultSemester = SemesterYear::where('year', $currentYear)
+            ->where('semester', ($currentMonth >= 1 && $currentMonth <= 6) ? 1 : 2)
+            ->first();
+
+        $selectedSemesterYearId = $request->input('semester_year_id', $defaultSemester->id);
+
+        // Mengambil semester hanya untuk tahun ini
+        $semesters = SemesterYear::where('year', $currentYear)->get();
+        $sidebarOpen = false;
 
         if (!$selectedSemesterYearId) {
             $selectedSemesterYearId = $defaultSemester->id;
         }
 
-        // menemukan data guru
+        // Menemukan data siswa
         $student = Student::with(['class.teacher', 'heightWeights'])->findOrFail($studentId);
         $headmaster = Teacher::where('typesOfCAR', 'Kepala Sekolah')->first();
 
-        // meneukan data grade sesuai semester
+        // Menemukan data grade sesuai semester
         $grades = Grade::where('student_id', $studentId)
             ->where('semester_year_id', $selectedSemesterYearId)
             ->get();
 
-        // sambungkan dengan tabel rapor
+        // Sambungkan dengan tabel rapor
         $rapors = Rapor::whereIn('grade_id', $grades->pluck('id'))
             ->with('extracurricular', 'achievement', 'health', 'attendances')
             ->get();
 
-        //menyesuaikan sesuai hari
+        // Menyesuaikan sesuai hari
         $uniqueSickDates = [];
         $uniquePermissionDates = [];
         $uniqueUnexcusedDates = [];
@@ -61,18 +69,21 @@ class RaporController extends Controller
             }
         }
 
-        //hitung berasarkan hari yg berbeda
+        // Hitung berdasarkan hari yang berbeda
         $totalSick = count($uniqueSickDates);
         $totalPermission = count($uniquePermissionDates);
         $totalUnexcused = count($uniqueUnexcusedDates);
 
-        // Set print_date
+        // Set print_date jika belum diatur
         foreach ($rapors as $rapor) {
             if (is_null($rapor->print_date)) {
                 $rapor->print_date = now()->toDateString();
                 $rapor->save();
             }
         }
+
+        // Mengambil data heightWeight berdasarkan rapor yang ada
+        $heightWeights = HeightWeight::whereIn('rapor_id', $rapors->pluck('id'))->get();
 
         return view('rapors.index', [
             'student' => $student,
@@ -84,14 +95,77 @@ class RaporController extends Controller
             'totalPermission' => $totalPermission,
             'totalUnexcused' => $totalUnexcused,
             'headmaster' => $headmaster,
+            'heightWeights' => $heightWeights, // Mengirim data heightWeight ke view
         ]);
     }
 
+
     //edit data kompetensi sikap
+        public function createAspect($studentId, $aspectName)
+    {
+        $student = Student::findOrFail($studentId);
+        $action = route('rapors.storeAspect', ['studentId' => $studentId, 'aspectName' => $aspectName]);
+
+        return view('rapors.editAspect', [
+            'rapor' => new Rapor(),
+            'action' => $action,
+            'aspectName' => $aspectName,
+            'student' => $student
+        ]);
+    }
+
+    public function storeAspect(Request $request, $studentId, $aspectName)
+    {
+        $validated = $request->validate([
+            'social_attitudes' => 'nullable|string|max:255',
+            'spiritual_attitude' => 'nullable|string|max:255',
+        ]);
+
+        // Create a new Rapor record
+        $grade = Grade::where('student_id', $studentId)
+                    ->where('semester_year_id', $request->input('semester_year_id'))
+                    ->first();
+
+        if ($grade) {
+            $rapor = new Rapor();
+            $rapor->grade_id = $grade->id;
+
+            // Save attributes based on the aspectName
+            switch ($aspectName) {
+                case 'Sikap Sosial':
+                    $rapor->social_attitudes = $validated['social_attitudes'];
+                    break;
+                case 'Sikap Spiritual':
+                    $rapor->spiritual_attitude = $validated['spiritual_attitude'];
+                    break;
+                default:
+                    break;
+            }
+
+            $rapor->save();
+
+            $notification['alert-type'] = 'success';
+            $notification['message'] = 'Data Sikap Berhasil Disimpan';
+            return redirect()->route('rapors.index', ['studentId' => $studentId])->with($notification);
+        } else {
+            $notification['alert-type'] = 'error';
+            $notification['message'] = 'Gagal menemukan Grade yang sesuai';
+            return redirect()->route('rapors.createAspect', ['studentId' => $studentId, 'aspectName' => $aspectName])
+                            ->withInput()
+                            ->with($notification);
+        }
+    }
+
+
     public function editAspect($studentId, $raporId, $aspectName)
     {
         $student = Student::findOrFail($studentId);
-        $rapor = Rapor::findOrFail($raporId);
+        $rapor = Rapor::find($raporId);
+
+        if (!$rapor) {
+            return redirect()->route('rapors.createAspect', ['studentId' => $studentId, 'aspectName' => $aspectName]);
+        }
+
         $action = route('rapors.updateAspect', ['studentId' => $studentId, 'raporId' => $raporId, 'aspectName' => $aspectName]);
 
         return view('rapors.editAspect', [
@@ -109,11 +183,11 @@ class RaporController extends Controller
             'spiritual_attitude' => 'nullable|string|max:255',
         ]);
 
-        try {
-            // Cari rapor berdasarkan $raporId
-            $rapor = Rapor::findOrFail($raporId);
+        // Find the rapor record
+        $rapor = Rapor::find($raporId);
 
-            // Simpan nilai-nilai atribut kesehatan sesuai dengan aspek yang dipilih
+        if ($rapor) {
+            // Update attributes based on the aspectName
             switch ($aspectName) {
                 case 'Sikap Sosial':
                     $rapor->social_attitudes = $validated['social_attitudes'];
@@ -129,16 +203,15 @@ class RaporController extends Controller
 
             $notification['alert-type'] = 'success';
             $notification['message'] = 'Data Sikap Berhasil Disimpan';
-
             return redirect()->route('rapors.index', ['studentId' => $studentId])->with($notification);
-
-        } catch (\Exception $e) {
+        } else {
             $notification['alert-type'] = 'error';
-            $notification['message'] = 'Gagal menyimpan data Sikap: ' . $e->getMessage();
-            return redirect()->route('rapors.editAspect', ['studentId' => $studentId, 'raporId' => $raporId, 'aspectName' => $aspectName])->withInput()->with($notification);
+            $notification['message'] = 'Gagal menemukan Rapor yang sesuai';
+            return redirect()->route('rapors.editAspect', ['studentId' => $studentId, 'raporId' => $raporId, 'aspectName' => $aspectName])
+                            ->withInput()
+                            ->with($notification);
         }
     }
-
 
      //saran
      public function editSuggestion($studentId, $semesterYearId)
@@ -155,31 +228,38 @@ class RaporController extends Controller
      }
 
      public function updateSuggestion(Request $request, $studentId, $semesterYearId)
-     {
-         $validated = $request->validate([
-             'suggestion' => 'required|max:255',
-         ]);
+    {
+        $validated = $request->validate([
+            'suggestion' => 'required|max:255',
+        ]);
 
-         try {
-             $grade = Grade::where('student_id', $studentId)
-                          ->where('semester_year_id', $semesterYearId)
-                          ->firstOrFail();
+        $grade = Grade::where('student_id', $studentId)
+                    ->where('semester_year_id', $semesterYearId)
+                    ->first();
 
-             $rapor = Rapor::where('grade_id', $grade->id)->firstOrCreate(['grade_id' => $grade->id]);
+        if ($grade) {
+            $rapor = Rapor::updateOrCreate(
+                ['grade_id' => $grade->id],
+                ['suggestion' => $validated['suggestion']]
+            );
 
-             $rapor->suggestion = $validated['suggestion'];
-             $rapor->save();
+            $notification = [
+                'alert-type' => 'success',
+                'message' => 'Data Saran Berhasil Dimasukkan'
+            ];
 
-             $notification['alert-type'] = 'success';
-             $notification['message'] = 'Data Saran Berhasil Dimasukkan';
-             return redirect()->route('rapors.index', ['studentId' => $studentId])->with($notification);
+            return redirect()->route('rapors.index', ['studentId' => $studentId])->with($notification);
+        } else {
+            $notification = [
+                'alert-type' => 'error',
+                'message' => 'Gagal menemukan Grade yang sesuai'
+            ];
 
-         } catch (ModelNotFoundException $e) {
-             $notification['alert-type'] = 'error';
-             $notification['message'] = 'Data Saran Gagal Dimasukkan: ' . $e->getMessage();
-             return redirect()->route('rapors.editSuggestion', ['studentId' => $studentId, 'semesterYearId' => $semesterYearId])->withInput()->with($notification);
-         }
-     }
+            return redirect()->route('rapors.editSuggestion', ['studentId' => $studentId, 'semesterYearId' => $semesterYearId])
+                            ->withInput()
+                            ->with($notification);
+        }
+    }
 
      //edit nilai pengetahuan dan keterampilan
     public function edit($studentId, $semesterYearId)

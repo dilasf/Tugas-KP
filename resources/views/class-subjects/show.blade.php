@@ -27,16 +27,24 @@
                     <td  class="text-center">{{ $num++ }}</td>
                         <td  class="text-center">{{ $student->nis }}</td>
                         <td>{{ $student->student_name }}</td>
-                        <td  class="text-center">
-                            <a href="{{ route('grade.index', ['studentId' => $student->id, 'classSubjectId' => $classSubject->id]) }}"
-                                class="inline-flex items-center px-2 py-1 sm:px-3 sm:py-2 md:px-4 md:py-2 bg-light-blue border border-transparent rounded-md font-semibold
-                                       text-xs sm:text-xs md:text-sm text-white dark:text-gray-800 tracking-widest
-                                       hover:bg-sky-600 dark:hover:bg-white focus:bg-sky-600  active:bg-sky-600
-                                       focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-2
-                                       transition ease-in-out duration-150">
-                                 <span class="text-12px ml-1">{{ __('Penilaian') }}</span>
-                             </a>
+                        <td :class="{ 'flex flex-col items-center justify-center gap-2': sidebarOpen, 'flex justify-center items-center gap-2': !sidebarOpen }">
+                            {{-- <x-detail-primary-button tag="a" href="{{ route('student_data.show-detail', ['id' => $student->id]) }}"
+                                class="flex items-center justify-center min-w-[60px]">
+                                <img src="{{ asset('img/detail_logo.png') }}" class="w-[13px] h-[13px]">
+                                <span x-show="!sidebarOpen" class="ml-1 text-[10px]">{{ __('Detail') }}</span>
+                            </x-detail-primary-button> --}}
 
+                            <x-edit-primary-button tag="a" href="{{ route('grade.index', ['studentId' => $student->id, 'classSubjectId' => $classSubject->id]) }}"
+                                class="flex items-center justify-center min-w-[60px] ">
+                                <img src="{{ asset('img/edit-brush_logo.png') }}" class="w-[13px] h-[13px]">
+                                <span x-show="!sidebarOpen" class="ml-1 text-[10px]">{{ __('Penilaian') }}</span>
+                            </x-edit-primary-button>
+
+                             {{-- <x-primary-button tag="a" href="{{ route('rapors.index', ['studentId' => $student->id]) }}"
+                                class="flex items-center justify-center min-w-[60px] max-h-[31px]">
+                                <img src="{{ asset('img/detail_logo.png') }}" class="w-[13px] h-[13px]">
+                                <span x-show="!sidebarOpen" class="ml-1 text-[10px]">{{ __('Lihat Rapor') }}</span>
+                            </x-primary-button> --}}
                         </td>
 
                     </tr>

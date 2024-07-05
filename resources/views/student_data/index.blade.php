@@ -13,6 +13,8 @@
                     <input id="searchInput" class="py-3 px-4 w-full border-gray-200 rounded-lg text-sm focus:border-light-blue focus:ring-light-blue disabled:opacity-50 disabled:pointer-events-none" type="text" placeholder="Cari siswa " value="">
                 </x-search-box>
             </div>
+            {{-- Tombol import dan tambah data siswa (hanya untuk admin) --}}
+            @role('admin')
             <div style="order: 2;">
                 <div class="flex items-center">
                     <x-edit-primary-button x-data=""
@@ -27,7 +29,9 @@
                     </x-primary-button>
                 </div>
             </div>
+            @endrole
         </div>
+
         {{-- End Fitur atas --}}
 
         {{-- Data Siswa Singkat --}}
@@ -44,6 +48,7 @@
                         <th>Nama Kelas</th>
                         <th>Status</th>
                         <th>Aksi</th>
+
                     </tr>
                 </x-slot>
                 @php $num=1; @endphp
@@ -51,13 +56,12 @@
                 <tr class="text-center">
                     <td>{{ $num++ }}</td>
                     <td>
-
                         @if ($siswa->student_photo)
                             <img src="{{ asset('storage/photos/'.$siswa->student_photo) }}" alt="{{ $siswa->student_name }}" class="w-16 h-auto mb-1">
                         @else
                             <img src="{{ asset('img/profil.png') }}" alt="No photo" class="w-[50px] h-auto mb-1">
                         @endif
-                </td>
+                    </td>
                     <td>{{ $siswa->nis }}</td>
                     <td>{{ ucwords(strtolower($siswa->student_name))}}</td>
                     <td>{{ $siswa->gender === 'Perempuan' ? 'P' : 'L' }}</td>
@@ -68,14 +72,15 @@
                             @if($siswa->status == 1)
                                 <span class="py-1 px-2 inline-flex items-center gap-x-1 text-xs font-semibold bg-green-100 text-green-800 rounded-full dark:bg-green-500/10 dark:text-green-500">
                                     <svg class="size-2.5" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                                        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
+                                        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417"></path>
+                                        <path d="M6.094 8.94 4.225 7.06a.75.75 0 1 0-1.06 1.06l2.5 2.5a.75.75 0 0 0 1.06 0l5.5-5.5a.75.75 0 0 0-1.06-1.06l-4.53 4.53z"></path>
                                     </svg>
                                     Aktif
                                 </span>
                             @else
                                 <span class="py-1 px-2 inline-flex items-center gap-x-1 text-xs font-semibold bg-red-100 text-red-800 rounded-full dark:bg-red-500/10 dark:text-red-500">
                                     <svg class="size-2.5" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                                        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293 5.354 4.646z"/>
+                                        <path d="M8 16a8 8 0 1 0 0-16 8 8 0 0 0 0 16zm0-1.5A6.5 6.5 0 1 1 8 1a6.5 6.5 0 0 1 0 13zm.75-10.25a.75.75 0 0 0-1.5 0v4.25a.75.75 0 0 0 1.5 0V4.25zm0 6a.75.75 0 1 0-1.5 0 .75.75 0 0 0 1.5 0z"></path>
                                     </svg>
                                     Tidak Aktif
                                 </span>
@@ -89,16 +94,26 @@
                             <span x-show="!sidebarOpen" class="ml-1 text-[10px]">{{ __('Detail') }}</span>
                         </x-detail-primary-button>
 
+                        @role('admin')
                         <x-edit-primary-button tag="a" href="{{ route('student_data.edit', ['id' => $siswa->id]) }}"
                             class="flex items-center justify-center min-w-[60px]">
                             <img src="{{ asset('img/edit-brush_logo.png') }}" class="w-[13px] h-[13px]">
                             <span x-show="!sidebarOpen" class="ml-1 text-[10px]">{{ __('Edit') }}</span>
                         </x-edit-primary-button>
+                        @endrole
 
-                        <a href="{{ route('rapors.index', ['studentId' => $siswa->id]) }}" class="inline-flex items-center px-4 py-2 bg-blue-500 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 focus:bg-blue-700 active:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
+                        {{-- <a href="{{ route('rapors.index', ['studentId' => $siswa->id]) }}" class="inline-flex items-center px-4 py-2 bg-blue-500 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 focus:bg-blue-700 active:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
                             Lihat Rapor
-                        </a>
+                        </a> --}}
+                        @role('guru_kelas')
+                        <x-primary-button tag="a" href="{{ route('rapors.index', ['studentId' => $siswa->id]) }}"
+                                class="flex items-center justify-center min-w-[60px] max-h-[31px]">
+                                <img src="{{ asset('img/detail_logo.png') }}" class="w-[10px] h-[13px]">
+                                <span x-show="!sidebarOpen" class="ml-1 text-[10px]">{{ __('Lihat Rapor') }}</span>
+                            </x-primary-button>
+                        @endrole
 
+                        @role('admin')
                         <x-danger-button
                             x-data=""
                             x-on:click.prevent="
@@ -108,6 +123,7 @@
                             <img src="{{ asset('img/garbage_logo.png') }}" class="w-[13px] h-[13px]">
                             <span x-show="!sidebarOpen" class="ml-1 text-[10px]">{{ __('Hapus') }}</span>
                         </x-danger-button>
+                        @endrole
                     </td>
 
                 </tr>

@@ -5,10 +5,10 @@ namespace App\Imports;
 use App\Models\Guardian;
 use App\Models\HeightWeight;
 use App\Models\Student;
+use Carbon\Carbon;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
-use Carbon\Carbon;
 
 class StudentsDataImport implements ToModel, WithHeadingRow
 {
@@ -29,6 +29,7 @@ class StudentsDataImport implements ToModel, WithHeadingRow
 
     public function model(array $row)
     {
+        // dd($row);
         // Ensure 'nis' is not empty
         if (!empty($row['nis'])) {
             // Import guardian data

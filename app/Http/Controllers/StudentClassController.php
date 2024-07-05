@@ -17,14 +17,13 @@ class StudentClassController extends Controller
                             ->get();
         $sidebarOpen = false;
         return view('class.index', ['classes' => $data], compact('sidebarOpen'));
-
     }
 
     public function create()
-    {
-        $data['teacher'] = Teacher::pluck('teacher_name', 'id');
-        return view('class.create', $data);
-    }
+{
+    $teachers = Teacher::where('typesOfCAR', 'guru kelas')->pluck('teacher_name', 'id');
+    return view('class.create', ['teachers' => $teachers]);
+}
 
     public function store(Request $request)
     {
@@ -59,10 +58,9 @@ class StudentClassController extends Controller
 
     public function edit(string $id)
     {
-        $data['classes'] = StudentClass::find($id);
-        $data['teachers'] = Teacher::pluck('teacher_name', 'id');
-
-        return view('class.edit', $data);
+        $teachers = Teacher::where('typesOfCAR', 'guru kelas')->pluck('teacher_name', 'id');
+        $class = StudentClass::find($id);
+        return view('class.edit', compact('class', 'teachers'));
     }
 
     public function update(Request $request, string $id)
@@ -74,11 +72,10 @@ class StudentClassController extends Controller
             'number_of_male_students' => 'nullable|integer',
             'number_of_female_students' => 'nullable|integer',
             'number_of_students' => 'nullable|integer',
-            'homeroom_teacher' => 'required|max:255',
+            'homeroom_teacher_id' => 'required|exists:teachers,id',
             'curriculum' => 'required|max:255',
             'room' => 'required|max:100',
         ]);
-
 
         $data = $class->update($validated);
 
@@ -97,12 +94,12 @@ class StudentClassController extends Controller
     {
         $class = StudentClass::findOrFail($id);
 
-       $class->total_students = 0;
+        $class->total_students = 0;
         $class->number_of_male_students = 0;
         $class->number_of_female_students = 0;
         $class->save();
 
-       $data = $class->delete();
+        $data = $class->delete();
         if ($data) {
             $notification['alert-type'] = 'success';
             $notification['message'] = 'Data Kelas Berhasil Dihapus';

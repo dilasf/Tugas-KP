@@ -31,17 +31,19 @@
 
                 <div id="users-accordion-child" class="hs-accordion-content w-full overflow-hidden transition-[height] duration-300 hidden">
                     <ul class="hs-accordion-group ps-3 pt-2" data-hs-accordion-always-open>
-
+                        @role('admin')
                             <li>
                                 <x-dropdown-link :href="route('teacher_data.index')" :active="request()->routeIs('teacher')">
                                 {{ __('Data Guru') }}
                                 </x-dropdown-link>
                             </li>
+                        @endrole
                             <li>
                                 <x-dropdown-link :href="route('student_data.index')" :active="request()->routeIs('student')">
                                     {{ __('Data Siswa') }}
                                 </x-dropdown-link>
                             </li>
+                            @role('admin')
                             <li class="hs-accordion" id="users-accordion-sub-2">
                                 <button type="button" class="hs-accordion-toggle w-full text-start flex items-center gap-x-3.5 py-2 px-2.5 hs-accordion-active:text-white hs-accordion-active:hover:bg-side-dark text-sm text-slate-200 hover:bg-hover-side hover:text-white focus:outline-none focus:bg-side-dark">
                                     Akun
@@ -63,10 +65,12 @@
                                     </ul>
                                 </div>
                             </li>
+                            @endrole
                     </ul>
                 </div>
             </li>
 
+            @role('admin')
             <li class="hs-accordion" id="account-accordion">
                 <button type="button" class="hs-accordion-toggle w-full text-start flex items-center gap-x-3.5 py-2 px-2.5 hs-accordion-active:text-white hs-accordion-active:hover:bg-side-dark text-sm text-slate-200 hover:bg-hover-side hover:text-white focus:outline-none focus:bg-side-dark">
 
@@ -96,6 +100,7 @@
                         </li>
                     </ul>
                 </div>
+            @endrole
 
             <div class="px-8 py-2">
                 <a class="flex-none text-sm font-semibold text-white focus:outline-none focus:ring-1 focus:ring-gray-600 py-3" href="#" aria-label="SAYA">SAYA</a>
@@ -109,7 +114,7 @@
                 </x-nav-link>
             </li>
 
-
+            @role('guru_mapel|guru_kelas')
             <li class="col-span-3">
                 <x-nav-link :href="route('class-subjects.index')" class=" bg-side-dark font-semibold px-3 py-2">
                     <svg class="flex-shrink-0 size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -121,7 +126,7 @@
                         </div>
                 </x-nav-link>
             </li>
-
+            @endrole
       </ul>
     </nav>
   </div>

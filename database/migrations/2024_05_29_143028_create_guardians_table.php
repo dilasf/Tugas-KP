@@ -35,6 +35,7 @@ return new class extends Migration
             $table->string('guardian_income', 100)->nullable();
             $table->bigInteger('guardian_phone_number')->nullable()->unique();
             $table->string('guardian_email', 255)->nullable()->unique();
+            // $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->timestamps();
         });
     }

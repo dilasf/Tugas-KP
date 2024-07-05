@@ -70,8 +70,7 @@
                     </div>
                 </div>
                 {{-- END Data Diri --}}
-
-                {{-- Kompetensi Sikap --}}
+           {{-- Kompetensi Sikap --}}
                 <div class="flex justify-between items-center">
                     <p class="font-semibold text-md">A. Kompetensi Sikap</p>
                 </div>
@@ -93,13 +92,17 @@
                                 @else
                                     <span class="text-gray-400">Data tidak tersedia</span>
                                 @endif
-
                             </td>
                             <td class="text-center">
-                                @if ($rapors->isNotEmpty() && $rapors->first()->spiritual_attitude !== null)
-                                    <x-edit-primary-button tag="a" href="{{ route('rapors.editAspect', ['studentId' => $student->id, 'raporId' => $rapors->first()->id, 'aspectName' => 'Sikap Spiritual']) }}" class="flex items-center justify-center min-w-[60px]">
+                                @if ($rapors->isNotEmpty())
+                                <x-edit-primary-button tag="a" href="{{ route('rapors.editAspect', ['studentId' => $student->id, 'raporId' => $rapors->first()->id, 'aspectName' => 'Sikap Spiritual']) }}" class="flex items-center justify-center min-w-[60px]">
+                                    <img src="{{ asset('img/edit-brush_logo.png') }}" class="w-[13px] h-[13px]">
+                                    <span x-show="!$sidebarOpen" class="ml-1 text-[10px]">{{ __('Edit') }}</span>
+                                </x-edit-primary-button>
+                                @else
+                                    <x-edit-primary-button tag="a" href="{{ route('rapors.createAspect', ['studentId' => $student->id, 'aspectName' => 'Sikap Spiritual']) }}" class="flex items-center justify-center">
                                         <img src="{{ asset('img/edit-brush_logo.png') }}" class="w-[13px] h-[13px]">
-                                        <span x-show="!$sidebarOpen" class="ml-1 text-[10px]">{{ __('Edit') }}</span>
+                                        <span x-show="!$sidebarOpen" class="ml-1 text-[10px]">{{ __('Create') }}</span>
                                     </x-edit-primary-button>
                                 @endif
                             </td>
@@ -117,19 +120,22 @@
                                 @endif
                             </td>
                             <td class="text-center">
-                                @if ($rapors->isNotEmpty() && $rapors->first()->social_attitudes !== null)
+                                @if ($rapors->isNotEmpty())
                                     <x-edit-primary-button tag="a" href="{{ route('rapors.editAspect', ['studentId' => $student->id, 'raporId' => $rapors->first()->id, 'aspectName' => 'Sikap Sosial']) }}" class="flex items-center justify-center min-w-[60px]">
                                         <img src="{{ asset('img/edit-brush_logo.png') }}" class="w-[13px] h-[13px]">
                                         <span x-show="!$sidebarOpen" class="ml-1 text-[10px]">{{ __('Edit') }}</span>
                                     </x-edit-primary-button>
+                                @else
+                                    <x-edit-primary-button tag="a" href="{{ route('rapors.createAspect', ['studentId' => $student->id, 'aspectName' => 'Sikap Sosial']) }}" class="flex items-center justify-center min-w-[60px]">
+                                        <img src="{{ asset('img/edit-brush_logo.png') }}" class="w-[13px] h-[13px]">
+                                        <span x-show="!$sidebarOpen" class="ml-1 text-[10px]">{{ __('Create') }}</span>
+                                    </x-edit-primary-button>
                                 @endif
                             </td>
                         </tr>
-
                     </x-table>
                 </div>
                 {{-- End Kompetensi Sikap --}}
-
 
                 {{-- Tabel Nilai --}}
                 <div class="mt-8">
@@ -274,91 +280,86 @@
                   </div>
                   {{-- End Saran --}}
 
-                    {{--Tinggi Badan --}}
-                    <div class="mt-8">
-                        <p class="font-semibold text-md">E. Data Tinggi Berat Badan</p>
-                        <div class="text-black max-h-[calc(100vh-200px)] overflow-y-auto">
-                            <x-table header="Header Content" :sidebarOpen="$sidebarOpen" class="overflow-x-auto mx-auto">
-                                <x-slot name="header">
-                                    <tr>
-                                        <th>No</th>
-                                        <th>Aspek yang dinilai</th>
-                                        <th>Jumlah</th>
-                                        <th>Aksi</th>
-                                    </tr>
-                                </x-slot>
-
-                                @php $num = 1; @endphp
-
+                {{-- Tinggi Badan --}}
+                <div class="mt-8">
+                    <p class="font-semibold text-md">E. Data Tinggi Berat Badan</p>
+                    <div class="text-black max-h-[calc(100vh-200px)] overflow-y-auto">
+                        <x-table header="Header Content" :sidebarOpen="$sidebarOpen" class="overflow-x-auto mx-auto">
+                            <x-slot name="header">
                                 <tr>
-                                    <td class="text-center">{{ $num++ }}</td>
-                                    <td class="font-semibold">Tinggi Badan</td>
-                                    <td class="text-center">
-                                        @if ($student->heightWeights->isNotEmpty())
-                                            @php
-                                                $heightWeight = $student->heightWeights->firstWhere(function ($heightWeight) use ($selectedSemesterYearId) {
-                                                    return $heightWeight->rapor && $heightWeight->rapor->grade && $heightWeight->rapor->grade->semester_year_id == $selectedSemesterYearId;
-                                                });
-                                            @endphp
+                                    <th>No</th>
+                                    <th>Aspek yang dinilai</th>
+                                    <th>Jumlah</th>
+                                    <th>Aksi</th>
+                                </tr>
+                            </x-slot>
 
-                                            @if ($heightWeight && $heightWeight->height !== null)
-                                                {{ $heightWeight->height }} cm
-                                            @else
-                                                <span class="text-gray-400">Data tidak tersedia</span>
-                                            @endif
+                            @php $num = 1; @endphp
+
+                            <tr>
+                                <td class="text-center">{{ $num++ }}</td>
+                                <td class="font-semibold">Tinggi Badan</td>
+                                <td class="text-center">
+                                    @if ($student->heightWeights->isNotEmpty())
+                                        @php
+                                            $heightWeight = $student->heightWeights->firstWhere(function ($heightWeight) use ($selectedSemesterYearId) {
+                                                return $heightWeight->rapor && $heightWeight->rapor->grade && $heightWeight->rapor->grade->semester_year_id == $selectedSemesterYearId;
+                                            });
+                                        @endphp
+
+                                        @if ($heightWeight && $heightWeight->height !== null)
+                                            {{ $heightWeight->height }} cm
                                         @else
                                             <span class="text-gray-400">Data tidak tersedia</span>
                                         @endif
-                                    </td>
-                                    <td class="text-center">
-                                        @if ($student->heightWeights->isNotEmpty())
-                                        <x-edit-primary-button tag="a" href="{{ route('height_weights.edit', ['studentId' => $student->id, 'heightWeightId' => $student->heightWeights->first()->id ?? null, 'aspectName' => 'Tinggi Badan', 'semester_year_id' => $selectedSemesterYearId]) }}" class="flex items-center justify-center min-w-[60px]">
+                                    @else
+                                        <span class="text-gray-400">Data tidak tersedia</span>
+                                    @endif
+                                </td>
+                                <td class="text-center">
+                                    @if ($heightWeight)
+                                        <x-edit-primary-button tag="a" href="{{ route('height_weights.edit', ['studentId' => $student->id, 'heightWeightId' => $heightWeight->id, 'aspectName' => 'Tinggi Badan', 'semester_year_id' => $selectedSemesterYearId]) }}" class="flex items-center justify-center min-w-[60px]">
                                             <img src="{{ asset('img/edit-brush_logo.png') }}" class="w-[13px] h-[13px]">
-                                            <span x-show="!sidebarOpen" class="ml-1 text-[10px]">{{ __('Edit') }}</span>
+                                            <span x-show="!$sidebarOpen" class="ml-1 text-[10px]">{{ __('Edit') }}</span>
                                         </x-edit-primary-button>
+                                    @endif
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td class="text-center">{{ $num++ }}</td>
+                                <td class="font-semibold">Berat Badan</td>
+                                <td class="text-center">
+                                    @if ($student->heightWeights->isNotEmpty())
+                                        @php
+                                            $weightHeight = $student->heightWeights->firstWhere(function ($heightWeight) use ($selectedSemesterYearId) {
+                                                return $heightWeight->rapor && $heightWeight->rapor->grade && $heightWeight->rapor->grade->semester_year_id == $selectedSemesterYearId;
+                                            });
+                                        @endphp
+
+                                        @if ($weightHeight && $weightHeight->weight !== null)
+                                            {{ $weightHeight->weight }} kg
                                         @else
                                             <span class="text-gray-400">Data tidak tersedia</span>
                                         @endif
-
-                                    </td>
-                                </tr>
-
-                                <tr>
-                                    <td class="text-center">{{ $num++ }}</td>
-                                    <td class="font-semibold">Berat Badan</td>
-                                    <td class="text-center">
-                                        @if ($student->heightWeights->isNotEmpty())
-                                            @php
-                                                $heightWeight = $student->heightWeights->firstWhere(function ($heightWeight) use ($selectedSemesterYearId) {
-                                                    return $heightWeight->rapor && $heightWeight->rapor->grade && $heightWeight->rapor->grade->semester_year_id == $selectedSemesterYearId;
-                                                });
-                                            @endphp
-
-                                            @if ($heightWeight && $heightWeight->weight !== null)
-                                                {{ $heightWeight->weight }} cm
-                                            @else
-                                                <span class="text-gray-400">Data tidak tersedia</span>
-                                            @endif
-                                        @else
-                                            <span class="text-gray-400">Data tidak tersedia</span>
-                                        @endif
-                                    </td>
-                                    <td class="text-center">
-                                        @if ($student->heightWeights->isNotEmpty())
-                                            <x-edit-primary-button tag="a" href="{{ route('height_weights.edit', ['studentId' => $student->id, 'heightWeightId' => $student->heightWeights->first()->id ?? null, 'aspectName' => 'Berat Badan', 'semester_year_id' => $selectedSemesterYearId]) }}" class="flex items-center justify-center min-w-[60px]">
-                                                <img src="{{ asset('img/edit-brush_logo.png') }}" class="w-[13px] h-[13px]">
-                                                <span x-show="!sidebarOpen" class="ml-1 text-[10px]">{{ __('Edit') }}</span>
-                                            </x-edit-primary-button>
-                                        @else
-                                            <span class="text-gray-400">Data tidak tersedia</span>
-                                        @endif
-                                    </td>
-                                </tr>
-                            </x-table>
-                        </div>
+                                    @else
+                                        <span class="text-gray-400">Data tidak tersedia</span>
+                                    @endif
+                                </td>
+                                <td class="text-center">
+                                    @if ($weightHeight)
+                                        <x-edit-primary-button tag="a" href="{{ route('height_weights.edit', ['studentId' => $student->id, 'heightWeightId' => $weightHeight->id, 'aspectName' => 'Berat Badan', 'semester_year_id' => $selectedSemesterYearId]) }}" class="flex items-center justify-center min-w-[60px]">
+                                            <img src="{{ asset('img/edit-brush_logo.png') }}" class="w-[13px] h-[13px]">
+                                            <span x-show="!$sidebarOpen" class="ml-1 text-[10px]">{{ __('Edit') }}</span>
+                                        </x-edit-primary-button>
+                                    @endif
+                                </td>
+                            </tr>
+                        </x-table>
                     </div>
+                </div>
+                {{-- End Tinggi Badan --}}
 
-                     {{-- End Tinggi Badan --}}
 
                      {{-- Kesehatan --}}
                     <div class="mt-8">

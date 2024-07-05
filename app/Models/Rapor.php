@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Observers\RaporObserver;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -27,6 +28,13 @@ class Rapor extends Model
         return $this->belongsTo(Student::class, 'student_id', 'id')->via('grade');
     }
 
+    // protected static function boot()
+    // {
+    //     parent::boot();
+
+    //     static::observe(RaporObserver::class);
+    // }
+
     public function grade()
     {
         return $this->belongsTo(Grade::class, 'grade_id');
@@ -36,7 +44,7 @@ class Rapor extends Model
     {
         return $this->hasOne(HeightWeight::class);
     }
-    
+
     public function extracurricular()
     {
         return $this->hasMany(Extracurricular::class);

@@ -11,60 +11,75 @@ use App\Models\KnowledgeScore;
 use App\Models\Rapor;
 use App\Models\SemesterYear;
 use App\Models\SkillScore;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 
 class GradeController extends Controller
 {
-    //menampilkan nilai rata rata
-    public function index($studentId, $classSubjectId, Request $request)
-    {
-        $student = Student::findOrFail($studentId);
-        $classSubject = ClassSubject::with('subject', 'class')->findOrFail($classSubjectId);
-        $semesters = SemesterYear::all();
-        $selectedSemesterYearId = $request->get('semester', 1);
+   // Menampilkan nilai rata-rata
+   public function index($studentId, $classSubjectId, Request $request)
+   {
+       $student = Student::findOrFail($studentId);
+       $classSubject = ClassSubject::with('subject', 'class')->findOrFail($classSubjectId);
 
-        //mengatur session sesuai dengan semester yg dipilih
-        session(['selectedSemesterYearId' => $selectedSemesterYearId]);
+       // Mengambil tahun dan bulan saat ini
+       $currentYear = Carbon::now()->year;
+       $currentMonth = Carbon::now()->month;
 
-        // Cek apakah sudah ada entry di tabel grades untuk siswa, mata pelajaran, dan semester yang dipilih
-        $grade = Grade::where('student_id', $studentId)
-            ->where('class_subject_id', $classSubjectId)
-            ->where('semester_year_id', $selectedSemesterYearId)
-            ->first();
+       // Menentukan semester berdasarkan bulan
+       $currentSemester = ($currentMonth >= 1 && $currentMonth <= 6) ? 1 : 2;
 
-        // Jika belum ada, buat entry baru di tabel grades
-        if (!$grade) {
-            $grade = new Grade();
-            $grade->student_id = $studentId;
-            $grade->class_subject_id = $classSubjectId;
-            $grade->semester_year_id = $selectedSemesterYearId;
-            $grade->save();
-        }
+       // Mendapatkan semester yang sesuai dengan tahun ini
+       $semesters = SemesterYear::where('year', $currentYear)->get();
 
-        // Menghitung rata-rata nilai jika ada nilai di tabel grade
-        $averageKnowledgeScore = round($grade->average_knowledge_score ?? 0);
-        $averageAttitudeScore = round($grade->average_attitude_score ?? 0);
-        $averageSkillScore = round($grade->average_skill_score ?? 0);
+       // Mengatur nilai default semester yang dipilih
+       $defaultSemester = SemesterYear::where('year', $currentYear)
+           ->where('semester', $currentSemester)
+           ->first();
 
-        // Menentukan grade berdasarkan rata-rata nilai
-        $knowledgeGrade = $this->calculateGrade($averageKnowledgeScore, 'score');
-        $attitudeGrade = $this->calculateGrade($averageAttitudeScore, 'score');
-        $skillGrade = $this->calculateGrade($averageSkillScore, 'score');
+       $selectedSemesterYearId = $request->get('semester', $defaultSemester->id);
 
-        return view('grade.index',
-        compact('student',
-        'classSubject',
-        'semesters',
-        'selectedSemesterYearId',
-        'grade',
-        'averageKnowledgeScore',
-        'averageAttitudeScore',
-        'averageSkillScore',
-        'knowledgeGrade',
-        'attitudeGrade',
-        'skillGrade'));
-    }
+       // Mengatur session sesuai dengan semester yang dipilih
+       session(['selectedSemesterYearId' => $selectedSemesterYearId]);
+
+       // Cek apakah semester_year_id valid
+       $semesterYear = SemesterYear::find($selectedSemesterYearId);
+       if (!$semesterYear) {
+           return redirect()->back()->withErrors(['semester' => 'Semester yang dipilih tidak valid.']);
+       }
+
+       // Cek apakah sudah ada entry di tabel grades untuk siswa, mata pelajaran, dan semester yang dipilih
+       $grade = Grade::where('student_id', $studentId)
+           ->where('class_subject_id', $classSubjectId)
+           ->where('semester_year_id', $selectedSemesterYearId)
+           ->first();
+
+       // Jika belum ada, buat entry baru di tabel grades
+       if (!$grade) {
+           $grade = new Grade();
+           $grade->student_id = $studentId;
+           $grade->class_subject_id = $classSubjectId;
+           $grade->semester_year_id = $selectedSemesterYearId;
+           $grade->save();
+       }
+
+       // Menghitung rata-rata nilai jika ada nilai di tabel grade
+       $averageKnowledgeScore = round($grade->average_knowledge_score ?? 0);
+       $averageAttitudeScore = round($grade->average_attitude_score ?? 0);
+       $averageSkillScore = round($grade->average_skill_score ?? 0);
+
+       // Menentukan grade berdasarkan rata-rata nilai
+       $knowledgeGrade = $this->calculateGrade($averageKnowledgeScore);
+       $attitudeGrade = $this->calculateGrade($averageAttitudeScore);
+       $skillGrade = $this->calculateGrade($averageSkillScore);
+
+       return view('grade.index', compact(
+           'student', 'classSubject', 'semesters', 'selectedSemesterYearId',
+           'grade', 'averageKnowledgeScore', 'averageAttitudeScore',
+           'averageSkillScore', 'knowledgeGrade', 'attitudeGrade', 'skillGrade'
+       ));
+   }
 
     //Nilai Pengetahuan
     public function detailKnowledgeScore(Request $request, $studentId, $classSubjectId)

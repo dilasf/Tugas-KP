@@ -118,50 +118,43 @@
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            document.querySelectorAll('.update-attendance-btn').forEach(function(button) {
-                button.addEventListener('click', function() {
-                    var type = this.getAttribute('data-type');
-                    var action = this.getAttribute('data-action');
-                    var countElement = document.getElementById(type + '-count');
+       document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.update-attendance-btn').forEach(function(button) {
+        button.addEventListener('click', function() {
+            var type = this.getAttribute('data-type');
+            var action = this.getAttribute('data-action');
+            var countElement = document.getElementById(type + '-count');
 
-                    var formData = new FormData();
-                    formData.append('_token', '{{ csrf_token() }}');
-                    formData.append('_method', 'PATCH');
+            var formData = new FormData();
+            formData.append('_token', '{{ csrf_token() }}');
+            formData.append('_method', 'PATCH');
 
-                    var url = `{{ route('attendance.update', ['studentId' => $student->id, 'classSubjectId' => $classSubject->id, 'semesterYearId' => $selectedSemesterYearId, 'type' => 'typePlaceholder', 'action' => 'actionPlaceholder']) }}`;
-                    url = url.replace('typePlaceholder', type).replace('actionPlaceholder', action);
+            var url = `{{ route('attendance.update', ['studentId' => $student->id, 'classSubjectId' => $classSubject->id, 'semesterYearId' => $selectedSemesterYearId, 'type' => 'typePlaceholder', 'action' => 'actionPlaceholder']) }}`;
+            url = url.replace('typePlaceholder', type).replace('actionPlaceholder', action);
 
-                    console.log('Sending request to:', url);
-
-                    fetch(url, {
-                        method: 'POST',
-                        headers: {
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                            'X-Requested-With': 'XMLHttpRequest',
-                            'Accept': 'application/json'
-                        },
-                        body: formData
-                    })
-                    .then(response => {
-                        console.log('Response status:', response.status);
-                        return response.json();
-                    })
-                    .then(data => {
-                        if (data.success) {
-                            console.log('Updated count:', data.new_value);
-                            countElement.innerText = data.new_value;
-                        } else {
-                            console.error('Failed to update attendance.');
-                            alert('Failed to update attendance.');
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error:', error); // Debug log
-                        alert('An error occurred. See console for details.');
-                    });
-                });
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json'
+                },
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    countElement.innerText = data.new_value;
+                } else {
+                    alert('Failed to update attendance.');
+                }
+            })
+            .catch(error => {
+                alert('An error occurred.');
             });
         });
+    });
+});
+
     </script>
 </x-app-layout>

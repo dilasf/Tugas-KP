@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Models\SemesterYear;
@@ -23,9 +22,10 @@ class SemesterYearController extends Controller
 
     public function store(Request $request)
     {
+        $currentYear = date('Y');
         $validated = $request->validate([
             'semester' => 'required|integer|digits:1',
-            'year' => 'required|digits:4|integer|min:1900|max:' . (date('Y')),
+            'year' => 'required|digits:4|integer|min:' . $currentYear,
         ]);
 
         $data = SemesterYear::create($validated);
@@ -39,7 +39,6 @@ class SemesterYearController extends Controller
             $notification['message'] = 'Data Tahun Ajaran Gagal Disimpan';
             return redirect()->route('subject.semester_year.create')->withInput()->with($notification);
         }
-
     }
 
     public function edit(string $id)
@@ -52,11 +51,11 @@ class SemesterYearController extends Controller
     public function update(Request $request, string $id)
     {
         $subject = SemesterYear::findOrFail($id);
+        $currentYear = date('Y');
         $validated = $request->validate([
             'semester' => 'required|integer|digits:1',
-            'year' => 'required|digits:4|integer|min:1900|max:' . (date('Y')),
+            'year' => 'required|digits:4|integer|min:' . $currentYear,
         ]);
-
 
         $data = $subject->update($validated);
 
@@ -75,7 +74,7 @@ class SemesterYearController extends Controller
     {
         $semesteryear = SemesterYear::findOrFail($id);
 
-       $data = $semesteryear->delete();
+        $data = $semesteryear->delete();
         if ($data) {
             $notification['alert-type'] = 'success';
             $notification['message'] = 'Data Tahun Ajaran Berhasil Dihapus';

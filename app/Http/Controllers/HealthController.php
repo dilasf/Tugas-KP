@@ -12,45 +12,41 @@ class HealthController extends Controller
 {
     public function create($studentId, $semester_year_id, $aspectName)
     {
+        $student = Student::findOrFail($studentId);
 
-            $student = Student::findOrFail($studentId);
+        // Ambil rapor yang sesuai dengan studentId dan semester_year_id
+        $rapors = Rapor::whereHas('grade', function ($query) use ($studentId, $semester_year_id) {
+            $query->where('student_id', $studentId)
+                  ->where('semester_year_id', $semester_year_id);
+        })->get();
 
-            // Ambil rapor yang sesuai dengan studentId dan semester_year_id
-            $rapors = Rapor::whereHas('grade', function ($query) use ($studentId, $semester_year_id) {
-                $query->where('student_id', $studentId)
-                      ->where('semester_year_id', $semester_year_id);
-            })->get();
+        // Set action untuk form
+        $action = route('healths.storeOrUpdate', ['studentId' => $studentId, 'semester_year_id' => $semester_year_id, 'aspectName' => $aspectName]);
 
-            // Set action untuk form
-            $action = route('healths.store', ['studentId' => $studentId, 'semester_year_id' => $semester_year_id, 'aspectName' => $aspectName]);
-
-            return view('health.edit', [
-                'student' => $student,
-                'aspectName' => $aspectName,
-                'semester_year_id' => $semester_year_id,
-                'action' => $action,
-            ]);
-
-
+        return view('health.edit', [
+            'student' => $student,
+            'aspectName' => $aspectName,
+            'semester_year_id' => $semester_year_id,
+            'action' => $action,
+        ]);
     }
 
     public function edit($studentId, $healthId, $aspectName)
     {
-            $student = Student::findOrFail($studentId);
-            $health = Health::findOrFail($healthId);
-            $semester_year_id = $health->rapor->grade->semester_year_id;
+        $student = Student::findOrFail($studentId);
+        $health = Health::findOrFail($healthId);
+        $semester_year_id = $health->rapor->grade->semester_year_id;
 
-            $action = route('healths.update', ['studentId' => $studentId, 'healthId' => $healthId, 'aspectName' => $aspectName]); // default action is update
+        $action = route('healths.storeOrUpdate', ['studentId' => $studentId, 'semester_year_id' => $semester_year_id, 'aspectName' => $aspectName]);
 
-            return view('health.edit', [
-                'student' => $student,
-                'health' => $health,
-                'semester_year_id' => $semester_year_id,
-                'aspectName' => $aspectName,
-                'action' => $action,
-            ]);
+        return view('health.edit', [
+            'student' => $student,
+            'health' => $health,
+            'semester_year_id' => $semester_year_id,
+            'aspectName' => $aspectName,
+            'action' => $action,
+        ]);
     }
-
 
     public function storeOrUpdate(Request $request, $studentId, $semester_year_id, $aspectName)
     {
@@ -103,7 +99,7 @@ class HealthController extends Controller
         } catch (\Exception $e) {
             $notification['alert-type'] = 'error';
             $notification['message'] = 'Gagal menyimpan data Kesehatan: ' . $e->getMessage();
-            return redirect()->route('healths.edit', ['studentId' => $studentId, 'semester_year_id' => $semester_year_id, 'aspectName' => $aspectName])->withInput()->with($notification);
+            return redirect()->route('healths.create', ['studentId' => $studentId, 'semester_year_id' => $semester_year_id, 'aspectName' => $aspectName])->withInput()->with($notification);
         }
     }
 }

@@ -22,6 +22,7 @@ return new class extends Migration
             $table->string('religion', 10);
             $table->string('address');
             $table->string('mail', 50);
+            // $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->bigInteger('mobile_phone')->nullable()->unique();
             $table->bigInteger('nip')->nullable()->unique();
             $table->string('employment_status', 50);

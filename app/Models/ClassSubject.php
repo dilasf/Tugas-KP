@@ -24,8 +24,8 @@ class ClassSubject extends Model
     }
 
     public function rapor()
-{
-    return $this->hasMany(Rapor::class, 'class_subject_id');
-}
+    {
+        return $this->hasMany(Rapor::class, 'class_subject_id');
+    }
 
 }

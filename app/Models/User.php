@@ -18,10 +18,53 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
+        'teacher_id',
         'name',
         'email',
         'password',
+        'nuptk',
+        'nip',
+        'status',
     ];
+
+    public function teacher()
+    {
+        return $this->belongsTo(Teacher::class);
+    }
+
+    public function isActiveTeacher()
+    {
+        return $this->teacher && $this->teacher->status === 'active';
+    }
+
+    public function notActiveTeacher()
+    {
+        return $this->teacher && $this->teacher->status === 'inactive';
+    }
+
+    // public static function boot()
+    // {
+    //     parent::boot();
+
+    //     static::creating(function ($user) {
+    //         // Validate uniqueness of NUPTK for users with admin role
+    //         if ($user->hasRole('admin') && $user->nuptk) {
+    //             $existingUser = User::where('nuptk', $user->nuptk)->first();
+    //             if ($existingUser) {
+    //                 throw new \Exception('NUPTK must be unique.');
+    //             }
+    //         }
+
+    //         // Validate uniqueness of NIP if provided
+    //         if ($user->nip) {
+    //             $existingUser = User::where('nip', $user->nip)->first();
+    //             if ($existingUser) {
+    //                 throw new \Exception('NIP must be unique.');
+    //             }
+    //         }
+    //     });
+    // }
+
 
     /**
      * The attributes that should be hidden for serialization.

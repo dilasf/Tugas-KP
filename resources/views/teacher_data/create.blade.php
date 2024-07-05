@@ -27,13 +27,13 @@
 
                         <div class="max-w-3xl">
                             <x-input-label for="nuptk" value="NUPTK" />
-                            <x-text-input id="nuptk" type="text" name="nuptk" class="mt-1 block w-full bg-zinc-100" value="{{ old('nuptk')}}" required />
+                            <x-text-input id="nuptk" type="text" name="nuptk" class="mt-1 block w-full bg-zinc-100" value="{{ old('nuptk')}}"/>
                             <x-input-error class="mt-2" :messages="$errors->get('nuptk')" />
                         </div>
 
                         <div class="max-w-3xl">
                             <x-input-label for="nip" value="NIP" />
-                            <x-text-input id="nip" type="text" name="nip" class="mt-1 block w-full bg-zinc-100" value="{{ old('nip')}}" required />
+                            <x-text-input id="nip" type="text" name="nip" class="mt-1 block w-full bg-zinc-100" value="{{ old('nip')}}"/>
                             <x-input-error class="mt-2" :messages="$errors->get('nip')" />
                         </div>
 
