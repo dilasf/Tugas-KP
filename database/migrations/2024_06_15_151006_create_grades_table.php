@@ -16,6 +16,7 @@ return new class extends Migration
             $table->unsignedBigInteger('student_id')->nullable();
             $table->unsignedBigInteger('class_subject_id')->nullable();
             $table->unsignedBigInteger('semester_year_id')->nullable();
+            $table->morphs('teacher');
             $table->float('average_knowledge_score')->nullable();
             $table->string('gradeKnowledge', 1)->nullable();
             $table->string('descriptionKnowledge', 255)->nullable();

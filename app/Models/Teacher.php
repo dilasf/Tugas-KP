@@ -50,4 +50,14 @@ class Teacher extends Model
         return $this->hasMany(StudentClass::class, 'homeroom_teacher_id');
     }
 
+    public function subjects()
+    {
+        return Subject::whereIn('subject_name', explode(',', $this->teaching))->get();
+    }
+
+    public function classSubjects()
+    {
+        return $this->belongsToMany(ClassSubject::class, 'teacher_class_subject');
+    }
+
 }

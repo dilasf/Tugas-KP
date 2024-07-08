@@ -4,34 +4,47 @@ namespace App\Http\Controllers;
 
 use App\Models\SkillScore;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class skillScoreController extends Controller
 {
     public function index()
     {
-        $assessmentTypes = SkillScore::select('assessment_type')
-                                        ->distinct()
-                                        ->get();
+        $teacher = Auth::user();
+
+        // Assuming the teacher has a polymorphic relationship with grades
+        $assessmentTypes = SkillScore::where('teacher_id', $teacher->teacher_id)
+                                     ->select('assessment_type')
+                                     ->distinct()
+                                     ->get();
 
         $sidebarOpen = false;
 
         return view('grade.skill_scores.index', compact('assessmentTypes', 'sidebarOpen'));
     }
 
+
     public function create()
     {
         return view('grade.skill_scores.create');
     }
 
+
     public function store(Request $request)
     {
         $request->validate([
-            'assessment_type' => 'required|string|max:100|unique:skill_scores',
+            'assessment_type' => 'required|string|max:100|unique:skill_scores,assessment_type,NULL,id,teacher_id,' . Auth::user()->teacher_id,
         ]);
+
+        $user = Auth::user();
+
+        if (!$user->teacher_id) {
+            return back()->withErrors(['message' => 'Pengguna Tidak Terdaftar']);
+        }
 
         $data = SkillScore::create([
             'assessment_type' => $request->input('assessment_type'),
+            'teacher_id' => $user->teacher_id,
         ]);
 
         if ($data) {
@@ -45,19 +58,21 @@ class skillScoreController extends Controller
         }
     }
 
+
     public function edit(string $assessment_type)
     {
         $assessmentType = SkillScore::where('assessment_type', $assessment_type)->firstOrFail();
+
         return view('grade.skill_scores.edit', compact('assessmentType'));
     }
 
 
-        public function update(Request $request, string $assessment_type)
+    public function update(Request $request, string $assessment_type)
     {
         $assessmentType = SkillScore::where('assessment_type', $assessment_type)->firstOrFail();
 
         $request->validate([
-            'assessment_type' => 'required|string|max:100',
+            'assessment_type' => 'required|string|max:100|unique:skill_scores,assessment_type,' . $assessmentType->id,
         ]);
 
         $data = $assessmentType->update([
@@ -75,25 +90,20 @@ class skillScoreController extends Controller
         }
     }
 
+
     public function destroy(string $assessment_type)
     {
-        $assessmentType = SkillScore::where('assessment_type', $assessment_type)->firstOrFail();
+        $deleted = SkillScore::where('assessment_type', $assessment_type)->delete();
 
-        // Matikan constraint foreign key
-        DB::statement('SET FOREIGN_KEY_CHECKS=0');
-        $data = $assessmentType->delete();
-
-        // Aktifkan kembali constraint foreign key
-        DB::statement('SET FOREIGN_KEY_CHECKS=1');
-
-        if ($data) {
+        if ($deleted) {
             $notification['alert-type'] = 'success';
             $notification['message'] = 'Jenis Penilaian Berhasil Dihapus';
-            return redirect()->route('grade.skill_scores.index')->with($notification);
         } else {
             $notification['alert-type'] = 'error';
             $notification['message'] = 'Jenis Penilaian Gagal Dihapus';
-            return redirect()->route('grade.skill_scores.index')->with($notification);
         }
+
+        return redirect()->route('grade.skill_scores.index')->with($notification);
     }
+
 }

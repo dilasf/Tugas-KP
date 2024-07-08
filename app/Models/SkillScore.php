@@ -14,17 +14,15 @@ class SkillScore extends Model
     protected $fillable = [
         'grade_id',
         'assessment_type',
+        'teacher_id',
         'attendance_id',
         'score',
         'final_score',
         'grade',
         'description',
-        // 'student_id',
-        // 'class_subject_id',
-        // 'semester_year_id',
     ];
 
-    public function grades()
+    public function grade()
     {
         return $this->belongsTo(Grade::class);
     }
@@ -34,8 +32,8 @@ class SkillScore extends Model
     return $this->belongsTo(Attendance::class);
 }
 
-public function rapor()
-{
-    return $this->belongsTo(Rapor::class);
-}
+    public function rapor()
+    {
+        return $this->belongsTo(Rapor::class);
+    }
 }

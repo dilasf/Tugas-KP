@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('attitude_scores', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->unsignedBigInteger('grade_id')->nullable();
+            $table->unsignedBigInteger('teacher_id');
             $table->string('assessment_type', 100);
             $table->integer('score')->nullable();
             $table->integer('final_score')->nullable();
@@ -22,6 +23,7 @@ return new class extends Migration
             $table->timestamps();
 
             $table->foreign('grade_id')->references('id')->on('grades')->onDelete('cascade');
+            
         });
     }
 

@@ -28,4 +28,10 @@ class ClassSubject extends Model
         return $this->hasMany(Rapor::class, 'class_subject_id');
     }
 
+    public function teachers()
+{
+    return $this->belongsToMany(Teacher::class, 'teacher_class_subject');
+}
+
+
 }

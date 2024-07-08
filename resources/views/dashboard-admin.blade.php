@@ -34,18 +34,18 @@
                 </div>
             @endrole
 
-            @role('guru_kelas')
+            @role('guru_kelas|guru_mapel')
 
             <div style="width: 259px;">
-                <x-box-blue tag="button" href="{{ route('grade.knowledge_scores.index') }}" :count="$assessmentTypesKnowledge" title="Data Nilai Pengetahuan"/>
+                <x-box-blue tag="button" href="{{ route('grade.knowledge_scores.index') }}" :count="$uniqueKnowledge" title="Data Nilai Pengetahuan"/>
             </div>
 
             <div style="width: 259px;">
-                <x-box-green tag="button" href="{{ route('grade.skill_scores.index') }}" :count="$assessmentTypesSkill" title="Data Nilai Keterampilan"/>
+                <x-box-green tag="button" href="{{ route('grade.skill_scores.index') }}" :count="$uniqueSkill" title="Data Nilai Keterampilan"/>
             </div>
 
             <div style="width: 259px;">
-                <x-box-orange tag="button" href="{{ route('grade.attitude_scores.index') }}" :count="$assessmentTypesAttitude" title="Data Nilai Sikap"/>
+                <x-box-orange tag="button" href="{{ route('grade.attitude_scores.index') }}" :count="$uniqueAttitude" title="Data Nilai Sikap"/>
             </div>
 
         @endrole

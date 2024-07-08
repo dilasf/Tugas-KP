@@ -13,6 +13,8 @@ class KnowledgeScore extends Model
 
     protected $fillable = [
         'grade_id',
+        'teacher_id',
+        'teacher_type',
         'assessment_type',
         'score',
         'final_score',

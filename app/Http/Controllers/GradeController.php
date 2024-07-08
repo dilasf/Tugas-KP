@@ -13,73 +13,75 @@ use App\Models\SemesterYear;
 use App\Models\SkillScore;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\Auth;
 
 class GradeController extends Controller
 {
    // Menampilkan nilai rata-rata
-   public function index($studentId, $classSubjectId, Request $request)
-   {
-       $student = Student::findOrFail($studentId);
-       $classSubject = ClassSubject::with('subject', 'class')->findOrFail($classSubjectId);
+public function index($studentId, $classSubjectId, Request $request)
+{
+    $student = Student::findOrFail($studentId);
+    $classSubject = ClassSubject::with('subject', 'class')->findOrFail($classSubjectId);
 
-       // Mengambil tahun dan bulan saat ini
-       $currentYear = Carbon::now()->year;
-       $currentMonth = Carbon::now()->month;
+    // Mengambil tahun dan bulan saat ini
+    $currentYear = Carbon::now()->year;
+    $currentMonth = Carbon::now()->month;
 
-       // Menentukan semester berdasarkan bulan
-       $currentSemester = ($currentMonth >= 1 && $currentMonth <= 6) ? 1 : 2;
+    // Menentukan semester berdasarkan bulan
+    $currentSemester = ($currentMonth >= 1 && $currentMonth <= 6) ? 1 : 2;
 
-       // Mendapatkan semester yang sesuai dengan tahun ini
-       $semesters = SemesterYear::where('year', $currentYear)->get();
+    // Mendapatkan semester yang sesuai dengan tahun ini
+    $semesters = SemesterYear::where('year', $currentYear)->get();
 
-       // Mengatur nilai default semester yang dipilih
-       $defaultSemester = SemesterYear::where('year', $currentYear)
-           ->where('semester', $currentSemester)
-           ->first();
+    // Mengatur nilai default semester yang dipilih
+    $defaultSemester = SemesterYear::where('year', $currentYear)
+        ->where('semester', $currentSemester)
+        ->first();
 
-       $selectedSemesterYearId = $request->get('semester', $defaultSemester->id);
+    $selectedSemesterYearId = $request->get('semester', $defaultSemester->id);
 
-       // Mengatur session sesuai dengan semester yang dipilih
-       session(['selectedSemesterYearId' => $selectedSemesterYearId]);
+    // Mengatur session sesuai dengan semester yang dipilih
+    session(['selectedSemesterYearId' => $selectedSemesterYearId]);
 
-       // Cek apakah semester_year_id valid
-       $semesterYear = SemesterYear::find($selectedSemesterYearId);
-       if (!$semesterYear) {
-           return redirect()->back()->withErrors(['semester' => 'Semester yang dipilih tidak valid.']);
-       }
+    // Cek apakah semester_year_id valid
+    $semesterYear = SemesterYear::find($selectedSemesterYearId);
+    if (!$semesterYear) {
+        return redirect()->back()->withErrors(['semester' => 'Semester yang dipilih tidak valid.']);
+    }
 
-       // Cek apakah sudah ada entry di tabel grades untuk siswa, mata pelajaran, dan semester yang dipilih
-       $grade = Grade::where('student_id', $studentId)
-           ->where('class_subject_id', $classSubjectId)
-           ->where('semester_year_id', $selectedSemesterYearId)
-           ->first();
+    // Cek apakah sudah ada entry di tabel grades untuk siswa, mata pelajaran, dan semester yang dipilih
+    $grade = Grade::where('student_id', $studentId)
+        ->where('class_subject_id', $classSubjectId)
+        ->where('semester_year_id', $selectedSemesterYearId)
+        ->where('teacher_id', auth()->user()->teacher_id) // Tambahkan kondisi untuk teacher_id
+        ->first();
 
-       // Jika belum ada, buat entry baru di tabel grades
-       if (!$grade) {
-           $grade = new Grade();
-           $grade->student_id = $studentId;
-           $grade->class_subject_id = $classSubjectId;
-           $grade->semester_year_id = $selectedSemesterYearId;
-           $grade->save();
-       }
+    // Jika belum ada, buat entry baru di tabel grades
+    if (!$grade) {
+        $grade = new Grade();
+        $grade->student_id = $studentId;
+        $grade->class_subject_id = $classSubjectId;
+        $grade->semester_year_id = $selectedSemesterYearId;
+        $grade->teacher_id = auth()->user()->teacher_id; // Set teacher_id sesuai dengan user yang terautentikasi
+        $grade->save();
+    }
 
-       // Menghitung rata-rata nilai jika ada nilai di tabel grade
-       $averageKnowledgeScore = round($grade->average_knowledge_score ?? 0);
-       $averageAttitudeScore = round($grade->average_attitude_score ?? 0);
-       $averageSkillScore = round($grade->average_skill_score ?? 0);
+    // Menghitung rata-rata nilai jika ada nilai di tabel grade
+    $averageKnowledgeScore = round($grade->average_knowledge_score ?? 0);
+    $averageAttitudeScore = round($grade->average_attitude_score ?? 0);
+    $averageSkillScore = round($grade->average_skill_score ?? 0);
 
-       // Menentukan grade berdasarkan rata-rata nilai
-       $knowledgeGrade = $this->calculateGrade($averageKnowledgeScore);
-       $attitudeGrade = $this->calculateGrade($averageAttitudeScore);
-       $skillGrade = $this->calculateGrade($averageSkillScore);
+    // Menentukan grade berdasarkan rata-rata nilai
+    $knowledgeGrade = $this->calculateGrade($averageKnowledgeScore);
+    $attitudeGrade = $this->calculateGrade($averageAttitudeScore);
+    $skillGrade = $this->calculateGrade($averageSkillScore);
 
-       return view('grade.index', compact(
-           'student', 'classSubject', 'semesters', 'selectedSemesterYearId',
-           'grade', 'averageKnowledgeScore', 'averageAttitudeScore',
-           'averageSkillScore', 'knowledgeGrade', 'attitudeGrade', 'skillGrade'
-       ));
-   }
+    return view('grade.index', compact(
+        'student', 'classSubject', 'semesters', 'selectedSemesterYearId',
+        'grade', 'averageKnowledgeScore', 'averageAttitudeScore',
+        'averageSkillScore', 'knowledgeGrade', 'attitudeGrade', 'skillGrade'
+    ));
+}
 
     //Nilai Pengetahuan
     public function detailKnowledgeScore(Request $request, $studentId, $classSubjectId)
@@ -89,18 +91,41 @@ class GradeController extends Controller
         $semesters = SemesterYear::all();
         $selectedSemesterYearId = $request->input('semester', $request->session()->get('selectedSemesterYearId', 1));
 
+        // Find the grade for the student, class subject, and semester
         $grade = Grade::where('student_id', $studentId)
             ->where('class_subject_id', $classSubjectId)
             ->where('semester_year_id', $selectedSemesterYearId)
+            ->where('teacher_id', auth()->user()->teacher_id)
             ->first();
 
         if (!$grade) {
             $knowledgeScores = collect();
+
+            // Fetch assessment types based on teacher_id if grade is null
+            $assessmentTypes = KnowledgeScore::whereHas('grade', function ($query) {
+                $query->where('teacher_id', auth()->user()->teacher_id);
+            })
+                ->distinct()
+                ->pluck('assessment_type');
+
+            $assessmentTypes = KnowledgeScore::where('teacher_id', auth()->user()->teacher_id)
+                                                    ->distinct()
+                                                    ->pluck('assessment_type');
         } else {
             $knowledgeScores = KnowledgeScore::where('grade_id', $grade->id)->get();
-        }
 
-        $assessmentTypes = KnowledgeScore::distinct()->pluck('assessment_type');
+            // Fetch assessment types based on grade_id if grade exists
+            $assessmentTypes = KnowledgeScore::where('grade_id', $grade->id)
+                ->distinct()
+                ->pluck('assessment_type');
+
+            // If no SkillScore entries have the grade_id, fallback to teacher_id
+            if ($knowledgeScores->isEmpty()) {
+                $assessmentTypes = KnowledgeScore::where('teacher_id', auth()->user()->teacher_id)
+                                            ->distinct()
+                                            ->pluck('assessment_type');
+            }
+        }
 
         return view('grade.detailKnowledgeScore',
         compact('student',
@@ -119,25 +144,23 @@ class GradeController extends Controller
         $classSubject = ClassSubject::with('subject', 'class')->find($classSubjectId);
         $selectedSemesterId = $request->input('semester', $request->session()->get('selectedSemesterYearId', 1));
 
-        $grade = Grade::where('student_id', $studentId)
-            ->where('class_subject_id', $classSubjectId)
-            ->where('semester_year_id', $selectedSemesterId)
-            ->firstOrCreate([
+        $grade = Grade::firstOrCreate(
+            [
                 'student_id' => $studentId,
                 'class_subject_id' => $classSubjectId,
-                'semester_year_id' => $selectedSemesterId
-            ]);
-
-        $knowledgeScore = KnowledgeScore::firstOrCreate(
-            [
-                'grade_id' => $grade->id,
-                'assessment_type' => $assessmentType,
-            ],
-            [
-                'score' => 0,
-                'description' => ''
+                'semester_year_id' => $selectedSemesterId,
+                'teacher_id' => auth()->user()->teacher_id
             ]
         );
+
+         // Find or create the skill score for the given grade and assessment type
+    $knowledgeScore = KnowledgeScore::firstOrNew(
+        [
+            'grade_id' => $grade->id,
+            'assessment_type' => $assessmentType,
+            'teacher_id' => auth()->user()->teacher_id
+        ]
+    );
 
         $semesters = SemesterYear::all();
 
@@ -161,15 +184,21 @@ class GradeController extends Controller
             ->where('semester_year_id', $selectedSemesterId)
             ->first();
 
-        if (!$grade) {
-            abort(404, 'Grade not found for the specified student, class subject, and semester.');
-        }
+            if (!$grade) {
+                return redirect()->route('grade.detailAttitudeScore', [
+                    'studentId' => $studentId,
+                    'classSubjectId' => $classSubjectId,
+                    'semester' => $selectedSemesterId
+                ])->with('error', 'Grade tidak ditemukan.');
+            }
+
 
         // Cari atau buat KnowledgeScore berdasarkan grade_id dan assessmentType
         $knowledgeScore = KnowledgeScore::updateOrCreate(
             [
                 'grade_id' => $grade->id,
                 'assessment_type' => $assessmentType,
+                'teacher_id' => auth()->user()->teacher_id
             ],
             [
                 'score' => $request->input('score'),
@@ -226,18 +255,41 @@ class GradeController extends Controller
         $semesters = SemesterYear::all();
         $selectedSemesterYearId = $request->input('semester', $request->session()->get('selectedSemesterYearId', 1));
 
+        // Find the grade for the student, class subject, and semester
         $grade = Grade::where('student_id', $studentId)
             ->where('class_subject_id', $classSubjectId)
             ->where('semester_year_id', $selectedSemesterYearId)
+            ->where('teacher_id', auth()->user()->teacher_id)
             ->first();
 
         if (!$grade) {
             $attitudeScores = collect();
+
+            // Fetch assessment types based on teacher_id if grade is null
+            $assessmentTypes = AttitudeScore::whereHas('grade', function ($query) {
+                $query->where('teacher_id', auth()->user()->teacher_id);
+            })
+                ->distinct()
+                ->pluck('assessment_type');
+
+            $assessmentTypes = AttitudeScore::where('teacher_id', auth()->user()->teacher_id)
+                                                    ->distinct()
+                                                    ->pluck('assessment_type');
         } else {
             $attitudeScores = AttitudeScore::where('grade_id', $grade->id)->get();
-        }
 
-        $assessmentTypes = AttitudeScore::distinct()->pluck('assessment_type');
+            // Fetch assessment types based on grade_id if grade exists
+            $assessmentTypes = AttitudeScore::where('grade_id', $grade->id)
+                ->distinct()
+                ->pluck('assessment_type');
+
+            // If no SkillScore entries have the grade_id, fallback to teacher_id
+            if ($attitudeScores->isEmpty()) {
+                $assessmentTypes = AttitudeScore::where('teacher_id', auth()->user()->teacher_id)
+                                            ->distinct()
+                                            ->pluck('assessment_type');
+            }
+        }
 
         return view('grade.detailAttitudeScore',
         compact('student', 'classSubject',
@@ -248,30 +300,28 @@ class GradeController extends Controller
 
     public function editAttitudeScore(Request $request, $studentId, $classSubjectId, $assessmentType)
     {
-
-        $student = Student::find($studentId);
-        $classSubject = ClassSubject::with('subject', 'class')->find($classSubjectId);
+        $student = Student::findOrFail($studentId);
+        $classSubject = ClassSubject::with('subject', 'class')->findOrFail($classSubjectId);
         $selectedSemesterId = $request->input('semester', $request->session()->get('selectedSemesterYearId', 1));
 
-        $grade = Grade::where('student_id', $studentId)
-            ->where('class_subject_id', $classSubjectId)
-            ->where('semester_year_id', $selectedSemesterId)
-            ->firstOrCreate([
+        // Find or create the grade for the student, class subject, and semester
+        $grade = Grade::firstOrCreate(
+            [
                 'student_id' => $studentId,
                 'class_subject_id' => $classSubjectId,
-                'semester_year_id' => $selectedSemesterId
-            ]);
-
-        $attitudeScore = AttitudeScore::firstOrCreate(
-            [
-                'grade_id' => $grade->id,
-                'assessment_type' => $assessmentType,
-            ],
-            [
-                'score' => 0,
-                'description' => 'Tidak Ada Deskripsi'
+                'semester_year_id' => $selectedSemesterId,
+                'teacher_id' => auth()->user()->teacher_id
             ]
         );
+
+         // Find or create the skill score for the given grade and assessment type
+    $attitudeScore = AttitudeScore::firstOrNew(
+        [
+            'grade_id' => $grade->id,
+            'assessment_type' => $assessmentType,
+            'teacher_id' => auth()->user()->teacher_id
+        ]
+    );
 
         $semesters = SemesterYear::all();
 
@@ -295,14 +345,20 @@ class GradeController extends Controller
             ->where('semester_year_id', $selectedSemesterId)
             ->first();
 
-        if (!$grade) {
-            abort(404, 'Grade not found for the specified student, class subject, and semester.');
-        }
+            if (!$grade) {
+                return redirect()->route('grade.detailAttitudeScore', [
+                    'studentId' => $studentId,
+                    'classSubjectId' => $classSubjectId,
+                    'semester' => $selectedSemesterId
+                ])->with('error', 'Grade tidak ditemukan.');
+            }
+
 
         $attitudeScore = AttitudeScore::updateOrCreate(
             [
                 'grade_id' => $grade->id,
                 'assessment_type' => $assessmentType,
+                'teacher_id' => auth()->user()->teacher_id
             ],
             [
                 'score' => $request->input('score'),
@@ -347,35 +403,8 @@ class GradeController extends Controller
     }
 
 
+
     //Nilai Keterampilan
-    public function showDetailSkillScore($studentId, $classSubjectId, Request $request)
-    {
-        $student = Student::findOrFail($studentId);
-        $classSubject = ClassSubject::findOrFail($classSubjectId);
-        $semesters = SemesterYear::all();
-
-        $selectedSemesterYearId = $request->input('semester', SemesterYear::where('semester', 1)->first()->id);
-        $semesterYear = SemesterYear::findOrFail($selectedSemesterYearId);
-
-        $assessmentTypes = SkillScore::distinct()->pluck('assessment_type');
-
-        $skillScores = SkillScore::where('student_id', $studentId)
-        ->where('class_subject_id', $classSubjectId)
-        ->where('semester_year_id', $selectedSemesterYearId)
-        ->get();
-
-    return view('grade.detailSkillScore', compact(
-        'student',
-        'classSubject',
-        'semesterYear',
-        'skillScores',
-        'semesters',
-        'assessmentTypes',
-        'selectedSemesterYearId'
-    ));
-
-    }
-
     public function detailSkillScore(Request $request, $studentId, $classSubjectId)
     {
         $student = Student::findOrFail($studentId);
@@ -383,9 +412,11 @@ class GradeController extends Controller
         $semesters = SemesterYear::all();
         $selectedSemesterYearId = $request->input('semester', $request->session()->get('selectedSemesterYearId', 1));
 
+        // Find the grade for the student, class subject, and semester
         $grade = Grade::where('student_id', $studentId)
             ->where('class_subject_id', $classSubjectId)
             ->where('semester_year_id', $selectedSemesterYearId)
+            ->where('teacher_id', auth()->user()->teacher_id)
             ->first();
 
         if (!$grade) {
@@ -395,6 +426,16 @@ class GradeController extends Controller
                 'permission' => 0,
                 'unexcused' => 0,
             ]);
+
+            // Fetch assessment types based on teacher_id if grade is null
+            $assessmentTypes = SkillScore::whereHas('grade', function ($query) {
+                $query->where('teacher_id', auth()->user()->teacher_id);
+            })
+            ->distinct()
+            ->pluck('assessment_type');
+            $assessmentTypes = SkillScore::where('teacher_id', auth()->user()->teacher_id)
+            ->distinct()
+            ->pluck('assessment_type');
         } else {
             $skillScores = SkillScore::where('grade_id', $grade->id)->get();
             $attendance = Attendance::firstOrNew([
@@ -402,9 +443,19 @@ class GradeController extends Controller
                 'class_subject_id' => $classSubjectId,
                 'semester_year_id' => $selectedSemesterYearId,
             ]);
-        }
 
-        $assessmentTypes = SkillScore::distinct()->pluck('assessment_type');
+            // Fetch assessment types based on grade_id if grade exists
+            $assessmentTypes = SkillScore::where('grade_id', $grade->id)
+                ->distinct()
+                ->pluck('assessment_type');
+
+            // If no SkillScore entries have the grade_id, fallback to teacher_id
+            if ($skillScores->isEmpty()) {
+                $assessmentTypes = SkillScore::where('teacher_id', auth()->user()->teacher_id)
+                                            ->distinct()
+                                            ->pluck('assessment_type');
+            }
+        }
 
         return view('grade.detailSkillScore', compact(
             'student',
@@ -420,89 +471,112 @@ class GradeController extends Controller
     }
 
     public function editSkillScore(Request $request, $studentId, $classSubjectId, $assessmentType)
-    {
-        $student = Student::find($studentId);
-        $classSubject = ClassSubject::with('subject', 'class')->find($classSubjectId);
-        $selectedSemesterId = $request->input('semester', $request->session()->get('selectedSemesterYearId', 1));
+{
+    $student = Student::findOrFail($studentId);
+    $classSubject = ClassSubject::with('subject', 'class')->findOrFail($classSubjectId);
+    $selectedSemesterId = $request->input('semester', $request->session()->get('selectedSemesterYearId', 1));
 
-        $grade = Grade::where('student_id', $studentId)
-            ->where('class_subject_id', $classSubjectId)
-            ->where('semester_year_id', $selectedSemesterId)
-            ->firstOrCreate([
-                'student_id' => $studentId,
-                'class_subject_id' => $classSubjectId,
-                'semester_year_id' => $selectedSemesterId
-            ]);
+    // Find or create the grade for the student, class subject, and semester
+    $grade = Grade::firstOrCreate(
+        [
+            'student_id' => $studentId,
+            'class_subject_id' => $classSubjectId,
+            'semester_year_id' => $selectedSemesterId,
+            'teacher_id' => auth()->user()->teacher_id
+        ]
+    );
 
-        $skillScore = SkillScore::firstOrCreate(
-            [
-                'grade_id' => $grade->id,
-                'assessment_type' => $assessmentType,
-            ],
-            [
-                'score' => 0,
-                'description' => 'Tidak Ada Deskripsi'
-            ]
-        );
+    // Find or create the skill score for the given grade and assessment type
+    $skillScore = SkillScore::firstOrNew(
+        [
+            'grade_id' => $grade->id,
+            'assessment_type' => $assessmentType,
+            'teacher_id' => auth()->user()->teacher_id
+        ]
+    );
 
-        $semesters = SemesterYear::all();
+    $semesters = SemesterYear::all();
 
-        return view('grade.editSkillScore',
-        compact('student', 'classSubject',
-        'skillScore', 'assessmentType',
-        'selectedSemesterId', 'grade', 'semesters'));
-    }
+    return view('grade.editSkillScore', compact('student', 'classSubject', 'skillScore', 'assessmentType', 'selectedSemesterId', 'grade', 'semesters'));
+}
 
-    public function updateSkillScore(Request $request, $studentId, $classSubjectId, $assessmentType)
-    {
-        $request->validate([
-            'score' => 'required|numeric|min:0|max:100',
-            'description' => 'nullable|string|max:255',
-        ]);
 
-        $selectedSemesterId = session('selectedSemesterYearId', 1);
 
-        $grade = Grade::where('student_id', $studentId)
-            ->where('class_subject_id', $classSubjectId)
-            ->where('semester_year_id', $selectedSemesterId)
-            ->first();
+public function updateSkillScore(Request $request, $studentId, $classSubjectId, $assessmentType)
+{
+    $request->validate([
+        'score' => 'required|numeric|min:0|max:100',
+        'description' => 'nullable|string|max:255',
+    ]);
 
-        $skillScore = SkillScore::updateOrCreate(
-            [
-                'grade_id' => $grade->id,
-                'assessment_type' => $assessmentType,
-            ],
-            [
-                'score' => $request->input('score'),
-                'description' => $request->input('description'),
-            ]
-        );
+    $selectedSemesterId = session('selectedSemesterYearId', 1);
 
-        $skillScores = SkillScore::where('grade_id', $grade->id)
-            ->orderBy('id')
-            ->get();
+    // Find the grade for the student, class subject, and semester
+    $grade = Grade::where('student_id', $studentId)
+        ->where('class_subject_id', $classSubjectId)
+        ->where('semester_year_id', $selectedSemesterId)
+        ->where('teacher_id', auth()->user()->teacher_id)
+        ->first();
 
-        $previousFinalScore = 0;
-
-        foreach ($skillScores as $score) {
-            $previousFinalScore += $score->score;
-            $score->final_score = $previousFinalScore;
-            $score->grade = $this->calculateGrade($score->score, 'score');
-            $score->save();
-        }
-
-        $averageSkillScore = $skillScores->avg('score');
-
-        $grade->average_skill_score = $averageSkillScore;
-        $grade->gradeSkill = $this->calculateGrade($averageSkillScore, 'score');
-        $grade->save();
-
+    if (!$grade) {
         return redirect()->route('grade.detailSkillScore', [
             'studentId' => $studentId,
             'classSubjectId' => $classSubjectId,
             'semester' => $selectedSemesterId
-        ])->with('success', 'Nilai keterampilan berhasil diperbarui.');
+        ])->with('error', 'Grade tidak ditemukan.');
     }
+
+    // Update or create the skill score for the given grade and assessment type
+    $skillScore = SkillScore::updateOrCreate(
+        [
+            'grade_id' => $grade->id,
+            'assessment_type' => $assessmentType,
+            'teacher_id' => auth()->user()->teacher_id
+        ],
+        [
+            'score' => $request->input('score'),
+            'description' => $request->input('description'),
+        ]
+    );
+
+    // Update other related calculations or data as needed
+    $skillScores = SkillScore::where('grade_id', $grade->id)
+        ->orderBy('id')
+        ->get();
+
+    $previousFinalScore = 0;
+
+    foreach ($skillScores as $score) {
+        $previousFinalScore += $score->score;
+        $score->final_score = $previousFinalScore;
+        $score->grade = $this->calculateGrade($score->score, 'score');
+        $score->save();
+    }
+
+    $averageSkillScore = $skillScores->avg('score');
+
+    $grade->average_skill_score = $averageSkillScore;
+    $grade->gradeSkill = $this->calculateGrade($averageSkillScore, 'score');
+    $grade->save();
+
+    Rapor::updateOrCreate(
+        [
+            'grade_id' => $grade->id,
+        ],
+        [
+            'school_name' => 'SDN DAWUAN',
+            'school_address' => 'KP Pasir Eurih',
+        ]
+    );
+
+
+    return redirect()->route('grade.detailSkillScore', [
+        'studentId' => $studentId,
+        'classSubjectId' => $classSubjectId,
+        'semester' => $selectedSemesterId
+    ])->with('success', 'Nilai keterampilan berhasil diperbarui.');
+}
+
 
     //Sistem Pembuat Keputusan
     private function calculateGrade($score)

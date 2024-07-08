@@ -23,7 +23,7 @@ return new class extends Migration
             $table->string('mother_education', 255)->nullable();
             $table->string('father_occupation', 255)->nullable();
             $table->string('mother_occupation', 255)->nullable();
-            $table->bigInteger('father_income')->nullable();
+            $table->string('father_income')->nullable();
             $table->string('mother_income', 100)->nullable();
             $table->string('parent_phone_number', 100)->nullable()->unique();
             $table->string('parent_email', 255)->nullable()->unique();

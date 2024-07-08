@@ -16,6 +16,7 @@ class Grade extends Model
         // 'knowledge_score_id',
         // 'attitude_score_id',
         // 'skill_score_id',
+        'teacher_id',
         'average_knowledge_score',
         'average_attitude_score',
         'average_skill_score',
@@ -85,11 +86,15 @@ class Grade extends Model
         return $this->hasMany(AttitudeScore::class);
     }
 
-    public function skillScore()
+    public function teacher()
+    {
+        return $this->morphTo();
+    }
+
+    public function skillScores()
     {
         return $this->hasMany(SkillScore::class);
     }
-
     // public function rapor()
     // {
     //     return $this->hasMany(Rapor::class);

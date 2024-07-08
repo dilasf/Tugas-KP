@@ -24,25 +24,39 @@ class StudentController extends Controller
     //     return view('student_data.index', compact('students', 'sidebarOpen'));
     // }
 
+    public function index()
+{
+    $user = Auth::user();
+    $teacher = $user->teacher;
+    $roleId = $user->role_id;
+    $sidebarOpen = false;
 
-      public function index()
-    {
-        $user = Auth::user();
+    if ($roleId == 4) { // Guru Kelas
+        $classId = StudentClass::where('homeroom_teacher_id', $teacher->id)->pluck('id')->first();
 
-        $students = Student::with(['class', 'guardian', 'latestHeightWeight'])->get();
-        $sidebarOpen = false;
-        $teacher = $user->teacher;
-
-        // Ambil kelas-kelas yang diajarkan oleh guru tersebut
-        $classes = StudentClass::where('homeroom_teacher_id', $teacher->id)->get();
-
-        // Ambil siswa-siswa yang terkait dengan kelas-kelas tersebut
+        // Ambil semua siswa di kelas yang diajar oleh guru kelas
         $students = Student::with(['class', 'guardian', 'latestHeightWeight'])
-                           ->whereIn('class_id', $classes->pluck('id'))
-                           ->get();
-
-        return view('student_data.index', compact('students', 'sidebarOpen', 'classes'));
+            ->where('class_id', $classId)
+            ->get();
+    } elseif ($roleId == 3) { // Guru Mapel
+        // Ambil semua siswa dan urutkan berdasarkan kelas dan NIPD
+        $students = Student::with(['class', 'guardian', 'latestHeightWeight'])
+            ->orderBy('class_id')
+            ->orderBy('nipd')
+            ->get();
+    } elseif ($roleId == 1) { // Admin
+        // Ambil semua siswa tanpa filter
+        $students = Student::with(['class', 'guardian', 'latestHeightWeight'])
+            ->orderBy('class_id')
+            ->orderBy('nipd')
+            ->get();
+    } else {
+        // Jika role_id tidak sesuai
+        return abort(403, 'Unauthorized action.');
     }
+
+    return view('student_data.index', compact('students', 'sidebarOpen'));
+}
 
 
     // Menampilkan detail informasi siswa

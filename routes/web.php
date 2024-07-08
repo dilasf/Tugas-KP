@@ -160,7 +160,7 @@ Route::middleware(['auth', 'verified', 'role:guru_mapel|guru_kelas'])->group(fun
     Route::get('/skill-scores/create', [skillScoreController::class, 'create'])->name('grade.skill_scores.create');
     Route::post('/skill-scores', [skillScoreController::class, 'store'])->name('grade.skill_scores.store');
     Route::get('/skill-scores/{assessment_type}/edit', [skillScoreController::class, 'edit'])->name('grade.skill_scores.edit');
-    Route::match(['put', 'patch'],'/skill-scores/{assessment_type}', [skillScoreController::class, 'update'])->name('grade.skill_scores.update');
+    Route::patch('/skill-scores/{assessment_type}', [SkillScoreController::class, 'update'])->name('grade.skill_scores.update');
     Route::delete('/skill-scores/{assessment_type}', [skillScoreController::class, 'destroy'])->name('grade.skill_scores.destroy');
 
 

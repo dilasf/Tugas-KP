@@ -10,6 +10,7 @@ use App\Models\Subject;
 use App\Models\Student;
 use App\Models\StudentClass;
 use App\Models\Teacher;
+use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
 {
@@ -21,22 +22,36 @@ class DashboardController extends Controller
         $teacherCount = Teacher::count();
         $semesterYearCount = SemesterYear::count();
 
+        $teacher = Auth::user();
+
         // Menghitung jumlah tipe penilaian unik dari KnowledgeScore
-        $assessmentTypesKnowledge = KnowledgeScore::select('assessment_type')
-                                                  ->distinct()
-                                                  ->count();
+        $assessmentTypesKnowledge = KnowledgeScore::where('teacher_id', $teacher->teacher_id)
+                                                    ->select('assessment_type')
+                                                    ->distinct()
+                                                    ->pluck('assessment_type');
+
+        $assessmentTypesKnowledgeCollection = collect($assessmentTypesKnowledge);
+        $uniqueKnowledge = $assessmentTypesKnowledgeCollection->count();
 
         // Menghitung jumlah tipe penilaian unik dari AttitudeScore
-        $assessmentTypesAttitude = AttitudeScore::select('assessment_type')
+        $assessmentTypesAttitude = AttitudeScore::where('teacher_id', $teacher->teacher_id)
+                                                ->select('assessment_type')
                                                 ->distinct()
-                                                ->count();
+                                                ->pluck('assessment_type');
 
-        // Menghitung jumlah tipe penilaian unik dari SkillScore
-        $assessmentTypesSkill = SkillScore::select('assessment_type')
-                                           ->distinct()
-                                           ->count();
+        $assessmentTypesAttitudeCollection = collect($assessmentTypesAttitude);
+        $uniqueAttitude = $assessmentTypesAttitudeCollection->count();
 
-        return view('dashboard-admin', compact('subjectCount', 'studentCount', 'classCount', 'teacherCount', 'semesterYearCount', 'assessmentTypesKnowledge', 'assessmentTypesAttitude', 'assessmentTypesSkill'));
+        //menghitung jumlah tipe penilaian dari keterampilan
+        $assessmentTypesSkill = SkillScore::where('teacher_id', $teacher->teacher_id)
+                                   ->select('assessment_type')
+                                   ->distinct()
+                                   ->pluck('assessment_type');
+
+        $assessmentTypesSkillCollection = collect($assessmentTypesSkill);
+        $uniqueSkill = $assessmentTypesSkillCollection->count();
+
+        return view('dashboard-admin', compact('subjectCount', 'studentCount', 'classCount', 'teacherCount', 'semesterYearCount', 'uniqueSkill', 'uniqueAttitude', 'uniqueKnowledge'));
     }
 
 

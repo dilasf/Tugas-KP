@@ -12,6 +12,7 @@ class AttitudeScore extends Model
 
     protected $fillable = [
         'grade_id',
+        'teacher_id',
         'assessment_type',
         'score',
         'final_score',

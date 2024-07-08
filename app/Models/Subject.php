@@ -14,25 +14,14 @@ class Subject extends Model
         'kkm',
     ];
 
-
     public function classes()
     {
         return $this->belongsToMany(StudentClass::class, 'class_subjects', 'subject_id', 'class_id');
     }
-    // public static function getDataSubject()
-    // {
-    //     $subjects = Subject::all();
-    //     $subjects_filter = [];
 
-    //     $no = 1;
-    //     foreach ($subjects as $mapel) {
-    //         $subjects_filter[] = [
-    //             'no' => $no++,
-    //             'subject_name' => $mapel->subject_name,
-    //             'kkm' => $mapel->kkm,
-    //         ];
-    //     }
+    public function teachers()
+    {
+        return $this->hasMany(Teacher::class, 'teaching', 'subject_name');
+    }
 
-    //     return $subjects_filter;
-    // }
 }

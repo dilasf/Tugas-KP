@@ -21,7 +21,7 @@
                         <div class="mb-2 flex items-center">
                             <p class="font-medium text-16px text-gray-600 mr-2 inline-block w-[147px]">Nama Siswa</p>
                             <p class="text-gray-500 text-16px inline-block w-[10px]">:</p>
-                            <p class="text-gray-800 text-16px inline-block">{{ $student->student_name ?? 'N/A' }}</p>
+                            <p class="text-gray-800 text-16px inline-block">{{ ucwords(strtolower($student->student_name)) ?? 'N/A'}}</p>
                         </div>
                         <div class="mb-2 flex items-center">
                             <p class="font-medium text-16px text-gray-600 mr-2 inline-block w-[147px]">NIS</p>

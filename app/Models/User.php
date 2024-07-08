@@ -29,8 +29,16 @@ class User extends Authenticatable
 
     public function teacher()
     {
-        return $this->belongsTo(Teacher::class);
+        return $this->belongsTo(Teacher::class, 'teacher_id', 'id');
     }
+
+
+
+    public function hasValidTeacherId()
+    {
+        return $this->teacher_id !== null; // Ubah kondisi sesuai dengan kebutuhan
+    }
+
 
     public function isActiveTeacher()
     {

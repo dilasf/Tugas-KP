@@ -4,15 +4,17 @@ namespace App\Http\Controllers;
 
 use App\Models\AttitudeScore;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class AttitudeScoreController extends Controller
 {
     public function index()
     {
-        $assessmentTypes = AttitudeScore::select('assessment_type')
-                                        ->distinct()
-                                        ->get();
+        $teacher = Auth::user();
+        $assessmentTypes = AttitudeScore::where('teacher_id', $teacher->teacher_id)
+                                            ->select('assessment_type')
+                                            ->distinct()
+                                            ->get();
 
         $sidebarOpen = false;
 
@@ -28,11 +30,18 @@ class AttitudeScoreController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'assessment_type' => 'required|string|max:100|unique:attitude_scores',
+            'assessment_type' => 'required|string|max:100|unique:attitude_scores,assessment_type,NULL,id,teacher_id,' . Auth::user()->teacher_id,
         ]);
+
+        $user = Auth::user();
+
+        if (!$user->teacher_id) {
+            return back()->withErrors(['message' => 'Pengguna Tidak Terdaftar']);
+        }
 
         $data = AttitudeScore::create([
             'assessment_type' => $request->input('assessment_type'),
+            'teacher_id' => $user->teacher_id,
         ]);
 
         if ($data) {
@@ -57,7 +66,7 @@ class AttitudeScoreController extends Controller
         $assessmentType = AttitudeScore::where('assessment_type', $assessment_type)->firstOrFail();
 
         $request->validate([
-            'assessment_type' => 'required|string|max:100',
+            'assessment_type' => 'required|string|max:100|unique:attitude_scores,assessment_type,' . $assessmentType->id,
         ]);
 
         $data = $assessmentType->update([
@@ -77,24 +86,17 @@ class AttitudeScoreController extends Controller
 
     public function destroy(string $assessment_type)
     {
-        $assessmentType = AttitudeScore::where('assessment_type', $assessment_type)->firstOrFail();
+        $deleted = AttitudeScore::where('assessment_type', $assessment_type)->delete();
 
-        // Matikan constraint foreign key
-        DB::statement('SET FOREIGN_KEY_CHECKS=0');
-        $data = $assessmentType->delete();
-
-        // Aktifkan kembali constraint foreign key
-        DB::statement('SET FOREIGN_KEY_CHECKS=1');
-
-        if ($data) {
+        if ($deleted) {
             $notification['alert-type'] = 'success';
             $notification['message'] = 'Jenis Penilaian Berhasil Dihapus';
-            return redirect()->route('grade.attitude_scores.index')->with($notification);
         } else {
             $notification['alert-type'] = 'error';
             $notification['message'] = 'Jenis Penilaian Gagal Dihapus';
-            return redirect()->route('grade.attitude_scores.index')->with($notification);
         }
+
+        return redirect()->route('grade.skill_scores.index')->with($notification);
     }
 
 }
