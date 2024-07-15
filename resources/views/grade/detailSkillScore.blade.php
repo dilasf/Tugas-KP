@@ -75,86 +75,92 @@
                     </div>
                     {{-- End - Isi Tabel Keterampilan --}}
 
-                    {{-- Tabel Absensi --}}
-                    <div class="mt-8">
-                        <p class="font-semibold text-xl text-center py-3"> {{ __('Detail Absensi')}} </p>
-                        <x-table class="overflow-x-auto mx-auto">
-                            <x-slot name="header">
-                                <tr>
-                                    <th>No</th>
-                                    <th>Absensi</th>
-                                    <th>Jumlah</th>
-                                    <th>Aksi</th>
-                                </tr>
-                            </x-slot>
-                            @php
-                                $attendances = [
-                                    'sick' => 'Sakit',
-                                    'permission' => 'Ijin',
-                                    'unexcused' => 'Alpha'
-                                ];
-                                $num = 1;
-                                $attendance = $attendance ?? (object)['sick' => 0, 'permission' => 0, 'unexcused' => 0];
-                            @endphp
-                            @foreach($attendances as $type => $label)
-                                <tr>
-                                    <td class="text-center">{{ $num++ }}</td>
-                                    <td>{{ $label }}</td>
-                                    <td class="text-center" id="{{ $type }}-count">{{ $attendance->$type }}</td>
-                                    <td class="flex flex-col items-center gap-2 text-center">
-                                        <div class="flex flex-row gap-2 justify-center items-center">
-                                            <button type="button" class="bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-3 rounded update-attendance-btn" data-type="{{ $type }}" data-action="increment">+</button>
-                                            <button type="button" class="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-3 rounded update-attendance-btn" data-type="{{ $type }}" data-action="decrement">-</button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </x-table>
-                    </div>
-                    {{-- End - Tabel Absensi --}}
-                </div>
-            </div>
-        </div>
+                  {{-- Tabel Absensi --}}
+                  <div class="py-12">
+                    <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+                            <p class="font-semibold text-xl text-center pb-3"> {{ __('Detail Absensi')}} </p>
+
+                            <!-- Tabel untuk absensi -->
+                            <div class="overflow-x-auto">
+                                <x-table header="Header Content" class="overflow-x-auto mx-auto">
+                                    <x-slot name="header">
+                                        <tr>
+                                            <th class="px-4 py-2 text-left">No</th>
+                                            <th class="px-4 py-2 text-left">Absensi</th>
+                                            <th class="px-4 py-2 text-left">Jumlah</th>
+                                            <th class="px-4 py-2 text-left">Aksi</th>
+                                        </tr>
+                                    </x-slot>
+
+                                        <tr>
+                                            <td class="text-center">1</td>
+                                            <td>Sakit</td>
+                                            <td class="text-center">{{ $attendance->sick ?? '0'}}</td>
+                                            <td class="flex justify-center items-center gap-2">
+                                                <form action="{{ route('attendance.increment.sick') }}" method="POST">
+                                                    @csrf
+                                                    <input type="hidden" name="student_id" value="{{ $studentId }}">
+                                                    <input type="hidden" name="class_subject_id" value="{{ $classSubjectId }}">
+                                                    <input type="hidden" name="semester_year_id" value="{{ $selectedSemesterYearId }}">
+                                                    <button type="submit" class="bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-3 rounded update-attendance-btn">+</button>
+                                                </form>
+
+                                                <form action="{{ route('attendance.decrement.sick') }}" method="POST">
+                                                    @csrf
+                                                    <input type="hidden" name="student_id" value="{{ $studentId }}">
+                                                    <input type="hidden" name="class_subject_id" value="{{ $classSubjectId }}">
+                                                    <input type="hidden" name="semester_year_id" value="{{ $selectedSemesterYearId }}">
+                                                    <button type="submit" class="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-3 rounded update-attendance-btn">-</button>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-center">2</td>
+                                            <td>Ijin</td>
+                                            <td class="text-center">{{ $attendance->permission ?? '0' }}</td>
+                                            <td class="flex justify-center items-center gap-2">
+                                                <form action="{{ route('attendance.increment.permission') }}" method="POST">
+                                                    @csrf
+                                                    <input type="hidden" name="student_id" value="{{ $studentId }}">
+                                                    <input type="hidden" name="class_subject_id" value="{{ $classSubjectId }}">
+                                                    <input type="hidden" name="semester_year_id" value="{{ $selectedSemesterYearId }}">
+                                                    <button type="submit" class="bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-3 rounded update-attendance-btn">+</button>
+                                                </form>
+
+                                                <form action="{{ route('attendance.decrement.permission') }}" method="POST">
+                                                    @csrf
+                                                    <input type="hidden" name="student_id" value="{{ $studentId }}">
+                                                    <input type="hidden" name="class_subject_id" value="{{ $classSubjectId }}">
+                                                    <input type="hidden" name="semester_year_id" value="{{ $selectedSemesterYearId }}">
+                                                    <button type="submit" class="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-3 rounded update-attendance-btn">-</button>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-center">3</td>
+                                            <td>Alpha</td>
+                                            <td class="text-center">{{ $attendance->unexcused ?? '0'}}</td>
+                                            <td class="flex justify-center items-center gap-2">
+                                                <form action="{{ route('attendance.increment.unexcused') }}" method="POST">
+                                                    @csrf
+                                                    <input type="hidden" name="student_id" value="{{ $studentId }}">
+                                                    <input type="hidden" name="class_subject_id" value="{{ $classSubjectId }}">
+                                                    <input type="hidden" name="semester_year_id" value="{{ $selectedSemesterYearId }}">
+                                                    <button type="submit" class="bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-3 rounded update-attendance-btn">+</button>
+                                                </form>
+
+                                                <form action="{{ route('attendance.decrement.unexcused') }}" method="POST">
+                                                    @csrf
+                                                    <input type="hidden" name="student_id" value="{{ $studentId }}">
+                                                    <input type="hidden" name="class_subject_id" value="{{ $classSubjectId }}">
+                                                    <input type="hidden" name="semester_year_id" value="{{ $selectedSemesterYearId }}">
+                                                    <button type="submit" class="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-3 rounded update-attendance-btn">-</button>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                    </x-table>
+                            </div>
     </div>
+</div>
 
-    <script>
-       document.addEventListener('DOMContentLoaded', function() {
-    document.querySelectorAll('.update-attendance-btn').forEach(function(button) {
-        button.addEventListener('click', function() {
-            var type = this.getAttribute('data-type');
-            var action = this.getAttribute('data-action');
-            var countElement = document.getElementById(type + '-count');
-
-            var formData = new FormData();
-            formData.append('_token', '{{ csrf_token() }}');
-            formData.append('_method', 'PATCH');
-
-            var url = `{{ route('attendance.update', ['studentId' => $student->id, 'classSubjectId' => $classSubject->id, 'semesterYearId' => $selectedSemesterYearId, 'type' => 'typePlaceholder', 'action' => 'actionPlaceholder']) }}`;
-            url = url.replace('typePlaceholder', type).replace('actionPlaceholder', action);
-
-            fetch(url, {
-                method: 'POST',
-                headers: {
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                    'X-Requested-With': 'XMLHttpRequest',
-                    'Accept': 'application/json'
-                },
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    countElement.innerText = data.new_value;
-                } else {
-                    alert('Failed to update attendance.');
-                }
-            })
-            .catch(error => {
-                alert('An error occurred.');
-            });
-        });
-    });
-});
-
-    </script>
-</x-app-layout>
+    </x-app-layout>

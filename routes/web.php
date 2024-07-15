@@ -21,6 +21,7 @@ use App\Http\Controllers\StudentClassController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\SubjectController;
 use App\Http\Controllers\TeacherController;
+use App\Http\Controllers\ValidationsController;
 use App\Models\Teacher;
 use Illuminate\Support\Facades\Route;
 
@@ -184,8 +185,17 @@ Route::middleware(['auth', 'verified', 'role:guru_mapel|guru_kelas'])->group(fun
     Route::get('/grade/{studentId}/{classSubjectId}/edit-skill-score/{assessmentType}', [GradeController::class, 'editSkillScore'])->name('grade.editSkillScore');
     Route::match(['put', 'patch'],'/grade/{studentId}/{classSubjectId}/update-skill-score/{assessmentType}', [GradeController::class, 'updateSkillScore'])->name('grade.updateSkillScore');
 
-    // kehadiran
-    Route::patch('/attendance/update/{studentId}/{classSubjectId}/{semesterYearId}/{type}/{action}', [AttendanceController::class, 'update'])->name('attendance.update');
+
+// Route untuk penambahan absensi
+Route::post('/attendance/increment/sick', [AttendanceController::class, 'incrementSick'])->name('attendance.increment.sick');
+Route::post('/attendance/increment/permission', [AttendanceController::class, 'incrementPermission'])->name('attendance.increment.permission');
+Route::post('/attendance/increment/unexcused', [AttendanceController::class, 'incrementUnexcused'])->name('attendance.increment.unexcused');
+
+// Route untuk pengurangan absensi
+Route::post('/attendance/decrement/sick', [AttendanceController::class, 'decrementSick'])->name('attendance.decrement.sick');
+Route::post('/attendance/decrement/permission', [AttendanceController::class, 'decrementPermission'])->name('attendance.decrement.permission');
+Route::post('/attendance/decrement/unexcused', [AttendanceController::class, 'decrementUnexcused'])->name('attendance.decrement.unexcused');
+Route::post('/attendance/update', [AttendanceController::class, 'updateAttendance'])->name('attendance.update');
 
 });
 
@@ -237,6 +247,11 @@ Route::patch('/height_weights/{studentId}/{heightWeightId}/{aspectName}/{semeste
 
 });
 
+Route::middleware(['auth', 'verified', 'role:kepala_sekolah'])->group(function () {
+    Route::get('/validation', [ValidationsController::class, 'index'])->name('rapors.validation.index');
+    Route::get('/validation/{id}', [ValidationsController::class, 'show'])->name('rapors.validation.detail');
+    Route::post('/validation/{id}/approve', [ValidationsController::class, 'approve'])->name('rapors.validation.approve');
+});
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('rapors/lihat/{studentId}', [RaporController::class, 'index'])->name('rapors.index');
@@ -246,18 +261,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/rapors/{studentId}/edit-suggestion/{semesterYearId}', [RaporController::class, 'editSuggestion'])->name('rapors.editSuggestion');
     Route::match(['put', 'patch'],'/rapors/{studentId}/update-suggestion/{semesterYearId}', [RaporController::class, 'updateSuggestion'])->name('rapors.updateSuggestion');
 
-// Route untuk create aspect form
-Route::get('/rapors/{studentId}/create/{aspectName}', [RaporController::class, 'createAspect'])->name('rapors.createAspect');
+    Route::get('/rapors/{studentId}/create/{aspectName}', [RaporController::class, 'createAspect'])->name('rapors.createAspect');
+    Route::post('/rapors/{studentId}/store/{aspectName}', [RaporController::class, 'storeAspect'])->name('rapors.storeAspect');
+    Route::get('/rapors/{studentId}/edit/{raporId}/{aspectName}', [RaporController::class, 'editAspect'])->name('rapors.editAspect');
+    Route::patch('/rapors/{studentId}/update/{raporId}/{aspectName}', [RaporController::class, 'updateAspect'])->name('rapors.updateAspect');
 
-// Route untuk menyimpan aspek baru
-Route::post('/rapors/{studentId}/store/{aspectName}', [RaporController::class, 'storeAspect'])->name('rapors.storeAspect');
-
-// Route untuk edit aspect form
-Route::get('/rapors/{studentId}/edit/{raporId}/{aspectName}', [RaporController::class, 'editAspect'])->name('rapors.editAspect');
-
-// Route untuk memperbarui aspek yang ada
-Route::patch('/rapors/{studentId}/update/{raporId}/{aspectName}', [RaporController::class, 'updateAspect'])->name('rapors.updateAspect');
-
+    Route::post('/send-report/{rapor_id}', [RaporController::class, 'sendReport'])->name('send.report');
 
 });
 

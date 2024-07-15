@@ -8,6 +8,7 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg p-6">
                 @php
+                // $semesterNumber = $selectedSemester->semester ?? 'N/A';
                 $numberWords = [
                     1 => 'Satu',
                     2 => 'Dua',
@@ -47,12 +48,15 @@
                                 <p class="text-gray-900 font-medium text-16px">{{ $rapors->first()->school_address ?? 'KP Pasir Eurih' }}</p>
                             </div>
                         </div>
-                        <div class="py-10">
+
+                        <div class="py-10 px-20">
                             <div class="mb-2 flex items-center">
                                 <p class="font-medium text-16px text-gray-800 mr-2 w-[100px]">Kelas</p>
                                 <p class="text-gray-800 text-16px mr-2">:</p>
                                 <p class="text-gray-900 font-medium text-16px">{{ $classLevel }} ({{ $classLevelWord }})</p>
                             </div>
+
+                            @role('guru_kelas')
                             <div class="mb-2 flex items-center">
                                 <p class="font-medium text-16px text-gray-900 mr-2 w-[100px]">Semester</p>
                                 <p class="text-gray-800 text-16px mr-2">:</p>
@@ -66,10 +70,35 @@
                                     </select>
                                 </form>
                             </div>
+                            @endrole
+
+                            {{-- <div class="ml-50px w-full max-w-lg"> --}}
+                            <div class="mb-2 flex items-center">
+                                <p class="font-medium text-16px text-gray-900 mr-2 w-[100px]">Semester</p>
+                                <p class="text-gray-800 text-16px mr-2">:</p>
+                                @php
+                                    $selectedSemester = $semesters->firstWhere('id', $selectedSemesterYearId);
+                                    $semesterNumber = $selectedSemester ? $selectedSemester->semester : 'N/A';
+                                    $numberWords = [
+                                        1 => 'Satu',
+                                        2 => 'Dua',
+                                    ];
+                                    $semesterWord = isset($numberWords[$semesterNumber]) ? $numberWords[$semesterNumber] : 'N/A';
+                                @endphp
+                                <p class="text-gray-800 text-16px">{{ $semesterNumber }} ({{ $semesterWord }})</p>
+                            </div>
+
+                            <div class="mb-9 flex items-center">
+                                <p class="font-medium text-16px text-gray-900 mr-2 w-[100px]">Tahun Ajaran</p>
+                                <p class="text-gray-800 text-16px mr-2">:</p>
+                                <p class="text-gray-800 text-16px">{{  $semesterNumber = $selectedSemester ? $selectedSemester->year : 'N/A' }}</p>
+                            </div>
+                            {{-- </div> --}}
                         </div>
                     </div>
                 </div>
                 {{-- END Data Diri --}}
+
            {{-- Kompetensi Sikap --}}
                 <div class="flex justify-between items-center">
                     <p class="font-semibold text-md">A. Kompetensi Sikap</p>
@@ -82,6 +111,7 @@
                             </tr>
                         </x-slot>
                         @php $num = 1; @endphp
+
                         {{-- Sikap Spiritual --}}
                         <tr>
                             <td class="text-center">{{ $num++ }}</td>
@@ -94,6 +124,7 @@
                                 @endif
                             </td>
                             <td class="text-center">
+                                @role('guru_kelas')
                                 @if ($rapors->isNotEmpty())
                                 <x-edit-primary-button tag="a" href="{{ route('rapors.editAspect', ['studentId' => $student->id, 'raporId' => $rapors->first()->id, 'aspectName' => 'Sikap Spiritual']) }}" class="flex items-center justify-center min-w-[60px]">
                                     <img src="{{ asset('img/edit-brush_logo.png') }}" class="w-[13px] h-[13px]">
@@ -105,6 +136,7 @@
                                         <span x-show="!$sidebarOpen" class="ml-1 text-[10px]">{{ __('Create') }}</span>
                                     </x-edit-primary-button>
                                 @endif
+                                @endrole
                             </td>
                         </tr>
 
@@ -120,6 +152,7 @@
                                 @endif
                             </td>
                             <td class="text-center">
+                                @role('guru_kelas')
                                 @if ($rapors->isNotEmpty())
                                     <x-edit-primary-button tag="a" href="{{ route('rapors.editAspect', ['studentId' => $student->id, 'raporId' => $rapors->first()->id, 'aspectName' => 'Sikap Sosial']) }}" class="flex items-center justify-center min-w-[60px]">
                                         <img src="{{ asset('img/edit-brush_logo.png') }}" class="w-[13px] h-[13px]">
@@ -131,6 +164,7 @@
                                         <span x-show="!$sidebarOpen" class="ml-1 text-[10px]">{{ __('Create') }}</span>
                                     </x-edit-primary-button>
                                 @endif
+                                @endrole
                             </td>
                         </tr>
                     </x-table>
@@ -149,7 +183,9 @@
                                     <th colspan="3">Pengetahuan</th>
                                     <th rowspan="2">KKM</th>
                                     <th colspan="3">Keterampilan</th>
+                                    @role('guru_kelas')
                                     <th rowspan="2">Aksi</th>
+                                     @endrole
                                 </tr>
                                 <tr>
                                     <th>Nilai</th>
@@ -186,6 +222,7 @@
                                     <td class="{{ $averageSkillScore < $kkm ? 'text-red-500' : 'text-gray-800' }}">{{ $averageSkillScore }}</td>
                                     <td class="{{ $averageSkillScore < $kkm ? 'text-red-500' : 'text-gray-800' }}">{{ $gradeSkill }}</td>
                                     <td>{{ $descriptionSkill }}</td>
+                                    @role('guru_kelas')
                                     <td>
                                         <x-edit-primary-button tag="a" href="{{ route('rapors.edit', ['studentId' => $student->id, 'semesterYearId' => $selectedSemesterYearId]) }}" class="flex items-center justify-center min-w-[60px]">
                                             <img src="{{ asset('img/edit-brush_logo.png') }}" class="w-[13px] h-[13px]">
@@ -193,6 +230,8 @@
                                         </x-edit-primary-button>
 
                                     </td>
+                                @endrole
+
                                 </tr>
                             @endforeach
                         </x-table>
@@ -205,9 +244,12 @@
                         <div class="flex justify-between items-center">
                             <p class="font-semibold text-md">C. Ekstra Kurikuler</p>
 
+                            @role('guru_kelas')
                             <x-primary-button tag="a" href="{{ route('extracurriculars.create', ['studentId' => $student->id, 'semester_year_id' => $selectedSemesterYearId]) }}" class="font-semibold inline-flex items-center" style="padding: 0.5rem 1rem;">
                                 <span class="text-12px">{{ __('+ Tambah Data') }}</span>
                             </x-primary-button>
+                            @endrole
+
                         </div>
                         <div class="text-black max-h-[calc(100vh-200px)] overflow-y-auto">
                             <x-table header="Header Content" :sidebarOpen="$sidebarOpen" class="overflow-x-auto mx-auto">
@@ -216,7 +258,9 @@
                                         <th>No</th>
                                         <th>Kegiatan Ekstrakurikuler</th>
                                         <th>Keterangan</th>
+                                        @role('guru_kelas')
                                         <th>Aksi</th>
+                                        @endrole
                                     </tr>
                                 </x-slot>
                                 @php
@@ -230,6 +274,7 @@
                                             <td>{{ $num++ }}</td>
                                             <td>{{ $extracurricular->activity }}</td>
                                             <td>{{ $extracurricular->description }}</td>
+                                            @role('guru_kelas')
                                             <td class="text-center">
                                                 <x-edit-primary-button tag="a" href="{{ route('extracurriculars.edit', ['studentId' => $student->id, 'extracurricularId' => $extracurricular->id]) }}" class="flex items-center justify-center min-w-[60px]">
                                                     <img src="{{ asset('img/edit-brush_logo.png') }}" class="w-[13px] h-[13px]">
@@ -247,6 +292,7 @@
                                                     <span x-show="!sidebarOpen" class="ml-1 text-[10px]">{{ __('Hapus') }}</span>
                                                 </x-danger-button>
                                             </td>
+                                            @endrole
                                         </tr>
                                     @endforeach
                                 @endforeach
@@ -268,9 +314,13 @@
                   <div class="mt-8">
                     <div class="flex justify-between items-center mb-4">
                         <p class="font-semibold text-md">D. Saran</p>
+
+                        @role('guru_kelas')
                         <x-primary-button tag="a" href="{{ route('rapors.editSuggestion', ['studentId' => $student->id, 'semesterYearId' => $selectedSemesterYearId]) }}">
                             <span>{{ __('Masukkan Saran') }}</span>
                         </x-primary-button>
+                        @endrole
+
                     </div>
                         <div class="border border-black text-black p-5 rounded-md mt-2" style="min-height: 7rem;">
                             <p class="text-sm text-black">
@@ -290,7 +340,10 @@
                                     <th>No</th>
                                     <th>Aspek yang dinilai</th>
                                     <th>Jumlah</th>
+                                    @role('guru_kelas')
                                     <th>Aksi</th>
+                                    @endrole
+
                                 </tr>
                             </x-slot>
 
@@ -316,6 +369,7 @@
                                         <span class="text-gray-400">Data tidak tersedia</span>
                                     @endif
                                 </td>
+                                @role('guru_kelas')
                                 <td class="text-center">
                                     @if ($heightWeight)
                                         <x-edit-primary-button tag="a" href="{{ route('height_weights.edit', ['studentId' => $student->id, 'heightWeightId' => $heightWeight->id, 'aspectName' => 'Tinggi Badan', 'semester_year_id' => $selectedSemesterYearId]) }}" class="flex items-center justify-center min-w-[60px]">
@@ -324,6 +378,8 @@
                                         </x-edit-primary-button>
                                     @endif
                                 </td>
+                                @endrole
+
                             </tr>
 
                             <tr>
@@ -346,6 +402,7 @@
                                         <span class="text-gray-400">Data tidak tersedia</span>
                                     @endif
                                 </td>
+                                @role('guru_kelas')
                                 <td class="text-center">
                                     @if ($weightHeight)
                                         <x-edit-primary-button tag="a" href="{{ route('height_weights.edit', ['studentId' => $student->id, 'heightWeightId' => $weightHeight->id, 'aspectName' => 'Berat Badan', 'semester_year_id' => $selectedSemesterYearId]) }}" class="flex items-center justify-center min-w-[60px]">
@@ -354,6 +411,8 @@
                                         </x-edit-primary-button>
                                     @endif
                                 </td>
+                                @endrole
+
                             </tr>
                         </x-table>
                     </div>
@@ -374,7 +433,10 @@
                                         <th>No</th>
                                         <th>Aspek Fisik</th>
                                         <th>Keterangan</th>
+                                        @role('guru_kelas')
                                         <th>Aksi</th>
+                                        @endrole
+
                                     </tr>
                                 </x-slot>
                                 @php $num = 1; @endphp
@@ -386,9 +448,10 @@
                                         @if ($rapors->isNotEmpty() && $rapors[0]->health && $rapors[0]->health->hearing !== null)
                                             {{ $rapors[0]->health->hearing }}
                                         @else
-                                            Data Tidak Tersedia
+                                        <span class="text-gray-400">Data tidak tersedia</span>
                                         @endif
                                     </td>
+                                    @role('guru_kelas')
                                     <td class="text-center">
                                         @if ($rapors->isNotEmpty() && $rapors[0]->health)
                                             <x-edit-primary-button tag="a" href="{{ route('healths.edit', ['studentId' => $student->id, 'healthId' => $rapors[0]->health->id, 'aspectName' => 'Pendengaran']) }}" class="flex items-center justify-center min-w-[60px]">
@@ -402,6 +465,8 @@
                                             </x-edit-primary-button>
                                         @endif
                                     </td>
+                                    @endrole
+
                                 </tr>
                                 <tr>
                                     <td class="text-center">{{ $num++ }}</td>
@@ -410,9 +475,10 @@
                                         @if ($rapors->isNotEmpty() && $rapors[0]->health && $rapors[0]->health->vision !== null)
                                             {{ $rapors[0]->health->vision }}
                                         @else
-                                            Data Tidak Tersedia
+                                        <span class="text-gray-400">Data tidak tersedia</span>
                                         @endif
                                     </td>
+                                    @role('guru_kelas')
                                     <td class="text-center">
                                         @if ($rapors->isNotEmpty() && $rapors[0]->health)
                                             <x-edit-primary-button tag="a" href="{{ route('healths.edit', ['studentId' => $student->id, 'healthId' => $rapors[0]->health->id, 'aspectName' => 'Penglihatan']) }}" class="flex items-center justify-center min-w-[60px]">
@@ -426,6 +492,8 @@
                                             </x-edit-primary-button>
                                         @endif
                                     </td>
+                                    @endrole
+
                                 </tr>
                                 <tr>
                                     <td class="text-center">{{ $num++ }}</td>
@@ -434,9 +502,10 @@
                                         @if ($rapors->isNotEmpty() && $rapors[0]->health && $rapors[0]->health->tooth !== null)
                                             {{ $rapors[0]->health->tooth }}
                                         @else
-                                            Data Tidak Tersedia
+                                        <span class="text-gray-400">Data tidak tersedia</span>
                                         @endif
                                     </td>
+                                    @role('guru_kelas')
                                     <td class="text-center">
                                         @if ($rapors->isNotEmpty() && $rapors[0]->health)
                                             <x-edit-primary-button tag="a" href="{{ route('healths.edit', ['studentId' => $student->id, 'healthId' => $rapors[0]->health->id, 'aspectName' => 'Gigi']) }}" class="flex items-center justify-center min-w-[60px]">
@@ -450,6 +519,8 @@
                                             </x-edit-primary-button>
                                         @endif
                                     </td>
+                                    @endrole
+
                                 </tr>
                             </x-table>
                         </div>
@@ -461,11 +532,13 @@
                     <div class="mt-8">
                         <div class="flex justify-between items-center">
                             <p class="font-semibold text-md">G. Prestasi</p>
-
+                            @role('guru_kelas')
                             <x-primary-button tag="a" href="{{ route('achievements.create', ['studentId' => $student->id, 'semester_year_id' => $selectedSemesterYearId]) }}" class="font-semibold inline-flex items-center"
                                 style="padding: 0.5rem 1rem;">
                                 <span class="text-12px">{{ __('+ Tambah Data') }}</span>
                             </x-primary-button>
+                            @endrole
+
                         </div>
                         <div class="text-black max-h-[calc(100vh-200px)] overflow-y-auto">
                             <x-table header="Header Content" :sidebarOpen="$sidebarOpen" class="overflow-x-auto mx-auto">
@@ -474,7 +547,10 @@
                                         <th>No</th>
                                         <th>Jenis Prestasi</th>
                                         <th>Keterangan</th>
+                                        @role('guru_kelas')
                                         <th>Aksi</th>
+                                        @endrole
+
                                     </tr>
                                 </x-slot>
                                 @php $num = 1; @endphp
@@ -485,6 +561,8 @@
                                             <td>{{ $num++ }}</td>
                                             <td>{{ $achievement->achievement_type }}</td>
                                             <td>{{ $achievement->description }}</td>
+
+                                            @role('guru_kelas')
                                             <td class="text-center">
                                                 <!-- Tombol Edit -->
                                                 <x-edit-primary-button tag="a" href="{{ route('achievements.edit', ['studentId' => $student->id, 'achievementId' => $achievement->id]) }}" class="flex items-center justify-center min-w-[60px]">
@@ -504,6 +582,8 @@
                                                     <span x-show="!sidebarOpen" class="ml-1 text-[10px]">{{ __('Hapus') }}</span>
                                                 </x-danger-button>
                                             </td>
+                                            @endrole
+
                                         </tr>
                                         @php $hasAchievements = true; @endphp
                                     @endforeach
@@ -588,7 +668,30 @@
                         @if ($headmaster && $headmaster->typesOfCAR === 'Kepala Sekolah')
                             <p>Mengetahui</p>
                             <p>Kepala Sekolah</p>
-                            <div class="flex flex-col items-center">
+
+                            @role('guru_kelas')
+                            {{-- Form to send report for validation --}}
+                            @if ($rapors->count() == 1)
+                                @php $rapor = $rapors->first(); @endphp
+                                @if ($rapor->status !== 'waiting_validation')
+                                    <form action="{{ route('send.report', ['rapor_id' => $rapor->id]) }}" method="POST">
+                                        @csrf
+                                        <button type="submit" class="btn btn-primary">Kirimkan</button>
+                                    </form>
+                                @endif
+                            @endif
+                            @endrole
+
+                            <div class="flex flex-col items-center mt-4">
+                                @role('guru_kelas')
+                                {{-- <p class="text-gray-800 text-md">Status Rapor: {{ $rapors->first()->status }}</p> --}}
+                                @endrole
+                                @role('kepala_sekolah')
+                                <form action="{{ route('rapors.validation.approve', ['id' => $rapor->id]) }}" method="POST">
+                                    @csrf
+                                    <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded mt-4">Validasi</button>
+                                </form>
+                                @endrole
                                 <p class="font-semibold underline underline-offset-2 mt-20 text-center">
                                     {{ ucwords(strtolower($headmaster->prefix ?? '')) }}
                                     {{ ucwords(strtolower($headmaster->teacher_name ?? '')) }}
@@ -598,7 +701,8 @@
                             </div>
                         @endif
                     </div>
-
+                </div>
+            </div>
 
                     </div>
             </div>

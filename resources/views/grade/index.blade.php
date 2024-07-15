@@ -84,6 +84,7 @@
                                 </x-detail-primary-button>
                             </td>
                         </tr>
+                        
                         {{-- Keterampilan --}}
                         <tr>
                             <td class="text-center">3</td>

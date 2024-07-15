@@ -49,7 +49,9 @@
             </div>
 
         @endrole
-
+        {{-- <div style="width: 259px;">
+            <x-box-orange tag="button" href="{{ route('rapors.validation.index') }}" :count="$uniqueAttitude" title="Data Nilai Sikap"/>
+        </div> --}}
 
         </div>
     </div>

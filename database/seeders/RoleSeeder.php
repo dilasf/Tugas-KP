@@ -161,56 +161,5 @@ class RoleSeeder extends Seeder
             'view_rapors'
         ]);
     }
-    // }
-    // public function run(): void
-    // {
-    //     // Create roles with guard_name
-    //     Role::create(['name' => 'admin', 'guard_name' => 'web']);
-    //     Role::create(['name' => 'kepala_sekolah', 'guard_name' => 'web']);
-    //     Role::create(['name' => 'guru_mapel', 'guard_name' => 'web']);
-    //     Role::create(['name' => 'guru_kelas', 'guard_name' => 'web']);
-    //     Role::create(['name' => 'siswa', 'guard_name' => 'web']);
-
-    //     // Create permissions with guard_name
-    //     Permission::create(['name' => 'view_teacher', 'guard_name' => 'web']);
-    //     Permission::create(['name' => 'create_teacher', 'guard_name' => 'web']);
-    //     Permission::create(['name' => 'edit_teacher', 'guard_name' => 'web']);
-    //     Permission::create(['name' => 'delete_teacher', 'guard_name' => 'web']);
-    //     Permission::create(['name' => 'import_teacher', 'guard_name' => 'web']);
-
-    //     Permission::create(['name' => 'view_student', 'guard_name' => 'web']);
-    //     Permission::create(['name' => 'create_student', 'guard_name' => 'web']);
-    //     Permission::create(['name' => 'edit_student', 'guard_name' => 'web']);
-    //     Permission::create(['name' => 'delete_student', 'guard_name' => 'web']);
-    //     Permission::create(['name' => 'import_student', 'guard_name' => 'web']);
-
-    //     Permission::create(['name' => 'view_subject', 'guard_name' => 'web']);
-    //     Permission::create(['name' => 'create_subject', 'guard_name' => 'web']);
-    //     Permission::create(['name' => 'edit_subject', 'guard_name' => 'web']);
-    //     Permission::create(['name' => 'delete_subject', 'guard_name' => 'web']);
-
-    //     Permission::create(['name' => 'view_semester_year', 'guard_name' => 'web']);
-    //     Permission::create(['name' => 'create_semester_year', 'guard_name' => 'web']);
-    //     Permission::create(['name' => 'edit_semester_year', 'guard_name' => 'web']);
-    //     Permission::create(['name' => 'delete_semester_year', 'guard_name' => 'web']);
-
-    //     Permission::create(['name' => 'view_class', 'guard_name' => 'web']);
-    //     Permission::create(['name' => 'create_class', 'guard_name' => 'web']);
-    //     Permission::create(['name' => 'edit_class', 'guard_name' => 'web']);
-    //     Permission::create(['name' => 'delete_class', 'guard_name' => 'web']);
-
-    //     // Add more permissions as needed with guard_name...
-
-    //     // Assign permissions to admin role
-    //     $adminRole = Role::findByName('admin', 'web');
-    //     $adminRole->givePermissionTo([
-    //         'view_student', 'create_student', 'edit_student', 'delete_student', 'import_student',
-    //         'view_teacher', 'create_teacher', 'edit_teacher', 'delete_teacher', 'import_teacher',
-    //         'view_subject', 'create_subject', 'edit_subject', 'delete_subject',
-    //         'view_semester_year', 'create_semester_year', 'edit_semester_year', 'delete_semester_year',
-    //         'view_class', 'create_class', 'edit_class', 'delete_class'
-    //     ]);
-
-    //     // Assign permissions to other roles as needed...
-    // }
+    
 }

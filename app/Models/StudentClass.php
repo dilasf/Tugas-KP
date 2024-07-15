@@ -37,4 +37,9 @@ class StudentClass extends Model
     {
         return $this->hasMany(ClassSubject::class, 'class_id');
     }
+
+    public function rapors()
+    {
+        return $this->hasMany(Rapor::class);
+    }
 }

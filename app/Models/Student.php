@@ -106,11 +106,10 @@ class Student extends Model
         return $this->hasMany(Extracurricular::class);
     }
 
-    public function rapor()
-{
-    return $this->hasMany(Rapor::class);
-}
-
+    public function rapors()
+    {
+        return $this->hasMany(Rapor::class);
+    }
 public function user()
     {
         return $this->belongsTo(User::class);

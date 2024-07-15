@@ -6,6 +6,7 @@ use App\Observers\RaporObserver;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+
 class Rapor extends Model
 {
     use HasFactory;
@@ -13,7 +14,7 @@ class Rapor extends Model
     protected $fillable = [
         'student_id',
         'grade_id',
-        // 'height_weight_id',
+        'attendance_id',
         'school_name',
         'school_address',
         'suggestion',
@@ -28,12 +29,6 @@ class Rapor extends Model
         return $this->belongsTo(Student::class, 'student_id', 'id')->via('grade');
     }
 
-    // protected static function boot()
-    // {
-    //     parent::boot();
-
-    //     static::observe(RaporObserver::class);
-    // }
 
     public function grade()
     {
@@ -84,9 +79,21 @@ class Rapor extends Model
     {
         return $this->belongsTo(SemesterYear::class);
     }
-    public function attendances()
+
+    public function attendance()
     {
-        return $this->hasMany(Attendance::class);
+        return $this->belongsTo(Attendance::class);
     }
 
+    // Atribut dinamis untuk mendapatkan nama siswa
+    public function getStudentNameAttribute()
+    {
+        return $this->grade->student->name ?? 'Nama Siswa Tidak Diketahui';
+    }
+
+    // Atribut dinamis untuk mendapatkan nama kelas
+    public function getClassNameAttribute()
+    {
+        return $this->grade->classSubject->name ?? 'Kelas Tidak Diketahui';
+    }
 }

@@ -17,7 +17,7 @@ return new class extends Migration
             $table->unsignedBigInteger('teacher_id');
             // $table->string('teacher_type');
             $table->string('assessment_type', 100);
-            $table->unsignedBigInteger('attendance_id')->nullable();
+            // $table->unsignedBigInteger('attendance_id')->nullable();
             $table->integer('score')->nullable();
             $table->integer('final_score')->nullable();
             $table->string('grade', 1)->nullable();
@@ -25,7 +25,7 @@ return new class extends Migration
             $table->timestamps();
 
             $table->foreign('grade_id')->references('id')->on('grades')->onDelete('cascade');
-            $table->foreign('teacher_id')->references('id')->on('teachers')->onDelete('cascade');
+            // $table->foreign('teacher_id')->references('id')->on('teachers')->onDelete('cascade');
         });
     }
 

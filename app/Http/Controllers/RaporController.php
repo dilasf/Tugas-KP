@@ -2,102 +2,101 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Extracurricular;
 use App\Models\Grade;
 use App\Models\HeightWeight;
 use App\Models\Rapor;
 use App\Models\SemesterYear;
 use App\Models\Student;
 use App\Models\Teacher;
-use Carbon\Carbon;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 class RaporController extends Controller
 {
-
     public function index(Request $request, $studentId)
-    {
-        $currentYear = now()->year;
-        $currentMonth = now()->month;
+{
+    $currentYear = now()->year;
+    $currentMonth = now()->month;
 
-        $defaultSemester = SemesterYear::where('year', $currentYear)
-            ->where('semester', ($currentMonth >= 1 && $currentMonth <= 6) ? 1 : 2)
-            ->first();
+    $defaultSemester = SemesterYear::where('year', $currentYear)
+        ->where('semester', ($currentMonth >= 1 && $currentMonth <= 6) ? 1 : 2)
+        ->first();
 
-        $selectedSemesterYearId = $request->input('semester_year_id', $defaultSemester->id);
+    $selectedSemesterYearId = $request->input('semester_year_id', $defaultSemester->id);
 
-        // Mengambil semester hanya untuk tahun ini
-        $semesters = SemesterYear::where('year', $currentYear)->get();
-        $sidebarOpen = false;
+    // Mengambil semester hanya untuk tahun ini
+    $semesters = SemesterYear::where('year', $currentYear)->get();
+    $sidebarOpen = false;
 
-        if (!$selectedSemesterYearId) {
-            $selectedSemesterYearId = $defaultSemester->id;
-        }
-
-        // Menemukan data siswa
-        $student = Student::with(['class.teacher', 'heightWeights'])->findOrFail($studentId);
-        $headmaster = Teacher::where('typesOfCAR', 'Kepala Sekolah')->first();
-
-        // Menemukan data grade sesuai semester
-        $grades = Grade::where('student_id', $studentId)
-            ->where('semester_year_id', $selectedSemesterYearId)
-            ->get();
-
-        // Sambungkan dengan tabel rapor
-        $rapors = Rapor::whereIn('grade_id', $grades->pluck('id'))
-            ->with('extracurricular', 'achievement', 'health', 'attendances')
-            ->get();
-
-        // Menyesuaikan sesuai hari
-        $uniqueSickDates = [];
-        $uniquePermissionDates = [];
-        $uniqueUnexcusedDates = [];
-
-        foreach ($rapors as $rapor) {
-            foreach ($rapor->attendances as $attendance) {
-                if ($attendance->sick > 0 && !in_array($attendance->date, $uniqueSickDates)) {
-                    $uniqueSickDates[] = $attendance->date;
-                }
-                if ($attendance->permission > 0 && !in_array($attendance->date, $uniquePermissionDates)) {
-                    $uniquePermissionDates[] = $attendance->date;
-                }
-                if ($attendance->unexcused > 0 && !in_array($attendance->date, $uniqueUnexcusedDates)) {
-                    $uniqueUnexcusedDates[] = $attendance->date;
-                }
-            }
-        }
-
-        // Hitung berdasarkan hari yang berbeda
-        $totalSick = count($uniqueSickDates);
-        $totalPermission = count($uniquePermissionDates);
-        $totalUnexcused = count($uniqueUnexcusedDates);
-
-        // Set print_date jika belum diatur
-        foreach ($rapors as $rapor) {
-            if (is_null($rapor->print_date)) {
-                $rapor->print_date = now()->toDateString();
-                $rapor->save();
-            }
-        }
-
-        // Mengambil data heightWeight berdasarkan rapor yang ada
-        $heightWeights = HeightWeight::whereIn('rapor_id', $rapors->pluck('id'))->get();
-
-        return view('rapors.index', [
-            'student' => $student,
-            'rapors' => $rapors,
-            'semesters' => $semesters,
-            'selectedSemesterYearId' => $selectedSemesterYearId,
-            'sidebarOpen' => $sidebarOpen,
-            'totalSick' => $totalSick,
-            'totalPermission' => $totalPermission,
-            'totalUnexcused' => $totalUnexcused,
-            'headmaster' => $headmaster,
-            'heightWeights' => $heightWeights, // Mengirim data heightWeight ke view
-        ]);
+    if (!$selectedSemesterYearId) {
+        $selectedSemesterYearId = $defaultSemester->id;
     }
+
+    // Menemukan data siswa
+    $student = Student::with(['class.teacher', 'heightWeights'])->findOrFail($studentId);
+    $headmaster = Teacher::where('typesOfCAR', 'Kepala Sekolah')->first();
+
+    // Menemukan data grade sesuai semester
+    $grades = Grade::where('student_id', $studentId)
+        ->where('semester_year_id', $selectedSemesterYearId)
+        ->get();
+
+    // Sambungkan dengan tabel rapor
+    $rapors = Rapor::whereIn('grade_id', $grades->pluck('id'))
+        ->with('extracurricular', 'achievement', 'health', 'attendance')
+        ->get();
+
+    // Set print_date jika belum diatur
+    foreach ($rapors as $rapor) {
+        if (is_null($rapor->print_date)) {
+            $rapor->print_date = now()->toDateString();
+            $rapor->save();
+        }
+    }
+
+    // Menyesuaikan sesuai hari
+    $uniqueSickDates = [];
+    $uniquePermissionDates = [];
+    $uniqueUnexcusedDates = [];
+
+    if (!empty($rapors)) {
+        foreach ($rapors as $rapor) {
+            if (!empty($rapor->attendance)) {
+                $attendance = $rapor->attendance;
+
+                if ($attendance->sick > 0 && !in_array($attendance->created_at->toDateString(), $uniqueSickDates)) {
+                    $uniqueSickDates[] = $attendance->created_at->toDateString();
+                }
+                if ($attendance->permission > 0 && !in_array($attendance->created_at->toDateString(), $uniquePermissionDates)) {
+                    $uniquePermissionDates[] = $attendance->created_at->toDateString();
+                }
+                if ($attendance->unexcused > 0 && !in_array($attendance->created_at->toDateString(), $uniqueUnexcusedDates)) {
+                    $uniqueUnexcusedDates[] = $attendance->created_at->toDateString();
+                }
+            }
+        }
+    }
+
+    // Hitung berdasarkan hari yang berbeda
+    $totalSick = count($uniqueSickDates);
+    $totalPermission = count($uniquePermissionDates);
+    $totalUnexcused = count($uniqueUnexcusedDates);
+
+    // Mengambil data heightWeight berdasarkan rapor yang ada
+    $heightWeights = HeightWeight::whereIn('rapor_id', $rapors->pluck('id'))->get();
+
+    return view('rapors.index', [
+        'student' => $student,
+        'rapors' => $rapors,
+        'semesters' => $semesters,
+        'selectedSemesterYearId' => $selectedSemesterYearId,
+        'sidebarOpen' => $sidebarOpen,
+        'totalSick' => $totalSick,
+        'totalPermission' => $totalPermission,
+        'totalUnexcused' => $totalUnexcused,
+        'headmaster' => $headmaster,
+        'heightWeights' => $heightWeights,
+    ]);
+}
 
 
     //edit data kompetensi sikap
@@ -322,5 +321,18 @@ class RaporController extends Controller
             return 'D';
         }
     }
+
+    public function sendReport($raporId)
+    {
+        $rapor = Rapor::findOrFail($raporId);
+
+        // Set status to waiting for headmaster validation
+        $rapor->status = 'waiting_validation';
+        $rapor->save();
+
+        // Redirect back or to the appropriate page
+        return redirect()->back()->with('success', 'Rapor berhasil dikirimkan untuk validasi.');
+    }
+
 
 }

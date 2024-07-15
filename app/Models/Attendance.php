@@ -10,13 +10,12 @@ class Attendance extends Model
         'student_id',
         'class_subject_id',
         'semester_year_id',
-        'rapor_id',
-        'date',
+        // 'rapor_id',
         'sick',
         'permission',
         'unexcused',
-
     ];
+
 
     public function student()
     {
@@ -36,5 +35,10 @@ class Attendance extends Model
     public function rapor()
     {
         return $this->belongsTo(Rapor::class);
+    }
+
+    public function skillScores()
+    {
+        return $this->hasMany(SkillScore::class);
     }
 }
