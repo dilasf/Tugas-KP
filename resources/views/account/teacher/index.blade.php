@@ -22,11 +22,11 @@
             @foreach($teacherAccounts as $account)
                 <tr class="text-center">
                     <td>{{ $num++ }}</td>
-                    <td>{{ $account->user->name }}</td>
-                    <td>{{ $account->user->email }}</td>
+                    <td>{{ ucwords(strtolower($account->user->name))}}</td>
+                    <td>{{ ucwords(strtolower( $account->user->email))}}</td>
                     <td>{{ $account->user->nuptk }}</td>
                     <td>{{ $account->user->nip }}</td>
-                    {{-- <td>{{ $account->user->status }}</td> --}}
+
                     <td class="size-px whitespace-nowrap">
                         <div class="px-6 py-3">
                             @if( $account->user->status == 'active')
@@ -51,7 +51,6 @@
                             <img src="{{ asset('img/edit-brush_logo.png') }}" class="w-[13px] h-[13px]">
                             <span x-show="!sidebarOpen" class="ml-1 text-[10px]">{{ __('Edit') }}</span>
                         </x-edit-primary-button>
-                        {{-- Tombol untuk hapus bisa menggunakan modal atau konfirmasi lainnya --}}
                     </td>
                 </tr>
             @endforeach

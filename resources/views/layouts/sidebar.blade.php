@@ -31,18 +31,25 @@
 
                 <div id="users-accordion-child" class="hs-accordion-content w-full overflow-hidden transition-[height] duration-300 hidden">
                     <ul class="hs-accordion-group ps-3 pt-2" data-hs-accordion-always-open>
-                        @role('admin')
-                            <li>
-                                <x-dropdown-link :href="route('teacher_data.index')" :active="request()->routeIs('teacher')">
+                        @php
+                        $user = auth()->user();
+                    @endphp
+
+                    @if ($user->hasRole('admin') || $user->hasRole('kepala_sekolah'))
+                        <li>
+                            <x-dropdown-link :href="route('teacher_data.index')" :active="request()->routeIs('teacher')">
                                 {{ __('Data Guru') }}
-                                </x-dropdown-link>
-                            </li>
-                        @endrole
-                            <li>
-                                <x-dropdown-link :href="route('student_data.index')" :active="request()->routeIs('student')">
-                                    {{ __('Data Siswa') }}
-                                </x-dropdown-link>
-                            </li>
+                            </x-dropdown-link>
+                        </li>
+                    @endif
+                        <li>
+                            <x-dropdown-link :href="route('student_data.index')" :active="request()->routeIs('student')">
+                                {{ __('Data Siswa') }}
+                            </x-dropdown-link>
+                        </li>
+
+
+
                             @role('admin')
                             <li class="hs-accordion" id="users-accordion-sub-2">
                                 <button type="button" class="hs-accordion-toggle w-full text-start flex items-center gap-x-3.5 py-2 px-2.5 hs-accordion-active:text-white hs-accordion-active:hover:bg-side-dark text-sm text-slate-200 hover:bg-hover-side hover:text-white focus:outline-none focus:bg-side-dark">

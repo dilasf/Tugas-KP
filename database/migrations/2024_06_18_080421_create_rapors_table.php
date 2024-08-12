@@ -21,7 +21,7 @@ return new class extends Migration
             $table->string('spiritual_attitude', 255)->nullable();
             $table->string('suggestion', 255)->nullable();
             $table->date('print_date')->nullable();
-            $table->string('status', 255)->nullable();
+            $table->string('status', 255)->nullable()->default('not_sent');
             $table->timestamps();
 
             $table->foreign('grade_id')->references('id')->on('grades');

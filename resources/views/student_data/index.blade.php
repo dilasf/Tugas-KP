@@ -123,7 +123,7 @@
                             <img src="{{ asset('img/garbage_logo.png') }}" class="w-[13px] h-[13px]">
                             <span x-show="!sidebarOpen" class="ml-1 text-[10px]">{{ __('Hapus') }}</span>
                         </x-danger-button>
-                        @endrole
+                    @endrole
                     </td>
 
                 </tr>

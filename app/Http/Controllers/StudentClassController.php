@@ -94,7 +94,7 @@ class StudentClassController extends Controller
     {
         $class = StudentClass::findOrFail($id);
 
-        $class->total_students = 0;
+        $class->number_of_students = 0;
         $class->number_of_male_students = 0;
         $class->number_of_female_students = 0;
         $class->save();

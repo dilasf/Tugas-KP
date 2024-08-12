@@ -8,7 +8,7 @@
     <div class="flex-grow bg-white rounded-lg shadow-md mx-6 my-1 p-10 min-h-[calc(70vh-5px)]">
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 my-4 gap-10">
 
-            @role('admin')
+            @role('admin|kepala_sekolah')
                 <div style="width: 259px;">
                     <x-box-purple tag="button" href="{{ route('teacher_data.index') }}" :count="$teacherCount" title="Data Guru"/>
                 </div>
@@ -16,9 +16,19 @@
                 <div style="width: 259px;">
                     <x-box-aqua tag="button" href="{{ route('student_data.index') }}" :count="$studentCount" title="Data Siswa"/>
                 </div>
+            @endrole
 
+            @role('kepala_sekolah')
+            <div class="bg-gradient-to-r from-blue-500 to-teal-500 text-white shadow-lg rounded-lg p-6 hover:from-teal-500 hover:to-blue-500 transition duration-300 ease-in-out">
+                <p class="text-3xl"> {{ $pendingReportsCount }}</p>
+                <h2 class="text-lg font-medium">Rapor Menunggu Validasi</h2>
+                <a href="{{ route('rapors.validation.index') }}" class="text-white underline mt-2 block">Lihat Detail</a>
+            </div>
+            @endrole
+
+            @role('admin')
                 <div style="width: 259px;">
-                    <x-box-blue tag="button" data-hs-overlay="#hs-cookies" :count="0" title="Akun"/>
+                    <x-box-blue tag="button" data-hs-overlay="#hs-cookies" :count="$accountsCount" title="Akun"/>
                 </div>
 
                 <div style="width: 259px;">
@@ -49,12 +59,66 @@
             </div>
 
         @endrole
+
+
+
         {{-- <div style="width: 259px;">
             <x-box-orange tag="button" href="{{ route('rapors.validation.index') }}" :count="$uniqueAttitude" title="Data Nilai Sikap"/>
         </div> --}}
 
-        </div>
-    </div>
+            @if (Auth::user()->role_id == 5) <!-- Role ID 5 adalah siswa -->
+                <div class="col-span-1 lg:col-span-3">
+                    {{-- Data Diri --}}
+                    <div class="mb-4">
+                        <p class="font-semibold text-xl text-center">RAPOR DAN PROFIL PESERTA DIDIK</p>
+                        <div class="flex justify-between">
+                            <div class="py-10">
+                                <div class="mb-2 flex items-center">
+                                    <p class="font-medium text-16px text-gray-800 mr-2 w-[200px]">Nama Peserta Didik</p>
+                                    <p class="text-gray-800 text-16px mr-2">:</p>
+                                    <p class="text-gray-900 font-medium text-16px">{{ strtoupper(Auth::user()->name ?? 'N/A') }}</p>
+                                </div>
+                                <div class="mb-2 flex items-center">
+                                    <p class="font-medium text-16px text-gray-800 mr-2 w-[200px]">NIS</p>
+                                    <p class="text-gray-800 text-16px mr-2">:</p>
+                                    <p class="text-gray-900 font-medium text-16px">{{ Auth::user()->student->nis ?? 'N/A' }}</p>
+                                </div>
+                                <div class="mb-2 flex items-center">
+                                    <p class="font-medium text-16px text-gray-800 mr-2 w-[200px]">Nama Sekolah</p>
+                                    <p class="text-gray-800 text-16px mr-2">:</p>
+                                    <p class="text-gray-900 font-medium text-16px">{{ strtoupper($validatedReports->first()->school_name ?? 'SDN DAWUAN') }}</p>
+                                </div>
+                                <div class="mb-2 flex items-center">
+                                    <p class="font-medium text-16px text-gray-800 mr-2 w-[200px]">Alamat Sekolah</p>
+                                    <p class="text-gray-800 text-16px mr-2">:</p>
+                                    <p class="text-gray-900 font-medium text-16px">{{ $validatedReports->first()->school_address ?? 'KP Pasir Eurih' }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {{-- END Data Diri --}}
+
+                    <h3 class="text-xl font-semibold mb-4">Rapor yang Telah Divalidasi</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
+                        @foreach($validatedReports as $rapor)
+                        <div class="bg-white p-4 rounded-lg shadow-md">
+                            <p class="font-semibold">{{ $rapor->grade->classSubject->class->name }} - Semester {{ $rapor->grade->semesterYear->semester }}</p>
+                            <p class="text-sm text-gray-600">Tahun: {{ $rapor->grade->semesterYear->year }}</p>
+                            <p class="text-sm text-gray-600"><strong>Status:</strong> {{ $rapor->status }}</p>
+                            <a  href="{{ route('rapors.index', ['studentId' => $rapor->grade->student->id]) }}" class="mt-2 inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-500 focus:outline-none focus:border-blue-700 focus:ring focus:ring-blue-200 active:bg-blue-600 disabled:opacity-25 transition">
+                                Lihat Detail
+                            </a>
+                            <x-primary-button tag="a" href="{{ route('rapors.index', ['studentId' => $rapor->grade->student->id]) }}"
+                                class="flex items-center justify-center min-w-[60px] max-h-[31px]">
+                                <img src="{{ asset('img/detail_logo.png') }}" class="w-[10px] h-[13px]">
+                                <span x-show="!sidebarOpen" class="ml-1 text-[10px]">{{ __('Lihat Rapor') }}</span>
+                            </x-primary-button>
+                        </div>
+                        @endforeach
+                    </div>
+                </div>
+            @endif
+
 
     <div id="hs-cookies" class="hs-overlay hidden fixed top-0 left-0 z-50 w-full h-full bg-gray-900 bg-opacity-50 flex justify-center items-center">
         <div class="bg-white rounded-xl shadow-lg w-full max-w-md p-8 text-center relative">

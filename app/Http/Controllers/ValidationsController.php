@@ -27,9 +27,31 @@ class ValidationsController extends Controller
     public function approve($id)
     {
         $rapor = Rapor::findOrFail($id);
-        $rapor->status = 'validated'; // Sesuaikan dengan status yang sesuai setelah divalidasi
+        $rapor->status = 'validated';
         $rapor->save();
 
-        return redirect()->route('rapors.validation.index')->with('success', 'Rapor berhasil divalidasi.');
+
+        if ($rapor) {
+            $notification['alert-type'] = 'success';
+            $notification['message'] = 'Rapor Berhasil Divalidasi';
+            return redirect()->route('rapors.validation.index')->with($notification);
+        } else {
+            $notification['alert-type'] = 'error';
+            $notification['message'] = 'Rapor Gagal Divalidasi';
+            return redirect()->route('rapors.validation.index')->with($notification);
+        }
+
     }
+
+    public function reject($id)
+{
+    $rapor = Rapor::find($id);
+
+        $rapor->status = 'rejected';
+        $rapor->save();
+        // dd('Reject method reached');
+
+    return redirect()->route('rapors.validation.index')->with('success', 'Rapor telah ditolak.');
+}
+
 }

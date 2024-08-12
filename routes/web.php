@@ -26,7 +26,7 @@ use App\Models\Teacher;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('auth.login');
 });
 
 Route::get('/dashboard', function () {
@@ -44,7 +44,7 @@ Route::middleware('auth')->group(function () {
 });
 
 //Data Guru
-Route::middleware(['auth', 'verified', 'role:admin'])->group(function () {
+Route::middleware(['auth', 'verified', 'role:admin|kepala_sekolah'])->group(function () {
     Route::get('/teacher', [TeacherController::class, 'index'])->name('teacher_data.index');;
     Route::get('/teacher/create', [TeacherController::class, 'create'])->name('teacher_data.create');
     Route::post('/teacher/store', [TeacherController::class, 'store'])->name('teacher_data.store');
@@ -59,13 +59,14 @@ Route::middleware(['auth', 'verified', 'role:admin'])->group(function () {
 
 
 //Data Siswa
-Route::middleware(['auth', 'verified', 'role:admin|guru_mapel|guru_kelas'])->group(function () {
+Route::middleware(['auth', 'verified', 'role:admin|guru_mapel|guru_kelas|kepala_sekolah'])->group(function () {
     Route::get('/student', [StudentController::class, 'index'])->name('student_data.index');
     Route::get('/student/create', [StudentController::class, 'create'])->name('student_data.create');
     Route::post('/student/store', [StudentController::class, 'store'])->name('student_data.store');
     Route::get('/student/{id}/edit', [StudentController::class, 'edit'])->name('student_data.edit');
     Route::match(['put', 'patch'],'/student/{id}', [StudentController::class, 'update'])->name('student_data.update');
     Route::delete('/student/{id}', [StudentController::class, 'destroy'])->name('student_data.destroy');
+
     Route::get('/student/create-parent', [StudentController::class, 'createParent'])->name('student_data.create-parent');
     Route::post('/student/store-parent', [StudentController::class, 'storeParent'])->name('student_data.store-parent');
     Route::get('/student/{id}/edit-parent', [StudentController::class, 'editParent'])->name('student_data.edit-parent');
@@ -131,6 +132,8 @@ Route::middleware(['auth', 'verified', 'role:admin'])->group(function () {
 
 Route::middleware('auth')->group(function () {
     Route::get('/account/student', [AccountStudentController::class, 'index'])->name('account.student.index');
+    Route::get('/account/student/{id}/edit', [AccountStudentController::class, 'edit'])->name('account.student.edit');
+    Route::patch('/account/student/{id}', [AccountStudentController::class, 'update'])->name('account.student.update');
 });
 
 
@@ -229,21 +232,11 @@ Route::middleware(['auth', 'verified', 'role:guru_kelas'])->group(function () {
 
 //Tinggi Badan
 Route::middleware(['auth', 'verified'])->group(function () {
-    // Route::get('/students/{studentId}/height_weights/{heightWeightId}/edit/{aspectName}', [HeightWeightController::class, 'edit'])
-    // ->name('height_weights.edit');
-    // Route::get('/students/{studentId}/height_weights/{heightWeightId}/edit/{aspectName}', [HeightWeightController::class, 'edit'])
-    // ->name('height_weights.edit');
 
-    // Route::get('/students/{studentId}/height_weights/{heightWeightId}/edit/{aspectName}', [HeightWeightController::class, 'edit'])
-    // ->name('height_weights.edit');
-
-    // Route::patch('/students/{studentId}/height_weights/{heightWeightId?}/update/{aspectName}', [HeightWeightController::class, 'update'])
-    // ->name('height_weights.update');
     Route::get('/height_weights/{studentId}/{heightWeightId}/{aspectName}/{semester_year_id}/edit', [HeightWeightController::class, 'edit'])
     ->name('height_weights.edit');
-
-Route::patch('/height_weights/{studentId}/{heightWeightId}/{aspectName}/{semester_year_id}', [HeightWeightController::class, 'update'])
-    ->name('height_weights.update');
+    Route::patch('/height_weights/{studentId}/{heightWeightId}/{aspectName}/{semester_year_id}', [HeightWeightController::class, 'update'])
+        ->name('height_weights.update');
 
 });
 
@@ -251,10 +244,17 @@ Route::middleware(['auth', 'verified', 'role:kepala_sekolah'])->group(function (
     Route::get('/validation', [ValidationsController::class, 'index'])->name('rapors.validation.index');
     Route::get('/validation/{id}', [ValidationsController::class, 'show'])->name('rapors.validation.detail');
     Route::post('/validation/{id}/approve', [ValidationsController::class, 'approve'])->name('rapors.validation.approve');
+    Route::post('/validation/{id}/reject', [ValidationsController::class, 'reject'])->name('rapors.validation.reject');
+
+});
+
+Route::middleware(['auth', 'verified','role:guru_kelas|kepala_sekolah|siswa'])->group(function () {
+    Route::get('rapors/lihat/{studentId}', [RaporController::class, 'index'])->name('rapors.index');
+
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('rapors/lihat/{studentId}', [RaporController::class, 'index'])->name('rapors.index');
+     Route::get('rapors/lihat/{studentId}', [RaporController::class, 'index'])->name('rapors.index');
     Route::get('/rapors/{studentId}/edit/{semesterYearId}', [RaporController::class, 'edit'])->name('rapors.edit');
     Route::match(['put', 'patch'], '/rapors/{rapor}', [RaporController::class, 'update'])->name('rapors.update');
 
@@ -266,7 +266,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/rapors/{studentId}/edit/{raporId}/{aspectName}', [RaporController::class, 'editAspect'])->name('rapors.editAspect');
     Route::patch('/rapors/{studentId}/update/{raporId}/{aspectName}', [RaporController::class, 'updateAspect'])->name('rapors.updateAspect');
 
-    Route::post('/send-report/{rapor_id}', [RaporController::class, 'sendReport'])->name('send.report');
+    Route::post('/send-report/{raporId}', [RaporController::class, 'sendReport'])->name('send.report');
 
 });
 

@@ -36,7 +36,7 @@
                     <td>{{ $kelas->number_of_male_students }}</td>
                     <td>{{ $kelas->number_of_female_students }}</td>
                     <td>{{ $kelas->number_of_students }}</td>
-                    <td>{{ $kelas->teacher->teacher_name ?? 'N/A' }}</td>
+                    <td>{{ucwords(strtolower($kelas->teacher->teacher_name ?? 'N/A')) }}</td>
                     <td>{{ $kelas->curriculum }}</td>
                     <td>{{ $kelas->room }}</td>
                     <td :class="{ 'flex flex-row justify-center items-center gap-2': sidebarOpen, 'justify-center items-center gap-2': !sidebarOpen }">

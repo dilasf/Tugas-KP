@@ -131,14 +131,17 @@ class LoginRequest extends FormRequest
 
         // Attempt to login with various fields
         if ($this->attemptLogin('email', $login, $credentials['password']) ||
-            $this->attemptLogin('nuptk', $login, $credentials['password'], 'teacher') ||
-            $this->attemptLogin('nip', $login, $credentials['password'])) {
-            // $this->attemptLogin('nis', $login, $credentials['password']))
-            $this->clearRateLimiter();
-            return;
-        }
+        $this->attemptLogin('nuptk', $login, $credentials['password'], 'teacher') ||
+        $this->attemptLogin('nip', $login, $credentials['password'], 'teacher') ||
+        $this->attemptLogin('nis', $login, $credentials['password'], 'student') ||
+        $this->attemptLogin('nisn', $login, $credentials['password'], 'student')) {
 
-        $this->rateLimitFailedLogin();
+        $this->clearRateLimiter();
+        return;
+    }
+
+    $this->rateLimitFailedLogin();
+
     }
     /**
      * Attempt to authenticate using a specific field.

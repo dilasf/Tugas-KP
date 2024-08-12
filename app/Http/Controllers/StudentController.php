@@ -7,11 +7,14 @@ use App\Models\Student;
 use App\Models\Guardian;
 use App\Models\HeightWeight;
 use App\Models\StudentClass;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Facades\Excel;
+use Spatie\Permission\Models\Role;
 
 class StudentController extends Controller
 {
@@ -197,6 +200,17 @@ class StudentController extends Controller
             'guardian_id' => $guardian->id,
         ]));
 
+        // Membuat user terkait
+        $user = User::create([
+            'student_id' => $student->id,
+            'name' => $validated['student_name'],
+            'email' => $validated['student_name']. '@example.com',
+            'nis' => $validated['nis'],
+            'nisn' => $validated['nisn'],
+            'password' => Hash::make('password123'),
+            'role_id' => 5, // Set role_id to 5 for student
+        ]);
+
         // Simpan data berat badan ke database
         $heightWeightData['student_id'] = $student->id;
         HeightWeight::create($heightWeightData);
@@ -216,6 +230,7 @@ class StudentController extends Controller
         }
     }
 
+
     // Mengupdate data siswa
     public function edit(string $id)
     {
@@ -234,13 +249,13 @@ class StudentController extends Controller
         $validated = $request->validate([
             'student_photo' => 'nullable|image',
             'status' => 'required|boolean',
-            'nis' => 'required|numeric|digits_between:1,11,' . $student->id,
-            'nisn' => 'required|numeric|digits_between:1,11,' . $student->id,
-            'nipd' => 'required|numeric|digits_between:1,10,' . $student->id,
+            'nis' => 'required|numeric|digits_between:1,11|unique:students,nis,' . $student->id,
+            'nisn' => 'required|numeric|digits_between:1,11|unique:students,nisn,' . $student->id,
+            'nipd' => 'required|numeric|digits_between:1,10|unique:students,nipd,' . $student->id,
             'class_id' => 'required|exists:classes,id',
             'student_name' => 'required|max:255',
             'gender' => 'required|in:Laki-laki,Perempuan',
-            'nik' => 'required|numeric|digits_between:1,17,' . $student->id,
+            'nik' => 'required|numeric|digits_between:1,17|unique:students,nik,' . $student->id,
             'place_of_birth' => 'required|max:50',
             'date_of_birth' => 'required|date',
             'religion' => 'required|max:10',
@@ -249,7 +264,7 @@ class StudentController extends Controller
             'previous_school' => 'nullable|max:255',
             'birth_certificate_number' => 'nullable|max:60',
             'residence_type' => 'nullable|max:25',
-            'no_kk' => 'required|numeric|digits_between:1,17,' . $student->id,
+            'no_kk' => 'required|numeric|digits_between:1,17|unique:students,no_kk,' . $student->id,
             'child_number' => 'nullable|numeric|digits_between:1,2',
             'number_of_siblings' => 'nullable|numeric|digits_between:1,2',
             'transportation' => 'nullable|max:20',
@@ -293,16 +308,17 @@ class StudentController extends Controller
             Storage::delete('public/photos/' . $student->student_photo);
         }
 
-        // Hapus data siswa
+        // Hapus data siswa dan terkait melalui model events
         $student->delete();
 
         // Redirect dengan notifikasi
-        $notification['alert-type'] = 'success';
-        $notification['message'] = 'Data Siswa Berhasil Dihapus';
+        $notification = [
+            'alert-type' => 'success',
+            'message' => 'Data Siswa Berhasil Dihapus'
+        ];
 
         return redirect()->route('student_data.index')->with($notification);
     }
-
     // Import data siswa dari Excel
     public function import(Request $request)
     {

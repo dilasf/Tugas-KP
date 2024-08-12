@@ -14,10 +14,13 @@ return new class extends Migration
         Schema::create('users', function (Blueprint $table) {
             $table->id();
             $table->foreignId('teacher_id')->nullable()->constrained()->onDelete('cascade');
+            $table->foreignId('student_id')->nullable()->constrained()->onDelete('cascade');
             $table->string('name');
             $table->string('email')->unique();
             $table->string('nuptk')->nullable()->unique();
             $table->string('nip')->nullable()->unique();
+            $table->string('nis')->nullable()->unique();
+            $table->string('nisn')->nullable()->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password')->nullable();
             $table->string('status')->default('active');

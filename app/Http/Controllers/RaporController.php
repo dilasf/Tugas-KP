@@ -14,6 +14,7 @@ class RaporController extends Controller
 {
     public function index(Request $request, $studentId)
 {
+
     $currentYear = now()->year;
     $currentMonth = now()->month;
 
@@ -34,6 +35,7 @@ class RaporController extends Controller
     // Menemukan data siswa
     $student = Student::with(['class.teacher', 'heightWeights'])->findOrFail($studentId);
     $headmaster = Teacher::where('typesOfCAR', 'Kepala Sekolah')->first();
+
 
     // Menemukan data grade sesuai semester
     $grades = Grade::where('student_id', $studentId)
@@ -322,17 +324,22 @@ class RaporController extends Controller
         }
     }
 
-    public function sendReport($raporId)
+    public function sendReport(Request $request, $raporId)
     {
         $rapor = Rapor::findOrFail($raporId);
 
-        // Set status to waiting for headmaster validation
-        $rapor->status = 'waiting_validation';
-        $rapor->save();
+        // Check if the status is 'not_sent' before updating
+        if ($rapor->status === 'not_sent' || 'rejected') {
+            $rapor->status = 'waiting_validation'; // Update status as needed
+            $rapor->save();
 
-        // Redirect back or to the appropriate page
-        return redirect()->back()->with('success', 'Rapor berhasil dikirimkan untuk validasi.');
+            return redirect()->back()->with('success', 'Rapor berhasil dikirim.');
+        }
+
+        return redirect()->back()->with('error', 'Status rapor tidak valid untuk dikirim.');
     }
+
+
 
 
 }

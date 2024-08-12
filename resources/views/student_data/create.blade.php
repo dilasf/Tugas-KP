@@ -14,11 +14,55 @@
         <div class="top-0 left-0 w-full h-10 rounded-t-md bg-light-blue flex items-center justify-center text-white font-semibold text-md leading-tight">
             {{ __('Formulir Tambah Data Siswa') }}
         </div>
+
+
+
         <div class="bg-white overflow-hidden shadow-sm">
             <div class="p-6 text-black dark:text-gray-100">
                 <div class="max-h-[70vh] overflow-y-auto">
                     <form method="post" action="{{ route('student_data.store') }}" enctype="multipart/form-data" class="mt-6 space-y-6">
                         @csrf
+
+
+                        <div class="max-w-3xl">
+                            <x-input-label for="residence_type" value="Jenis Tinggal" />
+                            <div id="residence_type" class="mt-2 w-full flex space-x-16" required>
+                                <label class="inline-flex items-center">
+                                    <input type="radio" name="residence_type" value="Orang Tua" {{ old('residence_type') == 'orang tua' ? 'checked' : '' }}>
+                                    <span class="ml-2">Bersama Orang Tua</span>
+                                </label>
+                                <label class="inline-flex items-center">
+                                    <input type="radio" name="residence_type" value="Wali" {{ old('residence_type') == 'wali' ? 'checked' : '' }}>
+                                    <span class="ml-2">Bersama Wali</span>
+                                </label>
+                            </div>
+                            <x-input-error class="mt-2" :messages="$errors->get('residence_type')" />
+                        </div>
+
+                         <!-- Form untuk data orang tua -->
+                       <div class="max-w-3xl relative">
+                        <div class="mb-4">
+                            <div class="flex items-center justify-between bg-light-blue text-white rounded py-2 px-4 cursor-pointer" id="toggleParentForm">
+                                <span>Tambah Data Orang Tua</span>
+                                <svg id="triangle" class="w-3 h-3 transition-transform duration-300 ease-in-out transform rotate-0" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M0 0L10 5L0 10L0 0Z" fill="white"/>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+
+                      <!-- Form untuk Wali-->
+                    <div class="max-w-3xl relative">
+                        <div class="mb-4">
+                            <div class="flex items-center justify-between bg-light-blue text-white rounded py-2 px-4 cursor-pointer" id="toggleGuardianForm">
+                                <span>Tambah Data Wali</span>
+                                <svg id="triangle" class="w-3 h-3 transition-transform duration-300 ease-in-out transform rotate-0" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M0 0L10 5L0 10L0 0Z" fill="white"/>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+                    {{-- End --}}
 
                         <!-- Form input untuk data siswa -->
                         <div class="flex flex-col sm:flex-row sm:items-center sm:space-x-8 max-w-3xl">
@@ -177,52 +221,12 @@
                             <x-input-error class="mt-2" :messages="$errors->get('number_of_siblings')" />
                         </div>
 
-                        <div class="max-w-3xl">
-                            <x-input-label for="residence_type" value="Jenis Tinggal" />
-                            <div id="residence_type" class="mt-2 w-full flex space-x-16" required>
-                                <label class="inline-flex items-center">
-                                    <input type="radio" name="residence_type" value="Orang Tua" {{ old('residence_type') == 'orang tua' ? 'checked' : '' }}>
-                                    <span class="ml-2">Bersama Orang Tua</span>
-                                </label>
-                                <label class="inline-flex items-center">
-                                    <input type="radio" name="residence_type" value="Wali" {{ old('residence_type') == 'wali' ? 'checked' : '' }}>
-                                    <span class="ml-2">Bersama Wali</span>
-                                </label>
-                            </div>
-                            <x-input-error class="mt-2" :messages="$errors->get('residence_type')" />
-                        </div>
-
                         <div class="max-w-3xl mb-6">
                             <x-input-label for="no_kk" value="NO KK" />
                             <x-text-input id="no_kk" type="text" name="no_kk" class="mt-1 block w-full bg-zinc-100" value="{{ old('no_kk')}}" required />
                             <x-input-error class="mt-2" :messages="$errors->get('no_kk')" />
                         </div>
 
-
-                       <!-- Form untuk data orang tua -->
-                       <div class="max-w-3xl relative">
-                        <div class="mb-4">
-                            <div class="flex items-center justify-between bg-light-blue text-white rounded py-2 px-4 cursor-pointer" id="toggleParentForm">
-                                <span>Tambah Data Orang Tua</span>
-                                <svg id="triangle" class="w-3 h-3 transition-transform duration-300 ease-in-out transform rotate-0" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M0 0L10 5L0 10L0 0Z" fill="white"/>
-                                </svg>
-                            </div>
-                        </div>
-                    </div>
-
-                      <!-- Form untuk Wali-->
-                    <div class="max-w-3xl relative">
-                        <div class="mb-4">
-                            <div class="flex items-center justify-between bg-light-blue text-white rounded py-2 px-4 cursor-pointer" id="toggleGuardianForm">
-                                <span>Tambah Data Wali</span>
-                                <svg id="triangle" class="w-3 h-3 transition-transform duration-300 ease-in-out transform rotate-0" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M0 0L10 5L0 10L0 0Z" fill="white"/>
-                                </svg>
-                            </div>
-                        </div>
-                    </div>
-                    {{-- End --}}
 
                     <!-- Form input untuk data siswa -->
                     <div class="max-w-3xl">

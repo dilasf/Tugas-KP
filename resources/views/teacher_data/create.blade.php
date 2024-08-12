@@ -119,7 +119,21 @@
 
                         <div class="max-w-3xl">
                             <x-input-label for="typesOfCAR" value="Jenis PTK" />
-                            <x-text-input id="typesOfCAR" type="text" name="typesOfCAR" class="mt-1 block w-full bg-zinc-100" value="{{ old('typesOfCAR')}}" required />
+                            <x-select-input id="typesOfCAR" name="typesOfCAR" class="mt-1 block w-full bg-zinc-100" required>
+                                <option value="">Pilih Jenis PTK</option>
+                                <option value="Kepala Sekolah" {{ old('typesOfCAR') == 'Kepala Sekolah' ? 'selected' : '' }}>
+                                    Kepala Sekolah
+                                </option>
+                                <option value="Penjaga Sekolah" {{ old('typesOfCAR') == 'Penjaga Sekolah' ? 'selected' : '' }}>
+                                    Penjaga Sekolah
+                                </option>
+                                <option value="Guru Mapel" {{ old('typesOfCAR') == 'Guru Mapel' ? 'selected' : '' }}>
+                                    Guru Mapel
+                                </option>
+                                <option value="Guru Kelas" {{ old('typesOfCAR') == 'Guru Kelas' ? 'selected' : '' }}>
+                                    Guru Kelas
+                                </option>
+                            </x-select-input>
                             <x-input-error class="mt-2" :messages="$errors->get('typesOfCAR')" />
                         </div>
 
@@ -177,10 +191,26 @@
                             <x-input-error class="mt-2" :messages="$errors->get('additional_Duties')" />
                         </div>
 
-                        <div class="max-w-3xl">
+                        {{-- <div class="max-w-3xl">
                             <x-input-label for="teaching" value="Mengajar" />
                             <x-text-input id="teaching" type="text" name="teaching" class="mt-1 block w-full bg-zinc-100" value="{{ old('teaching')}}" />
                             <x-input-error class="mt-2" :messages="$errors->get('teaching')" />
+                        </div> --}}
+
+                        <div class="max-w-3xl">
+                            <x-input-label for="subject_id" value="Mengajar" />
+                            <x-select-input id="subject_id" name="subject_id" class="mt-1 block w-full bg-zinc-100">
+                                <option value="">Pilih Mata Pelajaran</option>
+                                <option value="guru_kelas" {{ old('subject_id') == 'guru_kelas' ? 'selected' : '' }}>
+                                    Guru Kelas SD/MI/SLB
+                                </option>
+                                @foreach($subjects as $subject)
+                                    <option value="{{ $subject->id }}" {{ old('subject_id') == $subject->id ? 'selected' : '' }}>
+                                        {{ $subject->subject_name }}
+                                    </option>
+                                @endforeach
+                            </x-select-input>
+                            <x-input-error class="mt-2" :messages="$errors->get('subject_id')" />
                         </div>
 
                         <div class="max-w-3xl">

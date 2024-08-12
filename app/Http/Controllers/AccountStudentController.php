@@ -19,37 +19,42 @@ class AccountStudentController extends Controller
         return view('account.student.index', compact('studentAccounts', 'sidebarOpen'));
     }
 
-    public function createStudentAccount(Request $request)
+    public function edit($id)
     {
+        $studentAccount = Student::with('user')->findOrFail($id);
+
+        return view('account.student.edit', compact('studentAccount'));
+    }
+
+    public function update(Request $request, $id)
+    {
+        $studentAccount = Student::findOrFail($id);
+        $user = $studentAccount->user;
+
         $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'nullable|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8',
-            'parent_email' => 'nullable|string|email|max:255|unique:guardians,parent_email',
-            'nis' => 'required|numeric|unique:students',
-            'student_name' => 'required|string|max:255',
+            'email' => 'nullable|string|email|max:255|unique:users,email,' . $user->id,
+            'password' => 'nullable|string|min:8',
+            'nis' => 'nullable|numeric|unique:students,nis,' . $studentAccount->id,
+            'nisn' => 'nullable|numeric|unique:students,nisn,' . $studentAccount->id,
         ]);
 
-        $user = User::create([
-            'name' => $request->input('name'),
+        $user->update([
             'email' => $request->input('email'),
-            'password' => Hash::make($request->input('password')),
-            'role' => 'student',
+            'password' => $request->filled('password') ? Hash::make($request->input('password')) : $user->password,
         ]);
 
-        $guardian = Guardian::create([
-            'user_id' => $user->id,
-            'parent_email' => $request->input('parent_email'),
-            // atribut lainnya dari tabel guardians
-        ]);
+        // Jika email di User berubah, update juga email di Student
+        if ($request->input('email') !== null && $user->email !== $request->input('email')) {
+            $studentAccount->update([
+                'email' => $request->input('email'),
+            ]);
+        }
 
-        Student::create([
-            'user_id' => $user->id,
+        $studentAccount->update([
             'nis' => $request->input('nis'),
-            'student_name' => $request->input('student_name'),
-            // atribut lainnya dari tabel students
+            'nisn' => $request->input('nisn'),
         ]);
 
-        return response()->json(['message' => 'Akun siswa berhasil dibuat'], 201);
+        return redirect()->route('account.student.index')->with('success', 'Akun siswa berhasil diperbarui');
     }
 }

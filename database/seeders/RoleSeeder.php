@@ -83,22 +83,30 @@ class RoleSeeder extends Seeder
          Permission::create(['name' => 'update_attendance']);
 
           // Membuat permissions untuk Guru Mapel (AchievementController)
+        Permission::create(['name' => 'view_skill_achievement']);
         Permission::create(['name' => 'create_achievement']);
         Permission::create(['name' => 'edit_achievement']);
         Permission::create(['name' => 'delete_achievement']);
 
         // Membuat permissions untuk Guru Mapel (ExtracurricularController)
+        Permission::create(['name' => 'view_extracurricular']);
         Permission::create(['name' => 'create_extracurricular']);
         Permission::create(['name' => 'edit_extracurricular']);
         Permission::create(['name' => 'delete_extracurricular']);
 
         // Membuat permissions untuk Guru Mapel (HealthController)
+        Permission::create(['name' => 'view_health']);
         Permission::create(['name' => 'create_health']);
         Permission::create(['name' => 'edit_health']);
         Permission::create(['name' => 'delete_health']);
 
         // Membuat permissions untuk Guru Mapel (HeightWeightController)
+        Permission::create(['name' => 'view_height_weight']);
         Permission::create(['name' => 'edit_height_weight']);
+
+        //view_attendance
+        Permission::create(['name' => 'view_attendance']);
+        Permission::create(['name' => 'update_attendance']);
 
         // Membuat permissions untuk Guru Mapel (RaporController)
         Permission::create(['name' => 'view_rapors']);
@@ -125,41 +133,47 @@ class RoleSeeder extends Seeder
             'view_class', 'create_class', 'edit_class', 'delete_class'
         ]);
 
-          // Memberikan permissions kepada role 'guru_mapel'
-          $guruMapelRole = Role::findByName('guru_mapel');
+          // Memberikan permissions kepada role 'guru_kelas'
+          $guruMapelRole = Role::findByName('guru_kelas');
           $guruMapelRole->givePermissionTo([
+             'view_student','create_student','edit_student','delete_student','import_student',
               'view_class_subjects', 'view_class_subject', 'create_class_subject', 'edit_class_subject', 'delete_class_subject',
               'view_knowledge_scores', 'create_knowledge_score', 'edit_knowledge_score', 'delete_knowledge_score',
               'view_attitude_scores', 'create_attitude_score', 'edit_attitude_score', 'delete_attitude_score',
               'view_skill_scores', 'create_skill_score', 'edit_skill_score', 'delete_skill_score',
-              'create_achievement', 'edit_achievement', 'delete_achievement',
-            'create_extracurricular', 'edit_extracurricular', 'delete_extracurricular',
-            'create_health', 'edit_health', 'delete_health',
-            'edit_height_weight',
-            'view_rapors', 'edit_rapor', 'edit_suggestion', 'edit_aspect',
+              'view_skill_achievement','create_achievement', 'edit_achievement', 'delete_achievement',
+              'view_extracurricular','create_extracurricular', 'edit_extracurricular', 'delete_extracurricular',
+              'view_health','create_health', 'edit_health', 'delete_health',
+              'view_height_weight','edit_height_weight',
+              'view_attendance','update_attendance',
+              'view_rapors', 'edit_rapor', 'edit_suggestion', 'edit_aspect',
           ]);
 
-          // Memberikan permissions kepada role 'guru_kelas'
-          $guruKelasRole = Role::findByName('guru_kelas');
+          // Memberikan permissions kepada role 'guru_mapel
+          $guruKelasRole = Role::findByName('guru_mapel');
           $guruKelasRole->givePermissionTo([
+              'view_student','create_student','edit_student','delete_student','import_student',
               'view_grades', 'view_grade_detail',
-              'edit_knowledge_score_grade', 'update_knowledge_score_grade',
-              'edit_attitude_score_grade', 'update_attitude_score_grade',
-              'edit_skill_score_grade', 'update_skill_score_grade',
-              'update_attendance',
+              'view_knowledge_scores','edit_knowledge_score_grade', 'update_knowledge_score_grade',
+              'view_attitude_scores','edit_attitude_score_grade', 'update_attitude_score_grade',
+              'view_skill_scores','edit_skill_score_grade', 'update_skill_score_grade',
+              'view_attendance','update_attendance',
           ]);
 
            // Memberikan permissions kepada role 'kepala_sekolah'
         $kepalaSekolahRole = Role::findByName('kepala_sekolah');
         $kepalaSekolahRole->givePermissionTo([
-            'view_student', 'view_teacher','view_rapors', 'validate_rapors'
+            'view_student','create_student','edit_student','delete_student','import_student',
+            'view_teacher','view_rapors', 'validate_rapors',
+            'view_knowledge_scores','view_attitude_scores','view_skill_scores','view_skill_achievement', 'view_health','view_height_weight','view_extracurricular',
+            'view_attendance','update_attendance',
         ]);
 
         // Memberikan permissions kepada role 'siswa'
         $siswaRole = Role::findByName('siswa');
         $siswaRole->givePermissionTo([
-            'view_rapors'
+           'view_attendance','view_knowledge_scores','view_attitude_scores','view_skill_scores','view_skill_achievement', 'view_health','view_height_weight','view_extracurricular', 'view_rapors'
         ]);
     }
-    
+
 }

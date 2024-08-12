@@ -19,24 +19,32 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'teacher_id',
+        'student_id',
+        'role_id',
         'name',
         'email',
         'password',
         'nuptk',
         'nip',
+        'nis',
+        'nisn',
         'status',
+        // 'remember_token'
     ];
 
     public function teacher()
     {
-        return $this->belongsTo(Teacher::class, 'teacher_id', 'id');
+        return $this->belongsTo(Teacher::class, 'teacher_id');
     }
 
-
+    public function student()
+    {
+        return $this->belongsTo(Student::class, 'student_id');
+    }
 
     public function hasValidTeacherId()
     {
-        return $this->teacher_id !== null; // Ubah kondisi sesuai dengan kebutuhan
+        return $this->teacher_id !== null;
     }
 
 
