@@ -460,8 +460,6 @@
                 </div>
                 {{-- End Tinggi Badan --}}
 
-
-
                 {{-- Kesehatan --}}
                 <div class="mt-8">
                     <div class="flex justify-between items-center">

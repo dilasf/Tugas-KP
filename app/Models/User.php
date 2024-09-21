@@ -25,9 +25,9 @@ class User extends Authenticatable
         'email',
         'password',
         'nuptk',
-        'nip',
+        // 'nip',
         'nis',
-        'nisn',
+        // 'nisn',
         'status',
         // 'remember_token'
     ];

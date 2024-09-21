@@ -90,7 +90,7 @@ class TeachersImport implements WithHeadingRow, ToModel
                 'name' => $row['nama'],
                 'password' => Hash::make('password123'),
                 'nuptk' => $row['nuptk'],
-                'nip' => $row['nip'],
+                // 'nip' => $row['nip'],
             ]
         );
 

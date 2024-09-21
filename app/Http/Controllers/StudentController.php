@@ -206,7 +206,7 @@ class StudentController extends Controller
             'name' => $validated['student_name'],
             'email' => $validated['student_name']. '@example.com',
             'nis' => $validated['nis'],
-            'nisn' => $validated['nisn'],
+            // 'nisn' => $validated['nisn'],
             'password' => Hash::make('password123'),
             'role_id' => 5, // Set role_id to 5 for student
         ]);

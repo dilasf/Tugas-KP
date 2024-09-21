@@ -5,13 +5,12 @@
                 <img src="{{ asset('img/back_logo.png') }}" class="w-[30px] h-[30px] mr-3 cursor-pointer">
             </a>
             <p class="font-semibold text-gray-800 leading-tight text-2xl">
-                {{ __('Penilaian ' . $classSubject->class->class_name) }}
+                {{ __('Penilaian ' . ucwords($classSubject->class->class_name)) }}
             </p>
          </div>
     </x-slot>
 
-    <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-        <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg">
+    <div class="bg-white rounded-lg shadow-md mx-4 my-4 p-4 min-w-[300px] min-h-[480px]">
             <div class="p-6 bg-white border-b border-gray-200">
                 <p class="font-semibold text-xl text-center py-3"> {{ __('Penilaian Mata Pelajaran ' . $classSubject->subject->subject_name)}} </p>
 
@@ -84,7 +83,7 @@
                                 </x-detail-primary-button>
                             </td>
                         </tr>
-                        
+
                         {{-- Keterampilan --}}
                         <tr>
                             <td class="text-center">3</td>
@@ -102,6 +101,5 @@
                     </x-table>
                 </div>
             </div>
-        </div>
     </div>
 </x-app-layout>

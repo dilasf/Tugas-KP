@@ -135,6 +135,26 @@
             </li>
             @endrole
       </ul>
+
     </nav>
+
+
+    <div class="absolute bottom-0 w-full p-2 dark:bg-neutral-800 border-t dark:border-neutral-700">
+        <a href="{{ route('logout') }}"
+           onclick="event.preventDefault(); document.getElementById('logout-form').submit();"
+           class="flex items-center justify-center gap-x-2 px-3 py-2 text-sm text-white bg-side-dark hover:bg-hover-side font-semibold rounded-md shadow-sm transition-all duration-200"
+        >
+            <img src="{{ asset('img/icons8-log-out-60.png') }}" class="w-[20px] h-[20px] rounded-full">
+            <span class="tracking-normal">Logout</span>
+        </a>
+        <form id="logout-form" action="{{ route('logout') }}" method="POST" class="hidden">
+            @csrf
+        </form>
+    </div>
+
+
+
+
   </div>
   <!-- End Sidebar -->
+

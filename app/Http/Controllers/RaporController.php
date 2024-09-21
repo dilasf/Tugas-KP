@@ -9,6 +9,7 @@ use App\Models\SemesterYear;
 use App\Models\Student;
 use App\Models\Teacher;
 use Illuminate\Http\Request;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class RaporController extends Controller
 {
@@ -339,6 +340,94 @@ class RaporController extends Controller
         return redirect()->back()->with('error', 'Status rapor tidak valid untuk dikirim.');
     }
 
+//     public function downloadPDF($studentId)
+// {
+//     // Fetch the student with related data
+//     $student = Student::with([
+//         'class',
+//         'grades.rapor.grade.classSubject.subject'
+//     ])->findOrFail($studentId);
+
+//     // Fetch the rapors related to the student's grades
+//     $rapors = Rapor::whereHas('grade', function ($query) use ($studentId) {
+//         $query->where('student_id', $studentId); // Filter grades by student_id
+//     })->get();
+
+//     $semesters = SemesterYear::all();
+
+//     $selectedSemesterYearId = request()->get('semester_year_id', $semesters->first()->id ?? null);
+
+//     $data = compact('student', 'rapors', 'semesters', 'selectedSemesterYearId');
+
+//     $pdf = PDF::loadView('printRapor', $data);
+
+//     return $pdf->download('dashboard-admin');
+// }
+
+
+public function downloadPDF($studentId)
+{
+    // Fetch the student with related data
+    $student = Student::with([
+        'class.teacher', // Include class teacher
+        'grades.rapor.grade.classSubject.subject',
+        'grades.rapor.attendance' // Ensure attendance data is also loaded
+    ])->findOrFail($studentId);
+
+    // Fetch the rapors related to the student's grades
+    $rapors = Rapor::whereHas('grade', function ($query) use ($studentId) {
+        $query->where('student_id', $studentId); // Filter grades by student_id
+    })->get();
+
+    // Calculate attendance
+    $uniqueSickDates = [];
+    $uniquePermissionDates = [];
+    $uniqueUnexcusedDates = [];
+
+    foreach ($rapors as $rapor) {
+        if (!empty($rapor->attendance)) {
+            $attendance = $rapor->attendance;
+
+            if ($attendance->sick > 0 && !in_array($attendance->created_at->toDateString(), $uniqueSickDates)) {
+                $uniqueSickDates[] = $attendance->created_at->toDateString();
+            }
+            if ($attendance->permission > 0 && !in_array($attendance->created_at->toDateString(), $uniquePermissionDates)) {
+                $uniquePermissionDates[] = $attendance->created_at->toDateString();
+            }
+            if ($attendance->unexcused > 0 && !in_array($attendance->created_at->toDateString(), $uniqueUnexcusedDates)) {
+                $uniqueUnexcusedDates[] = $attendance->created_at->toDateString();
+            }
+        }
+    }
+
+    $totalSick = count($uniqueSickDates);
+    $totalPermission = count($uniquePermissionDates);
+    $totalUnexcused = count($uniqueUnexcusedDates);
+
+    // Fetch headmaster data
+    $headmaster = Teacher::where('typesOfCAR', 'Kepala Sekolah')->first();
+
+    // Fetch semesters for the dropdown
+    $semesters = SemesterYear::all();
+    $selectedSemesterYearId = request()->get('semester_year_id', $semesters->first()->id ?? null);
+
+    // Prepare data for the view
+    $data = compact(
+        'student',
+        'rapors',
+        'semesters',
+        'selectedSemesterYearId',
+        'totalSick',
+        'totalPermission',
+        'totalUnexcused',
+        'headmaster'
+    );
+
+    // Generate PDF
+    $pdf = PDF::loadView('printRapor', $data);
+
+    return $pdf->download('dashboard-admin.pdf');
+}
 
 
 

@@ -216,7 +216,7 @@ class StudentsDataImport implements ToModel, WithHeadingRow
                         'status' => 'active',
                         'role_id' => Role::where('name', 'siswa')->value('id'),
                         'nis' => $row['nis'],
-                        'nisn' => $row['nisn'],
+                        // 'nisn' => $row['nisn'],
                     ]
                 );
             }

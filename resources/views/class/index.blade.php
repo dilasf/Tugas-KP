@@ -4,7 +4,7 @@
             {{ __('Data Kelas') }}
         </h2>
     </x-slot>
-    <div class="bg-white rounded-lg shadow-md mx-4">
+    <div class="bg-white rounded-lg shadow-md mx-4 overflow-hidden min-w-[300px] min-h-[500px]">
 
         <div class="flex justify-end px-6 py-4">
             <x-primary-button tag="a" href="{{route('class.create')}}">

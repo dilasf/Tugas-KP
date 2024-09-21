@@ -4,7 +4,8 @@
             {{ __('Data Nilai Keterampilan') }}
         </h2>
     </x-slot>
-    <div class="bg-white rounded-lg shadow-md mx-4 overflow-hidden">
+
+    <div class="bg-white rounded-lg shadow-md mx-4 p-4 min-w-[300px] h-[500px]">
         <div class="flex justify-end px-6 py-4">
             <x-primary-button tag="a" href="{{ route('grade.skill_scores.create') }}">
                 <span class="text-12px ml-1">{{ __('+ Tambah Assessment') }}</span>
@@ -15,7 +16,7 @@
                 <x-slot name="header">
                     <tr>
                         <th>No</th>
-                        <th>Jenis Penialain</th>
+                        <th>Jenis Penilaian</th>
                         <th>Aksi</th>
                     </tr>
                 </x-slot>
@@ -44,8 +45,6 @@
     </tr>
                 @endforeach
             </x-table>
-
-
 
             <x-modal name="confirm-assessment-type-deletion" focusable maxWidth="xl">
                 <form method="post" x-bind:action="action" class="p-6">

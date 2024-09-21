@@ -4,7 +4,7 @@
             {{ __('Data Guru') }}
         </h2>
     </x-slot>
-            <div class="bg-white rounded-lg shadow-md mx-4 overflowhidden">
+    <div class="bg-white rounded-lg shadow-md mx-4 overflow-hidden min-w-[300px] min-h-[500px]">
 
                 <div class="flex justify-between items-center px-6 py-4">
                     <div style="order: 1;">
@@ -31,12 +31,12 @@
                     </div>
                 </div>
 
-                <div class="text-black max-h-[calc(100vh-200px)] overflow-y-auto">
+                <div class="text-black max-h-[calc(100vh-100px)] overflow-y-auto">
                     <x-table header="Header Content" :sidebarOpen="$sidebarOpen" class="overflow-x-auto">
                         <x-slot name="header">
                             <tr>
                                 <th>No</th>
-                                <th>Photo</th>
+                                <th x-show="!sidebarOpen">Photo</th>
                                 <th>NIP</th>
                                 <th>Nuptk</th>
                                 <th>Nama</th>
@@ -50,16 +50,19 @@
                         @foreach($teachers as $teach)
                         <tr>
                             <td>{{ $num++ }} </td>
-                            <td>
-
-                                    @if ($teach->photo)
-                                        <img src="{{ asset('storage/photos/'.$teach->photo) }}" alt="{{ $teach->teacher_name }}" class="w-16 h-auto mb-1">
-                                    @else
-                                        <img src="{{ asset('img/profil.png') }}" alt="No photo" class="w-[50px] h-auto mb-1">
-                                    @endif
+                            <td x-show="!sidebarOpen">
+                                @if ($teach->photo)
+                                    <img src="{{ asset('storage/photos/'.$teach->photo) }}"
+                                         alt="{{ $teach->teacher_name }}"
+                                         class="w-16 h-auto mb-1 max-w-[50px]">
+                                @else
+                                    <img src="{{ asset('img/profil.png') }}"
+                                         alt="No photo"
+                                         class="w-[50px] h-auto mb-1">
+                                @endif
                             </td>
-                            <td>{{ $teach->nip }}</td>
-                            <td>{{ $teach->nuptk }}</td>
+                            <td class="text-center">{{ $teach->nip ? $teach->nip : '-' }}</td>
+                            <td class="text-center">{{ $teach->nuptk ? $teach->nuptk : '-' }}</td>
                             <td>{{ucwords(strtolower($teach->teacher_name)) }}</td>
                             <td>{{ $teach->gender === 'Perempuan' ? 'P' : 'L' }}</td>
                             <td>{{ $teach->typesOfCAR }}</td>
@@ -91,7 +94,7 @@
                                     x-on:click.prevent="
                                         $dispatch('open-modal', 'teacher-details');
                                         $dispatch('set-teacher-id', {{ $teach->id }});"
-                                    class="flex items-center justify-center min-w-[90px]">
+                                    class="flex items-center justify-center min-w-[70px]">
                                     <img src="{{ asset('img/detail_logo.png') }}" class="w-[13px] h-[13px]">
                                     <span x-show="!sidebarOpen" class="ml-1 text-[10px]">{{ __('Detail') }}</span>
                                 </x-detail-primary-button>
@@ -99,7 +102,7 @@
                                 <!-- Edit Button -->
                                 <x-edit-primary-button
                                     tag="a" href="{{ route('teacher_data.edit', ['id' => $teach->id]) }}"
-                                    class="flex items-center justify-center min-w-[50px]">
+                                    class="flex items-center justify-center min-w-[70px]">
                                     <img src="{{ asset('img/edit-brush_logo.png') }}" class="w-[13px] h-[13px]">
                                     <span x-show="!sidebarOpen" class="ml-1 text-[10px]">{{ __('Edit') }}</span>
                                 </x-edit-primary-button>
@@ -109,7 +112,7 @@
                                     x-on:click.prevent="
                                         $dispatch('open-modal', 'confirm-book-deletion');
                                         $dispatch('set-action', '{{ route('teacher_data.destroy', $teach->id) }}');"
-                                    class="flex items-center justify-center min-w-[90px]">
+                                    class="flex items-center justify-center min-w-[70px]">
                                     <img src="{{ asset('img/garbage_logo.png') }}" class="w-[13px] h-[13px]">
                                     <span x-show="!sidebarOpen" class="ml-1 text-[10px]">{{ __('Hapus') }}</span> <!-- Menyertakan teks Hapus -->
                                 </x-danger-button>
@@ -119,6 +122,7 @@
                         </tr>
                         @endforeach
                     </x-table>
+                </div>
 
                     <!-- Detail Informasi Modal -->
                     <x-detail-modal name="teacher-details" focusable maxWidth="xl">

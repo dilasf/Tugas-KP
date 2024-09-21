@@ -4,7 +4,7 @@
             {{ __('Data Siswa') }}
         </h2>
     </x-slot>
-    <div class="bg-white rounded-lg shadow-md mx-4 overflow-hidden">
+    <div class="bg-white rounded-lg shadow-md mx-4 overflow-hidden min-w-[300px] min-h-[500px]">
 
         {{-- Fitur atas --}}
         <div class="flex justify-between items-center px-6 py-4">
@@ -35,7 +35,7 @@
         {{-- End Fitur atas --}}
 
         {{-- Data Siswa Singkat --}}
-        <div class="text-black max-h-[calc(100vh-200px)] overflow-y-auto">
+        <div class="text-black max-h-[calc(100vh-100px)] overflow-y-auto">
             <x-table header="Header Content" :sidebarOpen="$sidebarOpen" class="overflow-x-auto mx-auto">
                 <x-slot name="header">
                     <tr>
@@ -89,14 +89,14 @@
                     </td>
                     <td :class="{ 'flex flex-col items-center gap-2': sidebarOpen, 'justify-center items-center gap-2': !sidebarOpen }">
                         <x-detail-primary-button tag="a" href="{{ route('student_data.show-detail', ['id' => $siswa->id]) }}"
-                            class="flex items-center justify-center min-w-[60px]">
+                            class="flex items-center justify-center min-w-[70px]">
                             <img src="{{ asset('img/detail_logo.png') }}" class="w-[13px] h-[13px]">
                             <span x-show="!sidebarOpen" class="ml-1 text-[10px]">{{ __('Detail') }}</span>
                         </x-detail-primary-button>
 
                         @role('admin')
                         <x-edit-primary-button tag="a" href="{{ route('student_data.edit', ['id' => $siswa->id]) }}"
-                            class="flex items-center justify-center min-w-[60px]">
+                            class="flex items-center justify-center min-w-[70px]">
                             <img src="{{ asset('img/edit-brush_logo.png') }}" class="w-[13px] h-[13px]">
                             <span x-show="!sidebarOpen" class="ml-1 text-[10px]">{{ __('Edit') }}</span>
                         </x-edit-primary-button>
@@ -107,7 +107,7 @@
                         </a> --}}
                         @role('guru_kelas')
                         <x-primary-button tag="a" href="{{ route('rapors.index', ['studentId' => $siswa->id]) }}"
-                                class="flex items-center justify-center min-w-[60px] max-h-[31px]">
+                                class="flex items-center justify-center min-w-[70px] max-h-[31px]">
                                 <img src="{{ asset('img/detail_logo.png') }}" class="w-[10px] h-[13px]">
                                 <span x-show="!sidebarOpen" class="ml-1 text-[10px]">{{ __('Lihat Rapor') }}</span>
                             </x-primary-button>
@@ -119,7 +119,7 @@
                             x-on:click.prevent="
                                 $dispatch('open-modal', 'confirm-student-deletion');
                                 $dispatch('set-action', '{{ route('student_data.destroy', $siswa->id) }}');"
-                            class="flex items-center justify-center min-w-[60px]">
+                            class="flex items-center justify-center min-w-[70px]">
                             <img src="{{ asset('img/garbage_logo.png') }}" class="w-[13px] h-[13px]">
                             <span x-show="!sidebarOpen" class="ml-1 text-[10px]">{{ __('Hapus') }}</span>
                         </x-danger-button>

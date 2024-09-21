@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Rapor;
+use App\Models\SemesterYear;
+use App\Models\Student;
+
 use Illuminate\Http\Request;
 
 class ValidationsController extends Controller
@@ -49,9 +52,9 @@ class ValidationsController extends Controller
 
         $rapor->status = 'rejected';
         $rapor->save();
-        // dd('Reject method reached');
 
     return redirect()->route('rapors.validation.index')->with('success', 'Rapor telah ditolak.');
 }
+
 
 }

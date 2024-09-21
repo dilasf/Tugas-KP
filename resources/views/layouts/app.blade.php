@@ -55,7 +55,7 @@
                             </a>
                         </div>
 
-                        <!-- Log Out -->
+                        {{-- <!-- Log Out -->
                         <div class="flex flex-col gap-y-4 gap-x-0 mt-5 sm:flex-row sm:items-center sm:justify-end sm:gap-y-0 sm:gap-x-7 sm:mt-0 sm:ps-7 ms-4">
                             <!-- Authentication -->
                             <form class="px-6 sm:py-4 sm:px-0" method="POST" action="{{ route('logout') }}">
@@ -65,7 +65,7 @@
                                 </x-nav-link>
                             </form>
                         </div>
-                    </div>
+                    </div> --}}
                 </nav>
             </header>
             <!-- ========== END HEADER ========== -->

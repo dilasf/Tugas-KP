@@ -5,7 +5,7 @@
         </h2>
     </x-slot>
 
-    <div class="bg-white rounded-lg shadow-md mx-4 overflow-hidden">
+    <div class="bg-white rounded-lg shadow-md mx-4 overflow-hidden min-w-[300px] min-h-[500px]">
         <x-table header="Daftar Akun Guru" :sidebarOpen="$sidebarOpen" class="overflow-x-auto mx-auto">
             <x-slot name="header">
                 <tr>

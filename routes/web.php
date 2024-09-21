@@ -268,6 +268,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::post('/send-report/{raporId}', [RaporController::class, 'sendReport'])->name('send.report');
 
+    Route::get('/rapors/download/{studentId}', [RaporController::class, 'downloadPDF'])->name('rapors.download');
+
 });
 
 

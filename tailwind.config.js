@@ -23,6 +23,7 @@ export default {
               },
 
             colors: {
+                'custom-dark1': '#4a5568',
                 'custom-dark': '#1B1E23',
                 'side-dark' : '#515458',
                 'hover-side' : '#448BE2',

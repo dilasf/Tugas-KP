@@ -4,7 +4,8 @@
             {{ __('Data Nilai Sikap') }}
         </h2>
     </x-slot>
-    <div class="bg-white rounded-lg shadow-md mx-4 overflow-hidden">
+
+    <div class="bg-white rounded-lg shadow-md mx-4 overflow-hidden min-w-[300px] min-h-[500px] border border-gray-200">
         <div class="flex justify-end px-6 py-4">
             <x-primary-button tag="a" href="{{ route('grade.attitude_scores.create') }}">
                 <span class="text-12px ml-1">{{ __('+ Tambah Assessment') }}</span>
@@ -15,37 +16,35 @@
                 <x-slot name="header">
                     <tr>
                         <th>No</th>
-                        <th>Jenis Penialain</th>
+                        <th>Jenis Penilaian</th>
                         <th>Aksi</th>
                     </tr>
                 </x-slot>
                 @php $num=1; @endphp
                 @foreach($assessmentTypes as $assessmentType)
-                            <tr>
-                                <td class="text-center">{{ $num++ }}</td>
-                                <td>{{ $assessmentType->assessment_type }}</td>
-                                <td class="text-center">
-                                    <x-edit-primary-button tag="a" :href="route('grade.attitude_scores.edit', ['assessment_type' => $assessmentType->assessment_type])"
-                                        class="flex items-center justify-center min-w-[60px]">
-                                        <img src="{{ asset('img/edit-brush_logo.png') }}" class="w-[13px] h-[13px]">
-                                        <span x-show="!sidebarOpen" class="ml-1 text-[10px]">{{ __('Edit') }}</span>
-                                    </x-edit-primary-button>
+                <tr>
+                    <td class="text-center">{{ $num++ }}</td>
+                    <td>{{ $assessmentType->assessment_type }}</td>
+                    <td class="text-center">
+                        <x-edit-primary-button tag="a" :href="route('grade.attitude_scores.edit', ['assessment_type' => $assessmentType->assessment_type])"
+                            class="flex items-center justify-center min-w-[60px]">
+                            <img src="{{ asset('img/edit-brush_logo.png') }}" class="w-[13px] h-[13px]">
+                            <span x-show="!sidebarOpen" class="ml-1 text-[10px]">{{ __('Edit') }}</span>
+                        </x-edit-primary-button>
 
-                                    <x-danger-button
-                                    x-data=""
-                                    x-on:click.prevent="
-                                        $dispatch('open-modal', 'confirm-assessment-type-deletion');
-                                        $dispatch('set-action', '{{ route('grade.attitude_scores.destroy', ['assessment_type' => $assessmentType->assessment_type]) }}');"
-                                    class="flex items-center justify-center min-w-[60px]">
-                                    <img src="{{ asset('img/garbage_logo.png') }}" class="w-[13px] h-[13px]">
-                                    <span x-show="!sidebarOpen" class="ml-1 text-[10px]">{{ __('Hapus') }}</span>
-                                </x-danger-button>
-                        </td>
+                        <x-danger-button
+                        x-data=""
+                        x-on:click.prevent="
+                            $dispatch('open-modal', 'confirm-assessment-type-deletion');
+                            $dispatch('set-action', '{{ route('grade.attitude_scores.destroy', ['assessment_type' => $assessmentType->assessment_type]) }}');"
+                        class="flex items-center justify-center min-w-[60px]">
+                        <img src="{{ asset('img/garbage_logo.png') }}" class="w-[13px] h-[13px]">
+                        <span x-show="!sidebarOpen" class="ml-1 text-[10px]">{{ __('Hapus') }}</span>
+                    </x-danger-button>
+                    </td>
                 </tr>
                 @endforeach
             </x-table>
-
-
 
             <x-modal name="confirm-assessment-type-deletion" focusable maxWidth="xl">
                 <form method="post" x-bind:action="action" class="p-6">

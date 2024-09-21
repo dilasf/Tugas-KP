@@ -89,7 +89,7 @@ class TeacherController extends Controller
             'name' => $validated['teacher_name'],
             'email' => $validated['mail'],
             'nuptk' => $validated['nuptk'],
-            'nip' => $validated['nip'],
+            // 'nip' => $validated['nip'],
             'password' => Hash::make('password123'),
             'role_id' => $role_id,
         ]);
