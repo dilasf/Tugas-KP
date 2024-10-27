@@ -264,22 +264,24 @@ class RaporController extends Controller
     }
 
      //edit nilai pengetahuan dan keterampilan
-    public function edit($studentId, $semesterYearId)
-    {
-        $student = Student::findOrFail($studentId);
-        $grade = Grade::where('student_id', $studentId)
-            ->where('semester_year_id', $semesterYearId)
-            ->firstOrFail();
+     public function edit($studentId, $semesterYearId, $classSubjectId)
+     {
+         $student = Student::findOrFail($studentId);
+         $grade = Grade::where('student_id', $studentId)
+             ->where('semester_year_id', $semesterYearId)
+             ->where('class_subject_id', $classSubjectId)
+             ->firstOrFail();
 
-        $classSubject = $grade->classSubject;
-        $semesterYear = SemesterYear::findOrFail($semesterYearId);
+         $classSubject = $grade->classSubject;
+         $semesterYear = SemesterYear::findOrFail($semesterYearId);
 
-        $rapor = Rapor::where('grade_id', $grade->id)->firstOrCreate([
-            'grade_id' => $grade->id,
-        ]);
+         $rapor = Rapor::where('grade_id', $grade->id)->firstOrCreate([
+             'grade_id' => $grade->id,
+         ]);
 
-        return view('rapors.edit', compact('student', 'classSubject', 'semesterYear', 'rapor'));
-    }
+         return view('rapors.edit', compact('student', 'classSubject', 'semesterYear', 'rapor'));
+     }
+
 
     public function update(Request $request, $id)
     {
@@ -424,9 +426,15 @@ public function downloadPDF($studentId)
     );
 
     // Generate PDF
-    $pdf = PDF::loadView('printRapor', $data);
+    $pdf = PDF::loadView('printRapor', $data)
+    ->setPaper('A4', 'portrait')
+    ->setOptions([
+        'isHtml5ParserEnabled' => true,
+        'isRemoteEnabled' => true,
+        'defaultFont' => 'Times New Roman',
+    ]);
 
-    return $pdf->download('dashboard-admin.pdf');
+    return $pdf->download('rapor.pdf');
 }
 
 

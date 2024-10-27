@@ -36,7 +36,7 @@
                     </div>
                     {{-- End - Data Diri Singkat --}}
 
-                    {{-- Isi Tabel --}}
+                    {{-- Isi Tabel
                     <div class="text-black max-h-[calc(100vh-200px)] overflow-y-auto">
                         <x-table header="Header Content" class="overflow-x-auto mx-auto">
                             <x-slot name="header">
@@ -72,7 +72,51 @@
                             </tr>
                             @endforeach
                         </x-table>
-                    </div>
+                    </div> --}}
+                    {{-- Isi Tabel --}}
+<div class="text-black max-h-[calc(100vh-200px)] overflow-y-auto">
+    <x-table header="Header Content" class="overflow-x-auto mx-auto">
+        <x-slot name="header">
+            <tr>
+                <th>No</th>
+                <th>Tipe Penilaian</th>
+                <th>Nilai</th>
+                <th>Predikat</th>
+                <th>Nilai Akhir</th>
+                <th>Deskripsi</th>
+                <th>Aksi</th>
+            </tr>
+        </x-slot>
+        @php $num = 1; @endphp
+        @foreach($assessmentTypes as $assessmentType)
+        @php
+            // Get the knowledge score for the current assessment type or create a default object
+            $knowledgeScore = $knowledgeScores->firstWhere('assessment_type', $assessmentType) ?: (object)[
+                'score' => 0,
+                'grade' => '-',
+                'final_score' => 0,
+                'description' => 'Tidak Ada Deskripsi'
+            ];
+        @endphp
+        <tr>
+            <td class="text-center">{{ $num++ }}</td>
+            <td>{{ $assessmentType }}</td>
+            <td class="text-center">{{ $knowledgeScore->score }}</td>
+            <td class="text-center">{{ $knowledgeScore->grade }}</td>
+            <td class="text-center">{{ $knowledgeScore->final_score }}</td>
+            <td>{{ $knowledgeScore->description ?? 'Tidak Ada Deskripsi'}}</td>
+            <td class="text-center">
+                <x-edit-primary-button tag="a" href="{{ route('grade.editKnowledgeScore', ['studentId' => $studentId, 'classSubjectId' => $classSubjectId, 'assessmentType' => $assessmentType]) }}"
+                    class="flex items-center justify-center min-w-[60px]">
+                    <img src="{{ asset('img/edit-brush_logo.png') }}" class="w-[13px] h-[13px]">
+                    <span class="ml-1 text-[10px]">{{ __('Edit') }}</span>
+                </x-edit-primary-button>
+            </td>
+        </tr>
+        @endforeach
+    </x-table>
+</div>
+
 
                 </div>
             </div>

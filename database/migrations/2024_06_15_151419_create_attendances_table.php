@@ -16,7 +16,6 @@ return new class extends Migration
             $table->unsignedBigInteger('student_id')->nullable();
             $table->unsignedBigInteger('class_subject_id')->nullable();
             $table->unsignedBigInteger('semester_year_id')->nullable();
-            // $table->unsignedBigInteger('rapor_id')->nullable();
             $table->integer('sick')->nullable();
             $table->integer('permission')->nullable();
             $table->integer('unexcused')->nullable();

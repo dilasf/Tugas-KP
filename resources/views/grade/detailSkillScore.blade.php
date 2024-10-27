@@ -44,17 +44,28 @@
                                     <th>No</th>
                                     <th>Tipe Penilaian</th>
                                     <th>Nilai</th>
-                                    <th>Grade</th>
+                                    <th>Predikat</th>
                                     <th>Nilai Akhir</th>
                                     <th>Deskripsi</th>
                                     <th>Aksi</th>
                                 </tr>
                             </x-slot>
-                            @php $num = 1; @endphp
+                            {{-- @php $num = 1; @endphp
                             @foreach($assessmentTypes as $assessmentType)
                             @php
                                 $skillScore = $skillScores->firstWhere('assessment_type', $assessmentType) ?? (object)['score' => 0, 'grade' => '-', 'final_score' => 0, 'description' => 'Tidak Ada Deskripsi'];
-                            @endphp
+                            @endphp --}}
+                            @php $num = 1; @endphp
+        @foreach($assessmentTypes as $assessmentType)
+        @php
+            // Get the skill score for the current assessment type or create a default object
+            $skillScore = $skillScores->firstWhere('assessment_type', $assessmentType) ?: (object)[
+                'score' => 0,
+                'grade' => '-',
+                'final_score' => 0,
+                'description' => 'Tidak Ada Deskripsi'
+            ];
+        @endphp
                             <tr>
                                 <td class="text-center">{{ $num++ }}</td>
                                 <td>{{ $assessmentType ?? '-'}}</td>

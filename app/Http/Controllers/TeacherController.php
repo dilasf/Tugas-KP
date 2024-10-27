@@ -20,10 +20,7 @@ class TeacherController extends Controller
         return view('teacher_data.index', ['teachers' => $data], compact('sidebarOpen'));
     }
 
-    // public function create()
-    // {
-    //     return view('teacher_data.create');
-    // }
+
 
     public function create()
     {
@@ -53,7 +50,7 @@ class TeacherController extends Controller
             'fieldOfStudy'=> 'required|max:100',
             'certification'=> 'nullable|max:100',
             'startDateofEmployment'=> 'required|date',
-            'teaching' => 'nullable|string', // Memperbarui validasi
+            'teaching' => 'nullable|string',
             'status' => 'required|boolean',
         ]);
 
@@ -86,10 +83,11 @@ class TeacherController extends Controller
         // Membuat user terkait
         $user = User::create([
             'teacher_id' => $teacher->id,
+            'photo' => $validated['photo'],
             'name' => $validated['teacher_name'],
             'email' => $validated['mail'],
             'nuptk' => $validated['nuptk'],
-            // 'nip' => $validated['nip'],
+            'nip' => $validated['nip'],
             'password' => Hash::make('password123'),
             'role_id' => $role_id,
         ]);
@@ -136,7 +134,7 @@ class TeacherController extends Controller
             'certification'=> 'nullable|max:100',
             'startDateofEmployment'=> 'required|date',
             'additional_Duties'=> 'nullable|max:100',
-            'teaching' => 'nullable|max:150',
+            'teaching' => 'nullable|exists:subjects,id',
             'status' => 'required|boolean',
         ]);
 

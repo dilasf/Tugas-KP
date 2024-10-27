@@ -142,46 +142,49 @@
                     <tr>
                         <td class="text-center">{{ $num++ }}</td>
                         <td class="font-semibold">Sikap Spiritual</td>
-                        <td>
+                        <td class="whitespace-pre-line max-w-[250px]">
                             @if ($rapors->isNotEmpty() && $rapors->first()->spiritual_attitude !== null)
                                 {{ $rapors->first()->spiritual_attitude }}
                             @else
                                 <span class="text-gray-400">Data tidak tersedia</span>
                             @endif
                         </td>
+                        @role('guru_kelas')
                         <td class="text-center">
-                            @role('guru_kelas')
+
                             @if ($rapors->isNotEmpty() && !in_array($rapors->first()->status, ['waiting_validation', 'validated']))
                                 <x-edit-primary-button tag="a" href="{{ route('rapors.editAspect', ['studentId' => $student->id, 'raporId' => $rapors->first()->id, 'aspectName' => 'Sikap Spiritual']) }}" class="flex items-center justify-center min-w-[60px]">
                                     <img src="{{ asset('img/edit-brush_logo.png') }}" class="w-[13px] h-[13px]">
                                     <span x-show="!$sidebarOpen" class="ml-1 text-[10px]">{{ __('Edit') }}</span>
                                 </x-edit-primary-button>
                             @endif
-                            @endrole
+
                         </td>
+                        @endrole
                     </tr>
 
                     {{-- Sikap Sosial --}}
                     <tr>
                         <td class="text-center">{{ $num++ }}</td>
                         <td class="font-semibold">Sikap Sosial</td>
-                        <td>
+                        <td class="whitespace-pre-line max-w-[250px]">
                             @if ($rapors->isNotEmpty() && $rapors->first()->social_attitudes !== null)
                                 {{ $rapors->first()->social_attitudes }}
                             @else
                                 <span class="text-gray-400">Data tidak tersedia</span>
                             @endif
                         </td>
+                        @role('guru_kelas')
                         <td class="text-center">
-                            @role('guru_kelas')
                             @if ($rapors->isNotEmpty() && !in_array($rapors->first()->status, ['waiting_validation', 'validated']))
                                 <x-edit-primary-button tag="a" href="{{ route('rapors.editAspect', ['studentId' => $student->id, 'raporId' => $rapors->first()->id, 'aspectName' => 'Sikap Sosial']) }}" class="flex items-center justify-center min-w-[60px]">
                                     <img src="{{ asset('img/edit-brush_logo.png') }}" class="w-[13px] h-[13px]">
                                     <span x-show="!$sidebarOpen" class="ml-1 text-[10px]">{{ __('Edit') }}</span>
                                 </x-edit-primary-button>
                             @endif
-                            @endrole
+
                         </td>
+                        @endrole
                     </tr>
                 </x-table>
             </div>
@@ -238,18 +241,18 @@
                                 @endphp
                                 <tr class="text-center">
                                     <td>{{ $num++ }}</td>
-                                    <td>{{ $subject }}</td>
+                                    <td class="whitespace-pre-line max-w-[80px] text-left">{{ $subject }}</td>
                                     <td class="{{ $averageKnowledgeScore < $kkm ? 'text-red-500' : 'text-gray-800' }}">{{ $averageKnowledgeScore }}</td>
                                     <td class="{{ $averageKnowledgeScore < $kkm ? 'text-red-500' : 'text-gray-800' }}">{{ $gradeKnowledge }}</td>
-                                    <td>{{ $descriptionKnowledge }}</td>
+                                    <td class="whitespace-pre-line max-w-[120px] text-justify">{{ $descriptionKnowledge }}</td>
                                     <td>{{ $kkm }}</td>
                                     <td class="{{ $averageSkillScore < $kkm ? 'text-red-500' : 'text-gray-800' }}">{{ $averageSkillScore }}</td>
                                     <td class="{{ $averageSkillScore < $kkm ? 'text-red-500' : 'text-gray-800' }}">{{ $gradeSkill }}</td>
-                                    <td>{{ $descriptionSkill }}</td>
+                                    <td class="whitespace-pre-line max-w-[120px] text-justify">{{ $descriptionSkill }}</td>
                                    @if (!in_array($status, ['waiting_validation', 'validated']))
                                     @role('guru_kelas')
                                     <td>
-                                        <x-edit-primary-button tag="a" href="{{ route('rapors.edit', ['studentId' => $student->id, 'semesterYearId' => $selectedSemesterYearId]) }}" class="flex items-center justify-center min-w-[60px]">
+                                        <x-edit-primary-button tag="a" href="{{ route('rapors.edit', ['studentId' => $student->id, 'semesterYearId' => $selectedSemesterYearId, 'classSubjectId' => $firstRapor->grade->class_subject_id]) }}" class="flex items-center justify-center min-w-[60px]">
                                             <img src="{{ asset('img/edit-brush_logo.png') }}" class="w-[13px] h-[13px]">
                                             <span x-show="!sidebarOpen" class="ml-1 text-[10px]">{{ __('Edit') }}</span>
                                         </x-edit-primary-button>
@@ -361,7 +364,7 @@
 
                     </div>
                     <div class="border border-black text-black p-5 rounded-md mt-2" style="min-height: 7rem;">
-                        <p class="text-sm text-black">
+                        <p class="text-sm text-black whitespace-pre-line max-w-[4700px] text-justify">
                             {{ $rapors->first()->suggestion ?? 'Tidak ada saran yang tersedia' }}
                         </p>
                     </div>
@@ -741,7 +744,7 @@
                                     $rapor = $rapors->firstWhere('status', 'waiting_validation');
                                 @endphp
                                 @if ($rapor)
-                                <div class="flex space-x-4"> <!-- Add flex container for buttons -->
+                                <div class="flex space-x-4"> 
                                     <form action="{{ route('rapors.validation.approve', ['id' => $rapor->id]) }}" method="POST" class="inline-block">
                                         @csrf
                                         <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded mt-4 hover:bg-green-700">Validasi</button>

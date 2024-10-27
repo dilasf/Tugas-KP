@@ -51,7 +51,7 @@
                                 <th>No</th>
                                 <th>Jenis Penilaian</th>
                                 <th>Nilai Akhir</th>
-                                <th>Grade</th>
+                                <th>Predikat</th>
                                 <th>Aksi</th>
                             </tr>
                         </x-slot>

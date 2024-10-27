@@ -15,7 +15,7 @@
             <div class="text-center mb-2 font-bold text-xl">DETAIL INFORMASI SISWA</div>
 
             <div class="w-24 h-32 mb-6 flex flex-col items-center justify-center mx-auto">
-                <img id="student-photo" class="object-contain mb-5 mt-20" src="{{ $student->student_photo ? asset('storage/photos/' . $student->student_photo) : asset('img/profil.png') }}" alt="Student Photo">
+                <img id="student-photo" class="object-contain mb-50 mt-20" src="{{ $student->student_photo ? asset('storage/photos/' . $student->student_photo) : asset('img/profil.png') }}" alt="Student Photo">
                 <div class="text-center">
                     <p class="font-semibold uppercase text-gray-900">{{ strtoupper ($student->student_name) }}</p>
                     <div class="flex justify-center items-center">

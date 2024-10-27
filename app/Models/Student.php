@@ -199,7 +199,7 @@ class Student extends Model
 
     public function user()
     {
-        return $this->hasOne(User::class, 'student_id', 'id');
+        return $this->hasOne(User::class);
     }
 
 

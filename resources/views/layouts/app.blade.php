@@ -4,7 +4,9 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+
     <title>{{ config('app.name', 'E-Rapor') }}</title>
+    <link rel="icon" href="{{ asset('img/logopendidik.png') }}" type="image/png">
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -50,7 +52,7 @@
                             <!-- End Sidebar Toggle -->
 
                             <!-- Title -->
-                            <a class="h-9 w-auto fill-current text-gray-800 font-bold flex flex-col gap-y-4 gap-x-0 mt-5 sm:flex-row sm:items-center sm:justify-end sm:gap-y-0 sm:gap-x-7 sm:mt-0 sm:ps-7 ms-4" href="{{ route('dashboard-admin') }}">
+                            <a class="h-9 w-auto fill-current text-gray-800 font-bold flex flex-col gap-y-4 gap-x-0 mt-5 sm:flex-row sm:items-center sm:justify-end sm:gap-y-0 sm:gap-x-7 sm:mt-0 sm:ps-7 ms-4" href="{{ route('dashboard') }}">
                                 E-RAPOR SDN DAWUAN
                             </a>
                         </div>

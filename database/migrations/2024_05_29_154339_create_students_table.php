@@ -15,33 +15,31 @@ return new class extends Migration
             $table->bigIncrements('id');
             $table->string('student_photo', 255)->nullable();
             $table->boolean('status')->default(true);
-            $table->bigInteger('nis')->unique();
-            $table->bigInteger('nisn')->unique();
-            $table->bigInteger('nipd');
+            $table->bigInteger('nis',11)->unique();
+            $table->bigInteger('nisn',11)->unique();
+            $table->bigInteger('nipd',10);
             $table->unsignedBigInteger('class_id');
             $table->string('student_name', 255);
             $table->string('gender', 10);
-            $table->bigInteger('nik')->unique();
+            $table->bigInteger('nik',17)->unique();
             $table->string('place_of_birth', 50);
             $table->date('date_of_birth');
             $table->string('religion', 10);
             $table->string('address', 255);
             $table->boolean('special_needs')->default(false);
             $table->string('previous_school', 255)->nullable();
-            // $table->unsignedBigInteger('height_weight_id');
+            $table->bigInteger('no_kk',17)->unique();
             $table->string('birth_certificate_number', 60)->unique();
             $table->string('residence_type', 25);
             $table->unsignedBigInteger('guardian_id');
-            $table->bigInteger('no_kk')->unique();
-            $table->integer('child_number');
-            $table->integer('number_of_siblings')->nullable();
+            $table->integer('child_number',2);
+            $table->integer('number_of_siblings',2)->nullable();
             $table->string('transportation', 20);
-            $table->integer('distance_to_school');
+            $table->integer('distance_to_school',2);
             $table->timestamps();
 
             // Foreign keys
             $table->foreign('class_id')->references('id')->on('classes');
-            // $table->foreign('height_weight_id')->references('id')->on('height_weights')->onDelete('cascade');
             $table->foreign('guardian_id')->references('id')->on('guardians')->onDelete('cascade');
         });
     }

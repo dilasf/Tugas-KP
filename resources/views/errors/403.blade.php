@@ -20,7 +20,7 @@
         </div>
         <h1 class="text-2xl font-bold text-red-600 mb-4 text-center">Akses Ditolak</h1>
         <p class="text-gray-700 mb-6 text-center">Maaf, Anda tidak memiliki izin untuk mengakses halaman ini</p>
-        <a class="h-9 w-auto fill-current text-gray-800 dark:text-gray-200 font-bold flex items-center gap-2 mt-5 sm:mt-0" href="{{ route('dashboard-admin') }}">
+        <a class="h-9 w-auto fill-current text-gray-800 dark:text-gray-200 font-bold flex items-center gap-2 mt-5 sm:mt-0" href="{{ route('dashboard') }}">
             <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
             </svg>

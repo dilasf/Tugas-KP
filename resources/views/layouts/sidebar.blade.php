@@ -1,14 +1,30 @@
 
   <!-- Sidebar -->
   <div class="overflow-x-auto">
-    <div class="px-6">
-        <a class="flex-none text-xl font-semibold text-white focus:outline-none focus:ring-1 focus:ring-gray-600" href="#" aria-label="Admin">Admin</a>
+    {{-- <div class="px-6">
+        <a class="flex-none text-xl font-semibold text-white focus:outline-none focus:ring-1 focus:ring-gray-600" href="#" aria-label="Admin">
+            Selamat datang,<br>
+            {{ auth()->user()->name }}
+        </a>
+    </div> --}}
+
+    <div class="px-6 flex items-center">
+        @php
+            $user = auth()->user();
+            $photoPath = $user->photo ? asset('storage/' . $user->photo) : asset('img/profil.png');
+        @endphp
+        <img src="{{ $photoPath }}" alt="Profile Photo" class="w-[50px] h-[50px] mb-1 rounded-full object-cover">
+        <div class="ml-3">
+            <span class="text-xl font-semibold text-white">Selamat datang,</span>
+            <span class="text-xl font-semibold text-white">{{ $user->name }}</span>
+        </div>
     </div>
+
 
     <nav class="hs-accordion-group p-6 w-full flex flex-col flex-wrap" data-hs-accordion-always-open>
         <ul class="space-y-1.5">
             <li class="col-span-3 bg-side-dark">
-                <x-nav-link :href="route('dashboard-admin')" :active="request()->routeIs('dashboard')" class=" font-semibold px-4 py-2">
+                <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')" class=" font-semibold px-4 py-2">
                     <svg class="flex-shrink-0 size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" ><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
                         <div class = "px-1">
                             Dashboard

@@ -16,14 +16,14 @@ return new class extends Migration
             $table->unsignedBigInteger('grade_id')->nullable();
             $table->unsignedBigInteger('teacher_id');
             $table->string('assessment_type', 100);
-            $table->integer('score')->nullable();
-            $table->integer('final_score')->nullable();
+            $table->integer('score',3)->nullable();
+            $table->integer('final_score',10)->nullable();
             $table->string('grade', 1)->nullable();
             $table->string('description', 255)->nullable();
             $table->timestamps();
 
             $table->foreign('grade_id')->references('id')->on('grades')->onDelete('cascade');
-            
+
         });
     }
 

@@ -58,15 +58,17 @@ class AttitudeScoreController extends Controller
     public function edit(string $assessment_type)
     {
         $assessmentType = AttitudeScore::where('assessment_type', $assessment_type)->firstOrFail();
+
         return view('grade.attitude_scores.edit', compact('assessmentType'));
     }
+
 
     public function update(Request $request, string $assessment_type)
     {
         $assessmentType = AttitudeScore::where('assessment_type', $assessment_type)->firstOrFail();
 
         $request->validate([
-            'assessment_type' => 'required|string|max:100|unique:attitude_scores,assessment_type,' . $assessmentType->id,
+            'assessment_type' => 'required|string|max:100|unique:skill_scores,assessment_type,' . $assessmentType->id,
         ]);
 
         $data = $assessmentType->update([
@@ -84,6 +86,7 @@ class AttitudeScoreController extends Controller
         }
     }
 
+
     public function destroy(string $assessment_type)
     {
         $deleted = AttitudeScore::where('assessment_type', $assessment_type)->delete();
@@ -96,7 +99,7 @@ class AttitudeScoreController extends Controller
             $notification['message'] = 'Jenis Penilaian Gagal Dihapus';
         }
 
-        return redirect()->route('grade.skill_scores.index')->with($notification);
+        return redirect()->route('grade.attitude_scores.index')->with($notification);
     }
 
 }

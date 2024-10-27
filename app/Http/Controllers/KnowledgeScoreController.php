@@ -59,6 +59,7 @@ class KnowledgeScoreController extends Controller
     public function edit(string $assessment_type)
     {
         $assessmentType = KnowledgeScore::where('assessment_type', $assessment_type)->firstOrFail();
+
         return view('grade.knowledge_scores.edit', compact('assessmentType'));
     }
 
@@ -68,21 +69,22 @@ class KnowledgeScoreController extends Controller
         $assessmentType = KnowledgeScore::where('assessment_type', $assessment_type)->firstOrFail();
 
         $request->validate([
-            'assessment_type' => 'required|string|max:100|unique:knowledge_scores,assessment_type,' . $assessmentType->id,
+            'assessment_type' => 'required|string|max:100|unique:skill_scores,assessment_type,' . $assessmentType->id,
         ]);
 
         $data = $assessmentType->update([
             'assessment_type' => $request->assessment_type,
         ]);
-    if ($data) {
-        $notification['alert-type'] = 'success';
-        $notification['message'] = 'Jenis Penilaian Berhasil Diperbaharui';
-        return redirect()->route('grade.knowledge_scores.index')->with($notification);
-    } else {
-        $notification['alert-type'] = 'error';
-        $notification['message'] = 'Jenis Penilaian Gagal Diperbaharui';
-        return redirect()->route('grade.knowledge_scores.edit', ['assessment_type' => $assessment_type])->withInput()->with($notification);
-    }
+
+        if ($data) {
+            $notification['alert-type'] = 'success';
+            $notification['message'] = 'Jenis Penilaian Berhasil Diperbaharui';
+            return redirect()->route('grade.knowledge_scores.index')->with($notification);
+        } else {
+            $notification['alert-type'] = 'error';
+            $notification['message'] = 'Jenis Penilaian Gagal Diperbaharui';
+            return redirect()->route('grade.knowledge_scores.edit', ['assessment_type' => $assessment_type])->withInput()->with($notification);
+        }
     }
 
     public function destroy(string $assessment_type)
@@ -97,7 +99,7 @@ class KnowledgeScoreController extends Controller
             $notification['message'] = 'Jenis Penilaian Gagal Dihapus';
         }
 
-        return redirect()->route('grade.skill_scores.index')->with($notification);
+        return redirect()->route('grade.knowledge_scores.index')->with($notification);
     }
 
 }

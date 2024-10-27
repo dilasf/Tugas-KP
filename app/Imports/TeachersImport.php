@@ -56,6 +56,10 @@ class TeachersImport implements WithHeadingRow, ToModel
 {
     public function model(array $row)
     {
+        if ($row['jenis_ptk'] === 'Penjaga Sekolah') {
+            return null;
+        }
+
         // Temukan admin yang sudah ada berdasarkan NUPTK
         $existingAdmin = User::where('nuptk', $row['nuptk'])->first();
 
@@ -90,7 +94,7 @@ class TeachersImport implements WithHeadingRow, ToModel
                 'name' => $row['nama'],
                 'password' => Hash::make('password123'),
                 'nuptk' => $row['nuptk'],
-                // 'nip' => $row['nip'],
+                'nip' => $row['nip'],
             ]
         );
 

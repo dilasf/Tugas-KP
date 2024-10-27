@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('subjects', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('subject_name', 150);
-            $table->integer('kkm');
+            $table->integer('kkm',3);
             $table->timestamps();
         });
     }

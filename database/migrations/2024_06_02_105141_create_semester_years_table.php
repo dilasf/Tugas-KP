@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('semester_years', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->integer('semester');
-            $table->integer('year');
+            $table->integer('semester',1);
+            $table->integer('year',4);
             $table->timestamps();
         });
 

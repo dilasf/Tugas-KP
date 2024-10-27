@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Facades\Excel;
-use Spatie\Permission\Models\Role;
+
 
 class StudentController extends Controller
 {
@@ -149,7 +149,7 @@ class StudentController extends Controller
             'status' => 'required|boolean',
             'nis' => 'required|unique:students|numeric|digits_between:1,11',
             'nisn' => 'required|unique:students|numeric|digits_between:1,11',
-            'nipd' => 'required|unique:students|numeric|digits_between:1,10',
+            'nipd' => 'nullable|unique:students|numeric|digits_between:1,10',
             'class_id' => 'required|exists:classes,id',
             'student_name' => 'required|max:255',
             'gender' => 'required|in:Laki-laki,Perempuan',
@@ -200,15 +200,19 @@ class StudentController extends Controller
             'guardian_id' => $guardian->id,
         ]));
 
+        //email untuk siswa, bisa orang tua/wali
+        $studentEmail = $parentData['parent_email'] ?? $guardianData['guardian_email'] ?? null;
+
         // Membuat user terkait
         $user = User::create([
             'student_id' => $student->id,
+            'photo' => $validated['student_photo'],
             'name' => $validated['student_name'],
-            'email' => $validated['student_name']. '@example.com',
+            'email' => $studentEmail,
             'nis' => $validated['nis'],
-            // 'nisn' => $validated['nisn'],
+            'nisn' => $validated['nisn'],
             'password' => Hash::make('password123'),
-            'role_id' => 5, // Set role_id to 5 for student
+            'role_id' => 5,
         ]);
 
         // Simpan data berat badan ke database
@@ -230,6 +234,30 @@ class StudentController extends Controller
         }
     }
 
+    //untuk mengcencel(menghapus) season data orang tu/wali
+    public function cancel(Request $request)
+    {
+    // Hapus season
+    $request->session()->forget('parent_data');
+    $request->session()->forget('guardian_data');
+
+    //cek tabel guardian
+    $guardianEmail = $request->session()->get('guardian_data.guardian_email', null);
+    if ($guardianEmail) {
+        $guardian = Guardian::where('guardian_email', $guardianEmail)->first();
+        if ($guardian) {
+            // Hapus data guardian jika tidak hubungan dengan tabel students
+            $guardian->delete();
+        }
+    }
+
+    // menghapus email di tabel user jika adq
+    $user = User::where('email', $guardianEmail)->first();
+    if ($user) {
+        $user->delete();
+    }
+
+    }
 
     // Mengupdate data siswa
     public function edit(string $id)
@@ -251,7 +279,7 @@ class StudentController extends Controller
             'status' => 'required|boolean',
             'nis' => 'required|numeric|digits_between:1,11|unique:students,nis,' . $student->id,
             'nisn' => 'required|numeric|digits_between:1,11|unique:students,nisn,' . $student->id,
-            'nipd' => 'required|numeric|digits_between:1,10|unique:students,nipd,' . $student->id,
+            'nipd' => 'nullable|numeric|digits_between:1,10',
             'class_id' => 'required|exists:classes,id',
             'student_name' => 'required|max:255',
             'gender' => 'required|in:Laki-laki,Perempuan',
@@ -292,33 +320,47 @@ class StudentController extends Controller
         if ($student) {
             $notification['alert-type'] = 'success';
             $notification['message'] = 'Data Siswa Berhasil Diperbarui';
+            return redirect()->route('student_data.index')->with($notification);
         } else {
             $notification['alert-type'] = 'error';
             $notification['message'] = 'Data Siswa Gagal Diperbarui';
+            return redirect()->route('student_data.edit')->with($notification);
         }
 
-        return redirect()->route('student_data.index')->with($notification);
     }
 
-    // Menghapus data siswa
-    public function destroy(Student $student)
+     // Menghapus data siswa
+    public function destroy(string $id)
     {
-        // Hapus foto siswa jika ada
+        $student = Student::findOrFail($id);
+
         if ($student->student_photo) {
             Storage::delete('public/photos/' . $student->student_photo);
         }
 
-        // Hapus data siswa dan terkait melalui model events
-        $student->delete();
+        // Jika guardian ID sama dengan student ID, hapus guardian terlebih dahulu
+        if ($student->guardian && $student->id === $student->guardian->id) {
+            $student->guardian->delete();
+        }
 
-        // Redirect dengan notifikasi
-        $notification = [
-            'alert-type' => 'success',
-            'message' => 'Data Siswa Berhasil Dihapus'
-        ];
+        // Hapus data siswa setelah guardian dihapus
+        $studentDeleted = $student->delete();
+
+        if ($studentDeleted) {
+            $notification = [
+                'alert-type' => 'success',
+                'message' => 'Data Siswa dan Guardian Berhasil Dihapus'
+            ];
+        } else {
+            $notification = [
+                'alert-type' => 'error',
+                'message' => 'Data Siswa dan Guardian Gagal Dihapus'
+            ];
+        }
 
         return redirect()->route('student_data.index')->with($notification);
     }
+
     // Import data siswa dari Excel
     public function import(Request $request)
     {

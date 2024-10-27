@@ -47,7 +47,7 @@
                             <x-input-label for="gender" value="Jenis Kelamin" />
                             <div id="gender" class="mt-1 w-full flex space-x-10" required>
                                 <label class="inline-flex items-center">
-                                    <input type="radio" name="gender" value="Laki-laki" {{ old('gender') == 'Laki-laki' ? 'checked' : '' }}>
+                                    <input type="radio" name="gender" value="Laki-Laki" {{ old('gender') == 'Laki-Laki' ? 'checked' : '' }}>
                                     <span class="ml-2">Laki-laki</span>
                                 </label>
                                 <label class="inline-flex items-center">

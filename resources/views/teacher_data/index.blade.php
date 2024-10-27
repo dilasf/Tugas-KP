@@ -287,8 +287,7 @@
                               {{ __('Import Data Guru') }}
                            </h2>
                            <div class="max-w-xl">
-                              <x-input-label for="cover" class="sr-only" value="File
-                                 Import"/>
+                              <x-input-label for="cover" class="sr-only" value="File Import"/>
                               <x-file-input id="cover" name="file" class="mt-1 block wfull" required/>
                            </div>
                            <div class="mt-6 flex justify-end">

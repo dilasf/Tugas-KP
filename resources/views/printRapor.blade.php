@@ -6,7 +6,7 @@
     <title>Rapor Siswa</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            line-height: 1.5;
         }
         .container {
             max-width: 800px;
@@ -20,7 +20,7 @@
             font-weight: 500;
         }
         .text-xl {
-            font-size: 1.12rem;
+            font-size: 1rem;
         }
         .bg-white {
             background-color: #ffffff;
@@ -44,22 +44,20 @@
             width: 100%;
             border-collapse: collapse;
         }
-        .table-data-diri th, .table-data-diri td {
-            padding: 8px;
-            text-align: left;
-            border: none;
-        }
+        /* .table-data-diri th, .table-data-diri td, */
         .table-competency th, .table-competency td {
-            padding: 8px;
+            padding: 6px;
             text-align: left;
             border: 1px solid #ddd;
-            font-size: 1rem;
+            font-size: 0.9rem;
+            text-align: justify;
         }
         .table-competency th {
             background-color: #f2f2f2;
             text-align: center;
             font-weight: bold;
-            font-size: 1rem;
+            font-size: 0.9rem;
+            text-align: justify;
         }
         .colon {
             width: 20px;
@@ -77,8 +75,8 @@
             text-align: right;
         }
 
-         /* Styling untuk Saran Section */
-         .saran-title {
+        /* Styling untuk Saran Section */
+        .saran-title {
             margin-bottom: 0;
             padding-bottom: 0;
         }
@@ -89,6 +87,7 @@
             border: 1px solid black;
             border-radius: 0.375rem;
             font-size: 0.875rem;
+            text-align: justify;
         }
         .text-md {
             font-size: 14px;
@@ -114,9 +113,6 @@
         }
         .text-center {
             text-align: center;
-        }
-        .font-semibold {
-            font-weight: 600;
         }
         .underline {
             text-decoration: underline;
@@ -148,6 +144,7 @@
             align-items: center;
         }
     </style>
+
 </head>
 <body>
     @php

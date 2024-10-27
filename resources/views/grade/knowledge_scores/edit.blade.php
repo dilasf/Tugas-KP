@@ -16,7 +16,7 @@
         <div class="bg-white overflow-hidden shadow-sm">
             <div class="p-6 text-black">
                 <div class="max-h-[70vh] overflow-y-auto">
-                    <form method="post" action="{{ route('grade.knowledge_scores.update', $assessmentType->id) }}" class="mt-6 space-y-6">
+                    <form method="post" action="{{ route('grade.knowledge_scores.update', $assessmentType->assessment_type) }}" class="mt-6 space-y-6">
                         @csrf
                         @method('PATCH')
 

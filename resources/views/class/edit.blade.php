@@ -16,19 +16,19 @@
         <div class="bg-white overflow-hidden shadow-sm">
             <div class="p-6 text-black dark:text-gray-100">
                 <div class="max-h-[70vh] overflow-y-auto">
-                    <form method="post" action="{{ route('class.update', $classes->id) }}" enctype="multipart/form-data" class="mt-6 space-y-6">
+                    <form method="post" action="{{ route('class.update', $class->id) }}" enctype="multipart/form-data" class="mt-6 space-y-6">
                         @csrf
                         @method('PATCH')
 
                         <div class="max-w-3xl">
                             <x-input-label for="class_name" value="Nama Kelas" />
-                            <x-text-input id="class_name" type="text" name="class_name" class="mt-1 block w-full bg-zinc-100" value="{{ old('class_name', $classes->class_name) }}" required />
+                            <x-text-input id="class_name" type="text" name="class_name" class="mt-1 block w-full bg-zinc-100" value="{{ old('class_name', $class->class_name) }}" required />
                             <x-input-error class="mt-2" :messages="$errors->get('class_name')" />
                         </div>
 
                         <div class="max-w-3xl">
                             <x-input-label for="level" value="Tingkat" />
-                            <x-text-input id="level" type="text" name="level" class="mt-1 block w-full bg-zinc-100" value="{{ old('level', $classes->level) }}" required />
+                            <x-text-input id="level" type="text" name="level" class="mt-1 block w-full bg-zinc-100" value="{{ old('level', $class->level) }}" required />
                             <x-input-error class="mt-2" :messages="$errors->get('level')" />
                         </div>
 {{--
@@ -62,13 +62,13 @@
 
                         <div class="max-w-3xl">
                             <x-input-label for="curriculum" value="Kurikulum" />
-                            <x-text-input id="curriculum" type="text" name="curriculum" class="mt-1 block w-full bg-zinc-100" value="{{ old('curriculum', $classes->curriculum) }}" required />
+                            <x-text-input id="curriculum" type="text" name="curriculum" class="mt-1 block w-full bg-zinc-100" value="{{ old('curriculum', $class->curriculum) }}" required />
                             <x-input-error class="mt-2" :messages="$errors->get('curriculum')" />
                         </div>
 
                         <div class="max-w-3xl">
                             <x-input-label for="room" value="Ruangan" />
-                            <x-text-input id="room" type="text" name="room" class="mt-1 block w-full bg-zinc-100" value="{{ old('room', $classes->room) }}" required />
+                            <x-text-input id="room" type="text" name="room" class="mt-1 block w-full bg-zinc-100" value="{{ old('room', $class->room) }}" required />
                             <x-input-error class="mt-2" :messages="$errors->get('room')" />
                         </div>
 

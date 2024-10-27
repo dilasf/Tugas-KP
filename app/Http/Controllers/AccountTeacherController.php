@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Teacher;
-use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
@@ -41,19 +40,28 @@ class AccountTeacherController extends Controller
             'password' => $request->filled('password') ? Hash::make($request->input('password')) : $user->password,
         ]);
 
-        // Jika email di User berubah, update juga email di Teacher
-        if ($request->input('email') !== null && $user->email !== $request->input('email')) {
+        // memastikan email di tabel guru terupdate
+        if ($request->input('email') !== null && $teacherAccount->mail !== $request->input('email')) {
             $teacherAccount->update([
-                'email' => $request->input('email'),
+                'mail' => $request->input('email'),
             ]);
         }
 
-        $teacherAccount->update([
+        $account = $teacherAccount->update([
             'nuptk' => $request->input('nuptk'),
             'nip' => $request->input('nip'),
         ]);
 
-        return redirect()->route('account.teacher.index')->with('success', 'Akun guru berhasil diperbarui');
+        if ($account) {
+            $notification['alert-type'] = 'success';
+            $notification['message'] = 'Akun guru berhasil diperbarui';
+            return redirect()->route('account.teacher.index')->with($notification);
+        } else {
+            $notification['alert-type'] = 'error';
+            $notification['message'] = 'Akun guru gagal diperbarui';
+            return redirect()->route('account.teacher.edit')->withInput()->with($notification);
+        }
     }
+
 
 }

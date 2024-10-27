@@ -16,12 +16,13 @@
         <div class="bg-white overflow-hidden shadow-sm">
             <div class="p-6 text-black">
                 <div class="max-h-[70vh] overflow-y-auto">
-                    <form method="post" action="{{ route('grade.attitude_scores.store') }}" class="mt-6 space-y-6">
+                    <form method="post" action="{{ route('grade.attitude_scores.update', $assessmentType->assessment_type) }}" class="mt-6 space-y-6">
                         @csrf
+                        @method('PATCH')
 
                         <div class="max-w-3xl">
                             <x-input-label for="assessment_type" value="Assessment Type"/>
-                            <x-text-input id="assessment_type" type="text" name="assessment_type" class="mt-1 block w-full bg-zinc-100" value="{{ old('assessment_type') }}" required/>
+                            <x-text-input id="assessment_type" type="text" name="assessment_type" class="mt-1 block w-full bg-zinc-100" value="{{ old('assessment_type', $assessmentType->assessment_type) }}" required/>
                             <x-input-error class="mt-2" :messages="$errors->get('assessment_type')" />
                         </div>
 

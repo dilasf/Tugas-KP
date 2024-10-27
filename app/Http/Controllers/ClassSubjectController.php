@@ -22,13 +22,21 @@ class ClassSubjectController extends Controller
             $classes = StudentClass::where('homeroom_teacher_id', $teacher->id)->get();
 
             // Ambil mata pelajaran yang diajarkan di kelas-kelas tersebut
+            // $classSubjects = ClassSubject::with(['class', 'subject'])
+            //     ->whereIn('class_id', $classes->pluck('id'))
+            //     ->orderBy('class_id')
+            //     ->get()
+            //     ->filter(function ($classSubject) {
+            //         return $classSubject->subject->teachers->isEmpty();
+            //     });
+
             $classSubjects = ClassSubject::with(['class', 'subject'])
-                ->whereIn('class_id', $classes->pluck('id'))
-                ->orderBy('class_id')
-                ->get()
-                ->filter(function ($classSubject) {
-                    return $classSubject->subject->teachers->isEmpty(); // Exclude subjects taught by guru mapel
-                });
+            ->whereIn('class_id', $classes->pluck('id'))
+            ->whereDoesntHave('subject.teachers', function ($query) {
+                $query->where('typesOfCAR', 'guru mapel');
+            })
+            ->orderBy('class_id')
+            ->get();
 
             return view('class-subjects.index-subject', compact('classSubjects', 'sidebarOpen', 'classes', 'teacher'));
 

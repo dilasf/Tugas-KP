@@ -226,7 +226,7 @@ class LoginRequest extends FormRequest
         // cek status user active atau inactive
         if (!$user) {
             throw ValidationException::withMessages([
-                'login' => 'These credentials do not match our records.',
+                'login' => 'Kredensial ini tidak cocok dengan catatan kami.',
             ]);
         }
 

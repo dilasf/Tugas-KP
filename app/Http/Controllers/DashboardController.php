@@ -67,7 +67,7 @@ class DashboardController extends Controller
         }
 
 
-        return view('dashboard-admin', compact('subjectCount', 'studentCount', 'classCount', 'teacherCount', 'accountsCount', 'semesterYearCount', 'uniqueSkill', 'uniqueAttitude', 'uniqueKnowledge','pendingReportsCount', 'validatedReports'));
+        return view('dashboard', compact('subjectCount', 'studentCount', 'classCount', 'teacherCount', 'accountsCount', 'semesterYearCount', 'uniqueSkill', 'uniqueAttitude', 'uniqueKnowledge','pendingReportsCount', 'validatedReports'));
     }
 
 

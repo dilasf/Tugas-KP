@@ -48,7 +48,7 @@
                             <x-input-label for="gender" value="Jenis Kelamin" />
                             <div id="gender" class="mt-1 w-full flex space-x-10">
                                 <label class="inline-flex items-center">
-                                    <input type="radio" name="gender" value="Laki-laki" {{ old('gender', $teacher->gender) == 'Laki-laki' ? 'checked' : '' }}>
+                                    <input type="radio" name="gender" value="Laki-Laki" {{ old('gender', $teacher->gender) == 'Laki-Laki' ? 'checked' : '' }}>
                                     <span class="ml-2">Laki-laki</span>
                                 </label>
                                 <label class="inline-flex items-center">
@@ -137,7 +137,7 @@
                         </div>
 
                         <div class="max-w-3xl">
-                            <x-input-label for="education_Level" value="Pendidikan Wali" />
+                            <x-input-label for="education_Level" value="Pendidikan Terakhir" />
                             <x-select-input id="education_Level" name="education_Level" class="mt-1 block w-full bg-zinc-100">
                                 <option value="">Pilih Pendidikan</option>
                                 <option value="SD" {{ old('education_Level', $teacher->education_Level) == 'SD' ? 'selected' : '' }}>SD</option>
@@ -178,10 +178,25 @@
                             <x-input-error class="mt-2" :messages="$errors->get('additional_Duties')" />
                         </div>
 
-                        <div class="max-w-3xl">
+                        {{-- <div class="max-w-3xl">
                             <x-input-label for="teaching" value="Mengajar"/>
                             <x-text-input id="teaching" type="text" name="teaching" class="mt-1 block w-full bg-zinc-100" value="{{ old('teaching', $teacher->teaching) }}"/>
                             <x-input-error class="mt-2" :messages="$errors->get('teaching')" />
+                        </div> --}}
+                        <div class="max-w-3xl">
+                            <x-input-label for="subject_id" value="Mengajar" />
+                            <x-select-input id="subject_id" name="subject_id" class="mt-1 block w-full bg-zinc-100">
+                                <option value="">Pilih Mata Pelajaran</option>
+                                <option value="guru_kelas" {{ old('subject_id', $teacher->subject_id) == 'guru_kelas' ? 'selected' : '' }}>
+                                    Guru Kelas SD/MI/SLB
+                                </option>
+                                @foreach($subjects as $subject)
+                                    <option value="{{ $subject->id }}" {{ old('subject_id', $teacher->subject_id) == $subject->id ? 'selected' : '' }}>
+                                        {{ $subject->subject_name }}
+                                    </option>
+                                @endforeach
+                            </x-select-input>
+                            <x-input-error class="mt-2" :messages="$errors->get('subject_id')" />
                         </div>
 
                         <div class="max-w-3xl">

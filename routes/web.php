@@ -29,12 +29,9 @@ Route::get('/', function () {
     return view('auth.login');
 });
 
-Route::get('/dashboard', function () {
-    return view('dashboard-admin');
-})->middleware(['auth', 'verified'])->name('dashboard-admin');
 
 Route::middleware('auth')->group(function () {
-    Route::get('/dashboard', [DashboardController::class, 'dashboard'])->name('dashboard-admin');
+    Route::get('/dashboard', [DashboardController::class, 'dashboard'])->name('dashboard');
 });
 
 Route::middleware('auth')->group(function () {
@@ -63,6 +60,8 @@ Route::middleware(['auth', 'verified', 'role:admin|guru_mapel|guru_kelas|kepala_
     Route::get('/student', [StudentController::class, 'index'])->name('student_data.index');
     Route::get('/student/create', [StudentController::class, 'create'])->name('student_data.create');
     Route::post('/student/store', [StudentController::class, 'store'])->name('student_data.store');
+    Route::get('/student/cancel', [StudentController::class, 'cancel'])->name('student_data.cancel');
+
     Route::get('/student/{id}/edit', [StudentController::class, 'edit'])->name('student_data.edit');
     Route::match(['put', 'patch'],'/student/{id}', [StudentController::class, 'update'])->name('student_data.update');
     Route::delete('/student/{id}', [StudentController::class, 'destroy'])->name('student_data.destroy');
@@ -130,7 +129,7 @@ Route::middleware(['auth', 'verified', 'role:admin'])->group(function () {
     Route::patch('/account/teacher/{id}', [AccountTeacherController::class, 'update'])->name('account.teacher.update');
 });
 
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'verified', 'role:admin'])->group(function () {
     Route::get('/account/student', [AccountStudentController::class, 'index'])->name('account.student.index');
     Route::get('/account/student/{id}/edit', [AccountStudentController::class, 'edit'])->name('account.student.edit');
     Route::patch('/account/student/{id}', [AccountStudentController::class, 'update'])->name('account.student.update');
@@ -148,7 +147,7 @@ Route::middleware(['auth', 'verified', 'role:guru_mapel|guru_kelas'])->group(fun
 });
 
 //Jenis Nilai Sikap
-Route::middleware(['auth', 'verified', 'role:guru_mapel|guru_kelas'])->group(function () {
+Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/attitude-scores', [AttitudeScoreController::class, 'index'])->name('grade.attitude_scores.index');
     Route::get('/attitude-scores/create', [AttitudeScoreController::class, 'create'])->name('grade.attitude_scores.create');
     Route::post('/attitude-scores', [AttitudeScoreController::class, 'store'])->name('grade.attitude_scores.store');
@@ -167,13 +166,11 @@ Route::middleware(['auth', 'verified', 'role:guru_mapel|guru_kelas'])->group(fun
     Route::patch('/skill-scores/{assessment_type}', [SkillScoreController::class, 'update'])->name('grade.skill_scores.update');
     Route::delete('/skill-scores/{assessment_type}', [skillScoreController::class, 'destroy'])->name('grade.skill_scores.destroy');
 
-
 });
 
 //Nilai
 Route::middleware(['auth', 'verified', 'role:guru_mapel|guru_kelas'])->group(function () {
     Route::get('/{studentId}/{classSubjectId}', [GradeController::class, 'index'])->name('grade.index');
-    // Route::get('/{studentId}/{classSubjectId}/detail', [GradeController::class, 'detailKnowledgeScore'])->name('grade.detailKnowledgeScore');
     Route::get('/grade/{studentId}/{classSubjectId}/detail-knowledge-score', [GradeController::class, 'detailKnowledgeScore'])->name('grade.detailKnowledgeScore');
     Route::get('/grade/{studentId}/{classSubjectId}/edit-knowledge-score/{assessmentType}', [GradeController::class, 'editKnowledgeScore'])->name('grade.editKnowledgeScore');
     Route::match(['put', 'patch'],'/grade/{studentId}/{classSubjectId}/update-knowledge-score/{assessmentType}', [GradeController::class, 'updateKnowledgeScore'])->name('grade.updateKnowledgeScore');
@@ -188,24 +185,22 @@ Route::middleware(['auth', 'verified', 'role:guru_mapel|guru_kelas'])->group(fun
     Route::get('/grade/{studentId}/{classSubjectId}/edit-skill-score/{assessmentType}', [GradeController::class, 'editSkillScore'])->name('grade.editSkillScore');
     Route::match(['put', 'patch'],'/grade/{studentId}/{classSubjectId}/update-skill-score/{assessmentType}', [GradeController::class, 'updateSkillScore'])->name('grade.updateSkillScore');
 
+    // Route untuk penambahan absensi
+    Route::post('/attendance/increment/sick', [AttendanceController::class, 'incrementSick'])->name('attendance.increment.sick');
+    Route::post('/attendance/increment/permission', [AttendanceController::class, 'incrementPermission'])->name('attendance.increment.permission');
+    Route::post('/attendance/increment/unexcused', [AttendanceController::class, 'incrementUnexcused'])->name('attendance.increment.unexcused');
 
-// Route untuk penambahan absensi
-Route::post('/attendance/increment/sick', [AttendanceController::class, 'incrementSick'])->name('attendance.increment.sick');
-Route::post('/attendance/increment/permission', [AttendanceController::class, 'incrementPermission'])->name('attendance.increment.permission');
-Route::post('/attendance/increment/unexcused', [AttendanceController::class, 'incrementUnexcused'])->name('attendance.increment.unexcused');
-
-// Route untuk pengurangan absensi
-Route::post('/attendance/decrement/sick', [AttendanceController::class, 'decrementSick'])->name('attendance.decrement.sick');
-Route::post('/attendance/decrement/permission', [AttendanceController::class, 'decrementPermission'])->name('attendance.decrement.permission');
-Route::post('/attendance/decrement/unexcused', [AttendanceController::class, 'decrementUnexcused'])->name('attendance.decrement.unexcused');
-Route::post('/attendance/update', [AttendanceController::class, 'updateAttendance'])->name('attendance.update');
+    // Route untuk pengurangan absensi
+    Route::post('/attendance/decrement/sick', [AttendanceController::class, 'decrementSick'])->name('attendance.decrement.sick');
+    Route::post('/attendance/decrement/permission', [AttendanceController::class, 'decrementPermission'])->name('attendance.decrement.permission');
+    Route::post('/attendance/decrement/unexcused', [AttendanceController::class, 'decrementUnexcused'])->name('attendance.decrement.unexcused');
+    Route::post('/attendance/update', [AttendanceController::class, 'updateAttendance'])->name('attendance.update');
 
 });
 
 //prestasi
 Route::middleware(['auth', 'verified', 'role:guru_kelas'])->group(function () {
     Route::get('/students/{studentId}/achievements/create/{semester_year_id}', [AchievementController::class, 'create'])->name('achievements.create');
-    // Route::get('/students/{studentId}/achievements/create/{semester_year_id}', [AchievementController::class, 'create'])->name('achievements.create');
     Route::post('/students/{studentId}/achievements/store/{semester_year_id}', [AchievementController::class, 'store'])->name('achievements.store');
     Route::get('/students/{studentId}/achievements/{achievementId}/edit', [AchievementController::class, 'edit'])->name('achievements.edit');
     Route::match(['put', 'patch'], '/achievements/{studentId}/{achievementId}', [AchievementController::class, 'update'])->name('achievements.update');
@@ -226,13 +221,10 @@ Route::middleware(['auth', 'verified', 'role:guru_kelas'])->group(function () {
     Route::get('students/{studentId}/healths/create/{semester_year_id}/{aspectName}', [HealthController::class, 'create'])->name('healths.create');
     Route::get('students/{studentId}/healths/{healthId}/edit/{aspectName}', [HealthController::class, 'edit'])->name('healths.edit');
     Route::post('/healths/storeOrUpdate/{studentId}/{semester_year_id}/{aspectName}', [HealthController::class, 'storeOrUpdate'])->name('healths.storeOrUpdate');
-    // Route::patch('students/{studentId}/healths/update/{healthId}/{aspectName}', [HealthController::class, 'storeOrUpdate'])->name('healths.update');
-
 });
 
 //Tinggi Badan
-Route::middleware(['auth', 'verified'])->group(function () {
-
+Route::middleware(['auth', 'verified', 'role:guru_kelas'])->group(function () {
     Route::get('/height_weights/{studentId}/{heightWeightId}/{aspectName}/{semester_year_id}/edit', [HeightWeightController::class, 'edit'])
     ->name('height_weights.edit');
     Route::patch('/height_weights/{studentId}/{heightWeightId}/{aspectName}/{semester_year_id}', [HeightWeightController::class, 'update'])
@@ -248,14 +240,15 @@ Route::middleware(['auth', 'verified', 'role:kepala_sekolah'])->group(function (
 
 });
 
-Route::middleware(['auth', 'verified','role:guru_kelas|kepala_sekolah|siswa'])->group(function () {
+Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('rapors/lihat/{studentId}', [RaporController::class, 'index'])->name('rapors.index');
+    Route::get('/rapors/download/{studentId}', [RaporController::class, 'downloadPDF'])->name('rapors.download');
 
 });
 
-Route::middleware(['auth', 'verified'])->group(function () {
-     Route::get('rapors/lihat/{studentId}', [RaporController::class, 'index'])->name('rapors.index');
-    Route::get('/rapors/{studentId}/edit/{semesterYearId}', [RaporController::class, 'edit'])->name('rapors.edit');
+Route::middleware(['auth', 'verified', 'role:guru_kelas|kepala_sekolah|siswa'])->group(function () {
+    //  Route::get('rapors/lihat/{studentId}', [RaporController::class, 'index'])->name('rapors.index');
+     Route::get('rapors/edit/{studentId}/{semesterYearId}/{classSubjectId}', [RaporController::class, 'edit'])->name('rapors.edit');
     Route::match(['put', 'patch'], '/rapors/{rapor}', [RaporController::class, 'update'])->name('rapors.update');
 
     Route::get('/rapors/{studentId}/edit-suggestion/{semesterYearId}', [RaporController::class, 'editSuggestion'])->name('rapors.editSuggestion');
@@ -267,9 +260,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::patch('/rapors/{studentId}/update/{raporId}/{aspectName}', [RaporController::class, 'updateAspect'])->name('rapors.updateAspect');
 
     Route::post('/send-report/{raporId}', [RaporController::class, 'sendReport'])->name('send.report');
-
-    Route::get('/rapors/download/{studentId}', [RaporController::class, 'downloadPDF'])->name('rapors.download');
-
 });
 
 

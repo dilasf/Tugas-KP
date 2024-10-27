@@ -32,6 +32,7 @@
                             <span x-show="!sidebarOpen" class="ml-1 text-[10px]">{{ __('Edit') }}</span>
                         </x-edit-primary-button>
 
+
                         <x-danger-button
                         x-data=""
                         x-on:click.prevent="

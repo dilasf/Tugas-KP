@@ -42,6 +42,9 @@
                          <!-- Form untuk data orang tua -->
                        <div class="max-w-3xl relative">
                         <div class="mb-4">
+                            <p class="text-sm text-gray-600 mb-2">
+                                *Harap lengkapi data Orang Tua/Wali terlebih dahulu sebelum melanjutkan.*
+                            </p>
                             <div class="flex items-center justify-between bg-light-blue text-white rounded py-2 px-4 cursor-pointer" id="toggleParentForm">
                                 <span>Tambah Data Orang Tua</span>
                                 <svg id="triangle" class="w-3 h-3 transition-transform duration-300 ease-in-out transform rotate-0" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -246,11 +249,15 @@
                         <x-input-error class="mt-2" :messages="$errors->get('distance_to_school')" />
                     </div>
 
-                        <!-- Tombol submit -->
+                        <!-- Tombol Batal -->
                         <div class="flex justify-end space-x-4 mt-4 w-full">
-                            <x-secondary-button tag="a" href="{{ route('student_data.index') }}">Batal</x-secondary-button>
+                            <x-secondary-button tag="a" href="{{ route('student_data.cancel') }}">Batal</x-secondary-button>
                             <x-primary-button name="save" value="true">Simpan</x-primary-button>
                         </div>
+                        {{-- <div class="flex justify-end space-x-4 mt-4 w-full">
+                            <x-secondary-button tag="a" href="{{ route('student_data.index') }}">Batal</x-secondary-button>
+                            <x-primary-button name="save" value="true">Simpan</x-primary-button>
+                        </div> --}}
                     </form>
                 </div>
             </div>
